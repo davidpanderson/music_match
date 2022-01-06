@@ -1,0 +1,112 @@
+Profiles
+    screen name
+    email addr (not shown)
+    country/state/city
+    web link
+    A user can have both a composer and performer profile
+    
+Composer profile
+    instruments
+        piano/organ/keyboards
+        woodwinds
+        strings
+        brass
+        percussion
+        vocal
+        other:
+
+        solo
+        solo with accompaniment
+        ensemble
+        specific:
+    styles
+        romantic
+        modern
+        post-modern
+        minimalist
+        atonal
+        new age
+    influences
+        (list)
+    difficulty level
+        beginner
+        intermediate
+        adv intermediate
+        advanced
+    priorities (1 to 5)
+        get pieces played
+        get pieces heard by an audience
+        get paid for performances
+    license of compositions
+        public domain
+        CC license
+        other license
+        
+performer profile
+    instruments played
+    difficulty levels: as above (per instrument)
+    ensembles
+        already part of
+        would like to be part of
+    styles, favorite composers, favorite pieces
+    where do you perform or want to perform?
+        none
+        family/friends
+        Groupmuse or other house concerts
+        live streaming
+        Online recordings (Youtube, Soundcloud)
+        public concerts
+
+        for each: how often?
+    links to performances
+
+-----------------
+functions
+
+friends
+
+matching
+    search by criteria
+        instrument
+        style
+        level
+
+        sorting search results
+        proximity
+        ratings
+
+    recommendations
+        least-recently viewed
+
+rating
+    a) rating as a composer/performer
+    b) how relevant to me?
+
+messaging
+    private messages
+    message boards
+        composers seeking performers
+        performers seeking composers
+        questions about MusicMatch
+
+--------------
+database
+
+store stuff mostly in JSON and PHP variables
+performer/ID
+composer/ID
+
+styles: [baroque, classical, romantic, impressionist, modern, new age, contemporary]
+
+level: [beginner, intermediate, advanced, pro]
+
+composer goals: played, heard, paid
+
+Keep track of user views
+    src, dst user
+    # of views as performer
+    @ of views as composer
+    rating as performer
+        overall (I'd want to listen to them)
+        relevance to me (I'd want to play with or write for them)
+    rating as composer

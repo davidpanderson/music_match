@@ -2,6 +2,7 @@ Profiles
     screen name
     email addr (not shown)
     country/state/city
+    self-description
     web link
     A user can have both a composer and performer profile
     

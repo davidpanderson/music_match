@@ -1,5 +1,5 @@
 # music_match
-A Web-based system for matching composers and performers
+A Web-based system for matching classical music composers and performers
 
 A web site that lets composers and performers
 * Create accounts

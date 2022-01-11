@@ -1,5 +1,7 @@
 <?php
 
+define('DEBUG', true);
+
 $style_list = array(
     'baroque' => 'Baroque',
     'classical' => 'Classical',
@@ -166,9 +168,15 @@ function get_profiles($is_comp) {
     $x = array();
     foreach(scandir($dir) as $f) {
         if (str_starts_with($f, '.')) continue;
-        $x[] = json_decode(file_get_contents("$dir/$f"));
+        $id = (int)$f;
+        $x[$id] = read_profile($id, $is_comp);
     }
     return $x;
 }
 
+// ------------ utilities -------------
+
+function str_starts_with ( $haystack, $needle ) {
+  return strpos( $haystack , $needle ) === 0;
+}
 ?>

@@ -8,9 +8,10 @@ require_once("../inc/mm.inc");
 function rnd_subset($list) {
     $x = array();
     $n = random_int(1,3);
-    shuffle($list);
+    $list2 = array_keys($list);
+    shuffle($list2);
     for ($i=0; $i<$n; $i++) {
-        $x[] = $list[$i];
+        $x[] = $list2[$i];
     }
     return $x;
 }

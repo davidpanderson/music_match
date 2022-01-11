@@ -95,6 +95,17 @@ messaging
         questions about MusicMatch
 
 --------------
+pages
+
+mm_user.php
+    show a user in detail
+    comp, perf profiles
+    links to message/rate them
+
+mm_home.php
+    home page for logged-in user
+    summaries of comp, pref profiles; links to add or edit
+--------------
 database
 
 store stuff mostly in JSON and PHP variables

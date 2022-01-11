@@ -72,9 +72,13 @@ matching
         style
         level
 
+        "or" within each, "and" among them,
+        e.g. "(piano or violin) and (atonal or classical)"
+
         sorting search results
-        proximity
-        ratings
+            number of matches
+            proximity to me
+            ratings
 
     recommendations
         least-recently viewed

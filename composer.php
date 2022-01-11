@@ -71,12 +71,12 @@ function composer_action($profile) {
 $user = BOINCUser::lookup_id(1);
 
 if (get_str('submit', true)) {
-    $profile = read_profile($user, true);
+    $profile = read_profile($user->id, COMPOSER);
     $profile = composer_action($profile);
-    write_profile($user, $profile, true);
+    write_profile($user->id, $profile, COMPOSER);
     Header("Location: composer.php");
 } else {
-    $profile = read_profile($user, true);
+    $profile = read_profile($user->id, COMPOSER);
     composer_form($profile);
 }
 

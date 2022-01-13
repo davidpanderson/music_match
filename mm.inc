@@ -72,7 +72,7 @@ function items_custom($current, $prefix) {
 function parse_list($list, $prefix) {
     $x = array();
     foreach ($list as $tag=>$name) {
-        if (get_str(sprintf("%s_%s", $prefix, $tag), true)) {
+        if (post_str(sprintf("%s_%s", $prefix, $tag), true)) {
             $x[] = $tag;
         }
     }
@@ -85,11 +85,11 @@ function parse_list($list, $prefix) {
 function parse_custom($current, $prefix, $exclude) {
     $x = array();
     foreach ($current as $i=>$name) {
-        if (get_str(sprintf("%s_%d", $prefix, $i), true)) {
+        if (post_str(sprintf("%s_%d", $prefix, $i), true)) {
             $x[] = $name;
         }
     }
-    $y = get_str(sprintf("%s_new", $prefix), true);
+    $y = post_str(sprintf("%s_new", $prefix), true);
     if ($y && $y!=$exclude) {
         $x[] = $y;
     }
@@ -176,7 +176,13 @@ function get_profiles($is_comp) {
 
 // ------------ utilities -------------
 
-function str_starts_with ( $haystack, $needle ) {
-  return strpos( $haystack , $needle ) === 0;
+function str_starts_with ($haystack, $needle) {
+    return strpos( $haystack , $needle ) === 0;
 }
+
+function str_ends_with($haystack, $needle) {
+    $length = strlen($needle);
+    return $length > 0 ? substr($haystack, -$length) === $needle : true;
+}
+
 ?>

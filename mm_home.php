@@ -9,16 +9,16 @@ function home_page($user) {
     page_head("Home page");
     echo "<p>";
     if (profile_exists($user, true)) {
-        echo "<a href=composer.php>Edit your composer profile</a>";
+        echo "<a href=comp_profile.php>Edit your composer profile</a>";
     } else {
-        echo "<a href=composer.php>Create a composer profile</a>";
+        echo "<a href=comp_profile.php>Create a composer profile</a>";
     }
 
     echo "<p>";
     if (profile_exists($user, false)) {
-        echo "<a href=performer.php>Edit your performer profile</a>";
+        echo "<a href=perf_profile.php>Edit your performer profile</a>";
     } else {
-        echo "<a href=performer.php>Create a performer profile</a>";
+        echo "<a href=perf_profile.php>Create a performer profile</a>";
     }
 
     echo "<p><a href=mm_search.php?comp=1>Search for composers</a>";

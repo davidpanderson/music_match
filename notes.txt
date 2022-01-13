@@ -42,6 +42,8 @@ Composer profile
         public domain
         CC license
         other license
+    "signature" MP3
+    links to scores, performances
         
 performer profile
     instruments played
@@ -59,7 +61,9 @@ performer profile
         public concerts
 
         for each: how often?
-    links to performances
+    "signature" MP3
+    links to performances etc.
+        URL, text
 
 -----------------
 functions
@@ -119,10 +123,21 @@ level: [beginner, intermediate, advanced, pro]
 composer goals: played, heard, paid
 
 Keep track of user views
-    src, dst user
+    DB
+        src, dst userid
+        time
+        comp or perf
     # of views as performer
-    @ of views as composer
+    # of views as composer
+ratings
+    DB
+        src, dst userid
+        time
+        comp or perf
+        overall or relevance
     rating as performer
-        overall (I'd want to listen to them)
+        overall (I'd want to listen to their playing)
         relevance to me (I'd want to play with or write for them)
     rating as composer
+        overall (I'd want to listen to their compositions)
+        relevance to me (I'd want to play their compositions)

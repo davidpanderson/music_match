@@ -12,7 +12,7 @@ require_once("../inc/mm.inc");
 define('INST_ADD', 'Add instrument');
 define('STYLE_ADD', 'Add style');
 define('INFLUENCE_ADD', 'Add influence');
-define('LINK_ADD_URL', 'URL');
+define('LINK_ADD_URL', 'Add link: URL');
 define('LINK_ADD_DESC', 'Description');
 
 function form($profile, $is_comp) {
@@ -79,14 +79,31 @@ function form($profile, $is_comp) {
         $is_comp?"composition":"playing"
     );
     if ($profile->signature_filename) {
-        form_general($sig_title, $profile->signature_filename);
+        form_checkboxes($sig_title,
+            array(array("signature_check", $profile->signature_filename, true))
+        );
     } else {
-        form_general($sig_title, '<input name=signature type=file>');
+        form_general($sig_title, '<input name=signature_add type=file>');
     }
     echo "<hr>";
-    form_general('Links<br><small>... to web pages with examples of your work.</small>',
-        '<input type=text size=40 value=URL> &nbsp;&nbsp;&nbsp; <input type=text size=40 value=description>'
+
+    // links
+
+    $in_url = sprintf(
+        '<input name=link_url size=40 %s value="%s">',
+        text_input_default(LINK_ADD_URL), LINK_ADD_URL
     );
+    $in_desc = sprintf(
+        '<input name=link_desc size=40 %s value="%s">',
+        text_input_default(LINK_ADD_DESC), LINK_ADD_DESC
+    );
+    $title = 'Links<br><small>... to web pages with examples of your work.</small>';
+    if ($profile->link) {
+        form_checkboxes($title, items_link($profile->link, "link"));
+        form_general('', "$in_url &nbsp;&nbsp;&nbsp; $in_desc");
+    } else {
+        form_general($title, "$in_url &nbsp;&nbsp;&nbsp; $in_desc");
+    }
 
     form_submit("Update", 'name=submit value=on');
     form_end();
@@ -111,32 +128,63 @@ function action($user_id, $profile, $is_comp) {
         $profile->style_custom, "style_custom", STYLE_ADD
     );
     $profile2->level = parse_list($level_list, "level");
+
     if ($is_comp) {
         $profile2->influence = parse_custom(
             $profile->influence, "influence", INFLUENCE_ADD
         );
     }
 
-    $sig_file = $_FILES['signature'];
-    $sig_name = $sig_file['tmp_name'];
-    $orig_name = $sig_file['name'];
-    if ($orig_name) {
-        if (is_uploaded_file($sig_name)) {
-            if (!str_ends_with(strtolower($orig_name), ".mp3")) {
-                error_page("$orig_name is not an MP3 file.");
-            }
-            // check if it's actully an MP3 file?
-            $new_name = sprintf('%s/%d.mp3',
-                $is_comp?"composer":"performer", $user_id
-            );
-            if (!move_uploaded_file($sig_name, $new_name)) {
-                error_page("Couldn't move uploaded file.");
-            }
-            $profile2->signature_filename = $orig_name;
+    if ($profile->signature_filename) {
+        if (post_str(sprintf('signature_check'), true)) {
+            $profile2->signature_filename = $profile->signature_filename;
         } else {
-            error_page("Couldn't upload $sig_name; it may be too large.");
+            $profile2->signature_filename = '';
+            // remove MP3 file?
+        }
+    } else {
+        $sig_file = $_FILES['signature_add'];
+        $sig_name = $sig_file['tmp_name'];
+        $orig_name = $sig_file['name'];
+        if ($orig_name) {
+            if (is_uploaded_file($sig_name)) {
+                if (!str_ends_with(strtolower($orig_name), ".mp3")) {
+                    error_page("$orig_name is not an MP3 file.");
+                }
+                // check if it's actully an MP3 file?
+                $new_name = sprintf('%s/%d.mp3',
+                    $is_comp?"composer":"performer", $user_id
+                );
+                if (!move_uploaded_file($sig_name, $new_name)) {
+                    error_page("Couldn't move uploaded file.");
+                }
+                $profile2->signature_filename = $orig_name;
+            } else {
+                error_page("Couldn't upload $sig_name; it may be too large.");
+            }
         }
     }
+
+    foreach ($profile->link as $i=>$link) {
+        if (post_str(sprintf('link_%d', $i), true)) {
+            $profile2->link[] = $link;
+        }
+    }
+    $link_url = post_str('link_url');
+    if ($link_url != LINK_ADD_URL) {
+        if (!filter_var($link_url, FILTER_VALIDATE_URL)) {
+            error_page("$link_url is not a valid URL");
+        }
+        $link_desc = post_str('link_desc');
+        if ($link_desc == LINK_ADD_DESC) {
+            error_page("You must supply a link description");
+        }
+        $x = new StdClass;
+        $x->url = $link_url;
+        $x->desc = $link_desc;
+        $profile2->link[] = $x;
+    }
+
     return $profile2;
 }
 

@@ -65,6 +65,18 @@ function items_custom($current, $prefix) {
     return $x;
 }
 
+function items_link($current, $prefix) {
+    $x = array();
+    foreach ($current as $i=>$link) {
+        $x[] = array(
+            sprintf("%s_%d", $prefix, $i),
+            sprintf("%s (%s)", $link->desc, $link->url),
+            true
+        );
+    }
+    return $x;
+}
+
 // return the items in $list for which $prefix_item is set
 //
 function parse_list($list, $prefix) {
@@ -166,6 +178,7 @@ function read_profile($user_id, $is_comp) {
         if (!array_key_exists('level', $p)) $p->level = array();
         if (!array_key_exists('influence', $p)) $p->influence = array();
         if (!array_key_exists('signature_filename', $p)) $p->signature_filename = '';
+        if (!array_key_exists('link', $p)) $p->link = array();
     } else {
         if (!array_key_exists('style', $p)) $p->style = array();
         if (!array_key_exists('style_custom', $p)) $p->style_custom = array();
@@ -173,6 +186,7 @@ function read_profile($user_id, $is_comp) {
         if (!array_key_exists('inst_custom', $p)) $p->inst_custom = array();
         if (!array_key_exists('level', $p)) $p->level = array();
         if (!array_key_exists('signature_filename', $p)) $p->signature_filename = '';
+        if (!array_key_exists('link', $p)) $p->link = array();
     }
     return $p;
 }

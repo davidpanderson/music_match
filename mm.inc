@@ -1,6 +1,6 @@
 <?php
 
-define('DEBUG', true);
+define('DEBUG', false);
 
 $style_list = array(
     'baroque' => 'Baroque',
@@ -37,11 +37,9 @@ $inst_list_perf = array(
     'vocal_bass' => 'Vocal (Bass)',
 );
 $level_list = array(
-    1 => '1 (beginning)',
-    2 => '2',
-    3 => '3 (intermediate)',
-    4 => '4',
-    5 => '5 (advanced)'
+    'beg' => 'Beginning',
+    'int' => 'Intermediate',
+    'adv' => 'Advanced'
 );
 
 // ---------- Functions for generating and parsing forms
@@ -96,6 +94,19 @@ function parse_custom($current, $prefix, $exclude) {
     return $x;
 }
 
+// return stuff to put into a text <input> to give it a value
+// that goes away if you click there
+//
+function text_input_default($t) {
+    return sprintf('
+        onfocus="if(this.value==\'%s\'){this.value=\'\';}"
+        onblur="if(this.value==\'\'){this.value=\'%s\';}"',
+        $t, $t
+    );
+}
+
+// ---------- reading and writing profiles
+
 // example composer profile
 //
 //  {
@@ -118,21 +129,30 @@ function parse_custom($current, $prefix, $exclude) {
 //      ]
 //      "influence": [
 //          "Igor Stravinsky"
-//      ]
+//      ],
+//      "link": [
+//          {
+//              "url": "https://a.b.c",
+//              "desc": "Some of my works"
+//          },
+//          ...
+//      ],
+//      "signature_filename": "foo.mp3",
+//      "comment": "blah blah"
 //  }
 
 define('COMPOSER', true);
 define('PERFORMER', false);
 
-function profile_exists($user, $is_comp) {
+function profile_exists($user_id, $is_comp) {
     $dir = $is_comp?"composer":"performer";
-    $fname = "$dir/$user->id";
+    $fname = "$dir/$user_id.json";
     return file_exists($fname);
 }
 
 function read_profile($user_id, $is_comp) {
     $dir = $is_comp?"composer":"performer";
-    $fname = "$dir/$user_id";
+    $fname = "$dir/$user_id.json";
     if (file_exists($fname)) {
         $p = json_decode(file_get_contents($fname));
     } else {
@@ -145,19 +165,21 @@ function read_profile($user_id, $is_comp) {
         if (!array_key_exists('inst_custom', $p)) $p->inst_custom = array();
         if (!array_key_exists('level', $p)) $p->level = array();
         if (!array_key_exists('influence', $p)) $p->influence = array();
+        if (!array_key_exists('signature_filename', $p)) $p->signature_filename = '';
     } else {
         if (!array_key_exists('style', $p)) $p->style = array();
         if (!array_key_exists('style_custom', $p)) $p->style_custom = array();
         if (!array_key_exists('inst', $p)) $p->inst = array();
         if (!array_key_exists('inst_custom', $p)) $p->inst_custom = array();
         if (!array_key_exists('level', $p)) $p->level = array();
+        if (!array_key_exists('signature_filename', $p)) $p->signature_filename = '';
     }
     return $p;
 }
 
 function write_profile($user_id, $profile, $is_comp) {
     $dir = $is_comp?"composer":"performer";
-    $fname = "$dir/$user_id";
+    $fname = "$dir/$user_id.json";
     $f = fopen($fname, "w");
     fwrite($f, json_encode($profile, JSON_PRETTY_PRINT));
     fclose($f);
@@ -168,8 +190,55 @@ function get_profiles($is_comp) {
     $x = array();
     foreach(scandir($dir) as $f) {
         if (str_starts_with($f, '.')) continue;
+        if (!str_ends_with($f, '.json')) continue;
         $id = (int)$f;
         $x[$id] = read_profile($id, $is_comp);
+    }
+    return $x;
+}
+
+// ------------ display -------------
+
+// show a list of instruments or styles as a string
+//
+function lists_to_string($title, $master_list, $list, $list2=array()) {
+    $x = "<b>$title:</b>";
+    $first = true;
+    foreach ($list as $i) {
+        if ($first) {
+            $first = false;
+        } else {
+            $x .= ',';
+        }
+        $x .= ' ';
+        $x .= $master_list[$i];
+    }
+    foreach ($list2 as $i) {
+        if ($first) {
+            $first = false;
+        } else {
+            $x .= ',';
+        }
+        $x .= ' ';
+        $x .= "$i";
+    }
+    return $x;
+}
+
+function profile_summary($profile, $is_comp) {
+    global $inst_list_comp, $inst_list_perf, $style_list, $level_list;
+    $x = sprintf('%s<br>%s<br>%s',
+        lists_to_string(
+            "Instruments", $is_comp?$inst_list_comp:$inst_list_perf,
+            $profile->inst, $profile->inst_custom
+        ),
+        lists_to_string(
+            "Styles", $style_list, $profile->style, $profile->style_custom
+        ),
+        lists_to_string("Levels", $level_list, $profile->level)
+    );
+    if ($is_comp && $profile->influence) {
+        $x .= "<br> Influences: ".implode(", ", $profile->influence);
     }
     return $x;
 }

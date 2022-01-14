@@ -2,8 +2,16 @@
 
 // show info on another user
 
-composer info
+function show_user($user_id) {
 
-performer info
+    // composer info
 
-links to message, friend
+    // performer info
+
+    // links to message, friend
+}
+
+$user_id = get_int("user_id");
+show_user($user_id);
+
+?>

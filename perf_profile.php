@@ -1,5 +1,7 @@
 <?php
 
+DEPRECATED
+
 require_once("../inc/util.inc");
 require_once("../inc/mm.inc");
 

@@ -6,23 +6,32 @@ require_once("../inc/mm.inc");
 // user home page
 
 function home_page($user) {
-    page_head("Home page");
-    echo "<p>";
-    if (profile_exists($user, true)) {
-        echo "<a href=comp_profile.php>Edit your composer profile</a>";
+    page_head("Music match");
+    echo "<h2>Composer</h2>";
+    if (profile_exists($user->id, COMPOSER)) {
+        $profile = read_profile($user->id, COMPOSER);
+        echo profile_summary($profile, COMPOSER);
+        echo "<p><p>";
+        show_button_small("profile.php?comp=1", "Edit composer profile");
     } else {
-        echo "<a href=comp_profile.php>Create a composer profile</a>";
+        show_button_small("profile.php?comp=1", "Create composer profile");
     }
 
-    echo "<p>";
-    if (profile_exists($user, false)) {
-        echo "<a href=perf_profile.php>Edit your performer profile</a>";
+    echo "<h2>Performer</h2>";
+
+    if (profile_exists($user->id, PERFORMER)) {
+        $profile = read_profile($user->id, PERFORMER);
+        echo profile_summary($profile, PERFORMER);
+        echo "<p>";
+        show_button_small("profile.php?comp=0", "Edit performer profile");
     } else {
-        echo "<a href=perf_profile.php>Create a performer profile</a>";
+        show_button_small("profile.php?comp=0", "Create performer profile");
     }
 
-    echo "<p><a href=mm_search.php?comp=1>Search for composers</a>";
-    echo "<p><a href=mm_search.php>Search for performers</a>";
+    echo "<h2>Search</h2>";
+
+    show_button_small("mm_search.php?comp=1", "Find composers");
+    show_button_small("mm_search.php", "Find performers");
 
 
     // friend/message stuff

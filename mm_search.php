@@ -6,14 +6,9 @@ require_once("../inc/mm.inc");
 function search_form($profile, $is_comp) {
     global $inst_list_comp, $inst_list_perf, $style_list, $level_list;
 
-    if ($is_comp) {
-        page_head("Search for composers");
-        form_start("mm_search.php", "POST");
-        form_input_hidden("comp", "on");
-    } else {
-        page_head("Search for performers");
-        form_start("mm_search.php", "POST");
-    }
+    page_head(sprintf("Search for %s", $is_comp?"composers":"performers"));
+    form_start("mm_search.php", "POST");
+    form_input_hidden("comp", $is_comp?1:0);
     form_checkboxes(
         sprintf("Who %s at least one of:", $is_comp?"write for":"play"),
         items_list($is_comp?$inst_list_comp:$inst_list_perf,
@@ -82,52 +77,9 @@ function match_args($profile, $args) {
     return $x;
 }
 
-// show a list of instruments or styles as a string
-//
-function lists_to_string($title, $master_list, $list, $list2=array()) {
-    $x = "<b>$title:</b>";
-    $first = true;
-    foreach ($list as $i) {
-        if ($first) {
-            $first = false;
-        } else {
-            $x .= ',';
-        }
-        $x .= ' ';
-        $x .= $master_list[$i];
-    }
-    foreach ($list2 as $i) {
-        if ($first) {
-            $first = false;
-        } else {
-            $x .= ',';
-        }
-        $x .= ' ';
-        $x .= "$i";
-    }
-    return $x;
-}
-
-// show a list of levels as string
-//
-function levels_to_string($title, $list) {
-    $x = "<b>$title:</b>";
-    $first = true;
-    foreach ($list as $i) {
-        if ($first) {
-            $first = false;
-        } else {
-            $x .= ',';
-        }
-        $x .= " $i";
-    }
-    return $x;
-}
-
-// show a table row summarizing a composer profile
+// show a table row summarizing a composer or performer profile
 //
 function show_profile_short($user_id, $profile, $is_comp) {
-    global $inst_list_comp, $inst_list_perf, $style_list, $level_list;
     $user = BoincUser::lookup_id($user_id);
     $audio = "";
     if ($profile->signature_filename) {
@@ -139,16 +91,7 @@ function show_profile_short($user_id, $profile, $is_comp) {
         $audio,
         $user_id, $user->name
     );
-    $x2 = sprintf('%s<br>%s<br>%s',
-        lists_to_string(
-            "Instruments", $is_comp?$inst_list_comp:$inst_list_perf,
-            $profile->inst, $profile->inst_custom
-        ),
-        lists_to_string(
-            "Styles", $style_list, $profile->style, $profile->style_custom
-        ),
-        levels_to_string("Levels", $profile->level)
-    );
+    $x2 = profile_summary($profile, $is_comp);
     if (DEBUG) {
         $x2 .= sprintf('<br>match: %d (%d, %d, %d)',
             $profile->value,
@@ -162,7 +105,7 @@ function show_profile_short($user_id, $profile, $is_comp) {
 
 
 // each match is a triple (inst, style, level).
-// compute the the value (for ranking)
+// compute the "value" of the match (for ranking search results)
 //
 function match_value($match) {
     $x = 0;
@@ -261,7 +204,7 @@ if ($action) {
     $is_comp = post_str("comp", true);
     search_action($is_comp, $user);
 } else {
-    $is_comp = get_str("comp", true);
+    $is_comp = get_int("comp");
     search_form($profile, $is_comp);
 }
 

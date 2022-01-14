@@ -3,6 +3,28 @@
 require_once("../inc/util.inc");
 require_once("../inc/mm.inc");
 
+$mp3_files = array(
+    'bach_babylon.mp3',
+    'berio_wasser.mp3',
+    'dvorak_waltz.mp3',
+    'berg_rain.mp3',
+    'building.mp3',
+    'mompou_prelude_9.mp3',
+);
+
+function rnd_signature($user_id, $is_comp) {
+    global $mp3_files;
+    $n = count($mp3_files);
+    $i = random_int(0, $n-1);
+    $cmd = sprintf('cd %s; ln -s ../mp3/%s %d.mp3',
+        $is_comp?"composer":"performer",
+        $mp3_files[$i],
+        $user_id
+    );
+    system($cmd);
+    return $mp3_files[$i];
+}
+
 // make some random simulated users
 
 function rnd_subset($list) {
@@ -16,21 +38,23 @@ function rnd_subset($list) {
     return $x;
 }
 
-function rnd_perf() {
+function rnd_perf($user_id) {
     global $inst_list_perf, $style_list, $level_list;
     $x = new StdClass;
     $x->inst = rnd_subset($inst_list_perf);
     $x->style = rnd_subset($style_list);
     $x->level = rnd_subset($level_list);
+    $x->signature_filename = rnd_signature($user_id, PERFORMER);
     return $x;
 }
 
-function rnd_comp() {
+function rnd_comp($user_id) {
     global $inst_list_comp, $style_list, $level_list;
     $x = new StdClass;
     $x->inst = rnd_subset($inst_list_comp);
     $x->style = rnd_subset($style_list);
     $x->level = rnd_subset($level_list);
+    $x->signature_filename = rnd_signature($user_id, COMPOSER);
     return $x;
 }
 
@@ -41,12 +65,12 @@ function make_users() {
     for ($i=$max_id-100; $i<=$max_id; $i++) {
         $x = random_int(1,10);
         if ($x < 5) {
-            write_profile($i, rnd_comp(), COMPOSER);
+            write_profile($i, rnd_comp($i), COMPOSER);
         } else if ($x < 9) {
-            write_profile($i, rnd_perf(), PERFORMER);
+            write_profile($i, rnd_perf($i), PERFORMER);
         } else {
-            write_profile($i, rnd_comp(), COMPOSER);
-            write_profile($i, rnd_perf(), PERFORMER);
+            write_profile($i, rnd_comp($i), COMPOSER);
+            write_profile($i, rnd_perf($i), PERFORMER);
         }
     }
 }

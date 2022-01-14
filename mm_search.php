@@ -8,11 +8,11 @@ function search_form($profile, $is_comp) {
 
     if ($is_comp) {
         page_head("Search for composers");
-        form_start("mm_search.php");
+        form_start("mm_search.php", "POST");
         form_input_hidden("comp", "on");
     } else {
         page_head("Search for performers");
-        form_start("mm_search.php");
+        form_start("mm_search.php", "POST");
     }
     form_checkboxes(
         sprintf("Who %s at least one of:", $is_comp?"write for":"play"),
@@ -129,7 +129,14 @@ function levels_to_string($title, $list) {
 function show_profile_short($user_id, $profile, $is_comp) {
     global $inst_list_comp, $inst_list_perf, $style_list, $level_list;
     $user = BoincUser::lookup_id($user_id);
-    $x1 = sprintf('<a href=mm_user.php?user_id=%d>%s</a>',
+    $audio = "";
+    if ($profile->signature_filename) {
+        $audio = sprintf(' onmouseenter="play_sound(\'a%d\');" onmouseleave="stop_sound(\'a%d\');" ',
+            $user_id, $user_id
+        );
+    }
+    $x1 = sprintf('<a %s href=mm_user.php?user_id=%d>%s</a>',
+        $audio,
         $user_id, $user->name
     );
     $x2 = sprintf('%s<br>%s<br>%s',
@@ -175,9 +182,31 @@ function compare_value($p1, $p2) {
     }
 }
 
-function search_action($is_comp) {
+function search_action($is_comp, $user) {
+    $head_extra = <<<EOT
+<script language="javascript" type="text/javascript">
+function play_sound(id) {
+    var audio = document.getElementById(id);
+    audio.currentTime = 0;
+    audio.play();
+}
+
+function stop_sound(id) {
+    var audio = document.getElementById(id);
+    audio.pause();
+}
+function remove() {
+    var e = document.getElementById("enable");
+    e.innerHTML = "";
+}
+
+</script>
+EOT;
+
     page_head(
-        sprintf("%s search results", $is_comp?"Composers":"Performers")
+        sprintf("%s search results", $is_comp?"Composer":"Performer"),
+        null, false, "",
+        $head_extra
     );
     $form_args = get_form_args($is_comp);
     $profiles = get_profiles($is_comp);
@@ -187,13 +216,35 @@ function search_action($is_comp) {
     }
     uasort($profiles, 'compare_value');
     start_table("table-striped");
+    $enable_tag = '<br><a id="enable" onclick="remove()" href=#>Enable mouse-over audio</a>';
+    echo sprintf('<tr><th %s>%s<br><small>click for details<br>mouse over to hear audio sample%s</small></th><th %s>Summary</th></tr>',
+        NAME_ATTRS,
+        $is_comp?"Composer":"Performer",
+        $enable_tag,
+        VALUE_ATTRS
+    );
+    $found = false;
     foreach ($profiles as $user_id=>$profile) {
         if ($profile->value == 0) {
             continue;
         }
+        if ($user && $user->id == $user_id) {
+            // don't show user their own profile
+            continue;
+        }
+        if ($profile->signature_filename) {
+            echo sprintf('<audio id=a%d><source src="%s/%d.mp3"></source></audio>',
+                $user_id,
+                $is_comp?"composer":"performer",
+                $user_id
+            );
+        }
         show_profile_short($user_id, $profile, $is_comp);
     }
     end_table();
+    if (!$found) {
+        echo "No results found.  Try expanding your criteria.";
+    }
     page_tail();
 }
 
@@ -205,11 +256,12 @@ if ($user) {
     $profile = read_profile(0, false);
 }
 
-$is_comp = get_str("comp", true);
-$action = get_str("submit", true);
+$action = post_str("submit", true);
 if ($action) {
-    search_action($is_comp);
+    $is_comp = post_str("comp", true);
+    search_action($is_comp, $user);
 } else {
+    $is_comp = get_str("comp", true);
     search_form($profile, $is_comp);
 }
 

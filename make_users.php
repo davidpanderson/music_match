@@ -1,5 +1,7 @@
 <?php
 
+// make some random simulated users
+
 require_once("../inc/util.inc");
 require_once("../inc/mm.inc");
 
@@ -25,8 +27,6 @@ function rnd_signature($user_id, $is_comp) {
     return $mp3_files[$i];
 }
 
-// make some random simulated users
-
 function rnd_subset($list) {
     $x = array();
     $n = random_int(1,3);
@@ -38,6 +38,29 @@ function rnd_subset($list) {
     return $x;
 }
 
+function rnd_influence() {
+    $y = array("Zappa", "Mahler", "P.D.Q. Bach", "Sorabji");
+    shuffle($y);
+    $x = array();
+    $n = random_int(0,2);
+    for ($i=0; $i<$n; $i++) {
+        $x[] = $y[$i];
+    }
+    return $x;
+}
+
+function rnd_link() {
+    $x = array();
+    $n = random_int(0,2);
+    for ($i=0; $i<$n; $i++) {
+        $y = new StdClass;
+        $y->url = "https://google.com/";
+        $y->desc = "influence $i";
+        $x[] = $y;
+    }
+    return $x;
+}
+
 function rnd_perf($user_id) {
     global $inst_list_perf, $style_list, $level_list;
     $x = new StdClass;
@@ -45,6 +68,7 @@ function rnd_perf($user_id) {
     $x->style = rnd_subset($style_list);
     $x->level = rnd_subset($level_list);
     $x->signature_filename = rnd_signature($user_id, PERFORMER);
+    $x->link = rnd_link();
     return $x;
 }
 
@@ -54,7 +78,9 @@ function rnd_comp($user_id) {
     $x->inst = rnd_subset($inst_list_comp);
     $x->style = rnd_subset($style_list);
     $x->level = rnd_subset($level_list);
+    $x->influence = rnd_influence();
     $x->signature_filename = rnd_signature($user_id, COMPOSER);
+    $x->link = rnd_link();
     return $x;
 }
 

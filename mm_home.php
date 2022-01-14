@@ -7,7 +7,8 @@ require_once("../inc/mm.inc");
 
 function home_page($user) {
     page_head("Music match");
-    echo "<h2>Composer</h2>";
+    echo "<h2>Your profile</h2>";
+    echo "<h3>as composer:</h3>";
     if (profile_exists($user->id, COMPOSER)) {
         $profile = read_profile($user->id, COMPOSER);
         echo profile_summary($profile, COMPOSER);
@@ -17,7 +18,7 @@ function home_page($user) {
         show_button_small("profile.php?comp=1", "Create composer profile");
     }
 
-    echo "<h2>Performer</h2>";
+    echo "<h3>as performer:</h3>";
 
     if (profile_exists($user->id, PERFORMER)) {
         $profile = read_profile($user->id, PERFORMER);
@@ -28,10 +29,11 @@ function home_page($user) {
         show_button_small("profile.php?comp=0", "Create performer profile");
     }
 
+    echo "<hr>";
     echo "<h2>Search</h2>";
 
     show_button_small("mm_search.php?comp=1", "Find composers");
-    show_button_small("mm_search.php", "Find performers");
+    show_button_small("mm_search.php?comp=0", "Find performers");
 
 
     // friend/message stuff

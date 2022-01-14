@@ -108,7 +108,8 @@ function form($profile, $is_comp) {
     form_submit("Update", 'name=submit value=on');
     form_end();
 
-    //page_tail();
+    show_button_small('mm_home.php', 'Return to home page');
+    page_tail();
 }
 
 // ------------ handle submitted form ---------------

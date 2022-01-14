@@ -252,7 +252,19 @@ function profile_summary($profile, $is_comp) {
         lists_to_string("Levels", $level_list, $profile->level)
     );
     if ($is_comp && $profile->influence) {
-        $x .= "<br> Influences: ".implode(", ", $profile->influence);
+        $x .= "<br>Influences: ".implode(", ", $profile->influence);
+    }
+    if ($profile->link) {
+        $x .= "<br>Links: ";
+        $first = true;
+        foreach ($profile->link as $link) {
+            if ($first) {
+                $first = false;
+            } else {
+                $x .= ",";
+            }
+            $x .= sprintf(" <a href=%s>%s</a>", $link->url, $link->desc);
+        }
     }
     return $x;
 }

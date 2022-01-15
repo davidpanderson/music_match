@@ -215,8 +215,8 @@ function get_profiles($is_comp) {
 
 // show a list of instruments or styles as a string
 //
-function lists_to_string($title, $master_list, $list, $list2=array()) {
-    $x = "<b>$title:</b>";
+function lists_to_string($master_list, $list, $list2=array()) {
+    $x = "";
     $first = true;
     foreach ($list as $i) {
         if ($first) {
@@ -239,34 +239,115 @@ function lists_to_string($title, $master_list, $list, $list2=array()) {
     return $x;
 }
 
-function profile_summary($profile, $is_comp) {
+function links_to_string($profile) {
+    $x = "";
+    $first = true;
+    foreach ($profile->link as $link) {
+        if ($first) {
+            $first = false;
+        } else {
+            $x .= ",";
+        }
+        $x .= sprintf(" <a href=%s>%s</a>", $link->url, $link->desc);
+    }
+    return $x;
+}
+
+// show profile as a list of name: value lines
+//
+function profile_summary($user, $profile, $is_comp) {
     global $inst_list_comp, $inst_list_perf, $style_list, $level_list;
-    $x = sprintf('%s<br>%s<br>%s',
+    $x = sprintf('Instruments: %s',
         lists_to_string(
-            "Instruments", $is_comp?$inst_list_comp:$inst_list_perf,
+            $is_comp?$inst_list_comp:$inst_list_perf,
             $profile->inst, $profile->inst_custom
-        ),
+        )
+    );
+    $x .= sprintf('<br>Styles: %s',
         lists_to_string(
-            "Styles", $style_list, $profile->style, $profile->style_custom
-        ),
-        lists_to_string("Levels", $level_list, $profile->level)
+            $style_list, $profile->style, $profile->style_custom
+        )
+    );
+    $x .= sprintf('<br>Levels: %s',
+        lists_to_string($level_list, $profile->level)
     );
     if ($is_comp && $profile->influence) {
         $x .= "<br>Influences: ".implode(", ", $profile->influence);
     }
     if ($profile->link) {
-        $x .= "<br>Links: ";
-        $first = true;
-        foreach ($profile->link as $link) {
-            if ($first) {
-                $first = false;
-            } else {
-                $x .= ",";
-            }
-            $x .= sprintf(" <a href=%s>%s</a>", $link->url, $link->desc);
-        }
+        $x .= "<br>Links: ".links_to_string($profile);
+    }
+    if ($user->country) {
+        $x .= sprintf('<br>Country: %s', $user->country);
     }
     return $x;
+}
+
+// name, with link and audio mouseover
+//
+function name_link($user, $profile) {
+    $audio = "";
+    if ($profile->signature_filename) {
+        $audio = sprintf(' onmouseenter="play_sound(\'a%d\');" onmouseleave="stop_sound(\'a%d\');" ',
+            $user->id, $user->id
+        );
+    }
+    return sprintf('<a %s href=mm_user.php?user_id=%d>%s</a>',
+        $audio,
+        $user->id, $user->name
+    );
+}
+
+// show a 2-column table row summarizing a composer or performer profile
+//
+function show_profile_2col($user, $profile, $is_comp) {
+    $x1 = name_link($user, $profile);
+    $x2 = profile_summary($user, $profile, $is_comp);
+    if (DEBUG) {
+        $x2 .= sprintf('<br>match: %d (%d, %d, %d)',
+            $profile->value,
+            $profile->match->inst,
+            $profile->match->style,
+            $profile->match->level
+        );
+    }
+    row2($x1, $x2);
+}
+
+// show profile as an N-column table row
+//
+function profile_summary_row($user, $profile, $is_comp) {
+    global $inst_list_comp, $inst_list_perf, $style_list, $level_list;
+    $x = array();
+    $x[] = name_link($user, $profile);
+    $x[] = lists_to_string(
+        $is_comp?$inst_list_comp:$inst_list_perf,
+        $profile->inst, $profile->inst_custom
+    );
+    $x[] = lists_to_string(
+        $style_list, $profile->style, $profile->style_custom
+    );
+    $x[] = lists_to_string($level_list, $profile->level);
+    if ($is_comp) {
+        if ($profile->influence) {
+            $x[] = implode(", ", $profile->influence);
+        } else {
+            $x[] = '';
+        }
+    }
+    $x[] = links_to_string($profile);
+    $x[] = $user->country;
+    row_array($x);
+}
+
+// table header for the above
+//
+function profile_summary_header($name_header, $is_comp) {
+    $x= array($name_header, "Instruments", "Styles", "Level");
+    if ($is_comp) $x[] = "Influences";
+    $x[] = "Links";
+    $x[] = "Country";
+    row_heading_array($x);
 }
 
 // ------------ utilities -------------

@@ -77,32 +77,6 @@ function match_args($profile, $args) {
     return $x;
 }
 
-// show a table row summarizing a composer or performer profile
-//
-function show_profile_short($user_id, $profile, $is_comp) {
-    $user = BoincUser::lookup_id($user_id);
-    $audio = "";
-    if ($profile->signature_filename) {
-        $audio = sprintf(' onmouseenter="play_sound(\'a%d\');" onmouseleave="stop_sound(\'a%d\');" ',
-            $user_id, $user_id
-        );
-    }
-    $x1 = sprintf('<a %s href=mm_user.php?user_id=%d>%s</a>',
-        $audio,
-        $user_id, $user->name
-    );
-    $x2 = profile_summary($profile, $is_comp);
-    if (DEBUG) {
-        $x2 .= sprintf('<br>match: %d (%d, %d, %d)',
-            $profile->value,
-            $profile->match->inst,
-            $profile->match->style,
-            $profile->match->level
-        );
-    }
-    row2($x1, $x2);
-}
-
 
 // each match is a triple (inst, style, level).
 // compute the "value" of the match (for ranking search results)
@@ -160,12 +134,25 @@ EOT;
     uasort($profiles, 'compare_value');
     start_table("table-striped");
     $enable_tag = '<br><a id="enable" onclick="remove()" href=#>Enable mouse-over audio</a>';
-    echo sprintf('<tr><th %s>%s<br><small>click for details<br>mouse over to hear audio sample%s</small></th><th %s>Summary</th></tr>',
-        NAME_ATTRS,
-        $is_comp?"Composer":"Performer",
-        $enable_tag,
-        VALUE_ATTRS
-    );
+
+    // whether to show data in N columns
+    //
+    $ncol = true;
+
+    if ($ncol) {
+        $name_header = sprintf(
+            'Name<br><small>click for details<br>mouse over to hear audio sample%s</small>',
+            $enable_tag
+        );
+        profile_summary_header($name_header, $is_comp);
+    } else {
+        echo sprintf('<tr><th %s>%s<br><small>click for details<br>mouse over to hear audio sample%s</small></th><th %s>Summary</th></tr>',
+            NAME_ATTRS,
+            $is_comp?"Composer":"Performer",
+            $enable_tag,
+            VALUE_ATTRS
+        );
+    }
     $found = false;
     foreach ($profiles as $user_id=>$profile) {
         if ($profile->value == 0) {
@@ -182,7 +169,12 @@ EOT;
                 $user_id
             );
         }
-        show_profile_short($user_id, $profile, $is_comp);
+        $user = BoincUser::lookup_id($user_id);
+        if ($ncol) {
+            profile_summary_row($user, $profile, $is_comp);
+        } else {
+            show_profile_2col($user, $profile, $is_comp);
+        }
     }
     end_table();
     if (!$found) {

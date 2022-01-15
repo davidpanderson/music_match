@@ -141,3 +141,7 @@ ratings
     rating as composer
         overall (I'd want to listen to their compositions)
         relevance to me (I'd want to play their compositions)
+
+------------
+Where to deploy?
+

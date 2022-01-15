@@ -38,8 +38,11 @@ function rnd_subset($list) {
     return $x;
 }
 
+$influences = array("Zappa", "Mahler", "P.D.Q. Bach", "Sorabji");
+
 function rnd_influence() {
-    $y = array("Zappa", "Mahler", "P.D.Q. Bach", "Sorabji");
+    global $influences;
+    $y = $influences;
     shuffle($y);
     $x = array();
     $n = random_int(0,2);
@@ -49,13 +52,18 @@ function rnd_influence() {
     return $x;
 }
 
+$link_desc = array("Home page", "Soundcloud", "YouTube");
+
 function rnd_link() {
+    global $link_desc;
+    $d = $link_desc;
+    shuffle($d);
     $x = array();
     $n = random_int(0,2);
     for ($i=0; $i<$n; $i++) {
         $y = new StdClass;
         $y->url = "https://google.com/";
-        $y->desc = "influence $i";
+        $y->desc = $d[$i];
         $x[] = $y;
     }
     return $x;

@@ -2,6 +2,8 @@
 
 define('DEBUG', false);
 
+require_once("../inc/zip.inc");
+
 $style_list = array(
     'baroque' => 'Baroque',
     'classical' => 'Classical',
@@ -278,7 +280,7 @@ function profile_summary($user, $profile, $is_comp) {
         $x .= "<br>Links: ".links_to_string($profile);
     }
     if ($user->country) {
-        $x .= sprintf('<br>Country: %s', $user->country);
+        $x .= sprintf('<br>Country: %s', country_distance($user));
     }
     return $x;
 }
@@ -314,6 +316,25 @@ function show_profile_2col($user, $profile, $is_comp) {
     row2($x1, $x2);
 }
 
+// return country and - if possible - distance
+//
+function country_distance($user) {
+    $cur_user = get_logged_in_user(true);
+    if (!$cur_user
+        || ($cur_user->country != 'United States')
+        || ($user->country != 'United States')
+    ) {
+        return $user->country;
+    }
+    $z1 = str_to_zip($cur_user->postal_code);
+    $z2 = str_to_zip($user->postal_code);
+    if (!$z1 || !$z2) {
+        return $user->country;
+    }
+    $d = zip_dist($z1, $z2);
+    return sprintf("%s (%d miles)", $user->country, (int)$d);
+}
+
 // show profile as an N-column table row
 //
 function profile_summary_row($user, $profile, $is_comp) {
@@ -336,7 +357,7 @@ function profile_summary_row($user, $profile, $is_comp) {
         }
     }
     $x[] = links_to_string($profile);
-    $x[] = $user->country;
+    $x[] = country_distance($user);
     row_array($x);
 }
 

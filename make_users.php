@@ -106,6 +106,14 @@ function make_users() {
             write_profile($i, rnd_comp($i), COMPOSER);
             write_profile($i, rnd_perf($i), PERFORMER);
         }
+
+        if ($i < $max_id-20) {
+            $user = BoincUser::lookup_id($i);
+            $zip = rnd_zip(94000, 94999);
+            $user->update(
+                sprintf("country='United States', postal_code='%d'", $zip)
+            );
+        }
     }
 }
 

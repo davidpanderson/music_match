@@ -30,10 +30,13 @@ function rnd_signature($user_id, $is_comp) {
 function rnd_subset($list) {
     $x = array();
     $n = random_int(1,3);
-    $list2 = array_keys($list);
-    shuffle($list2);
-    for ($i=0; $i<$n; $i++) {
-        $x[] = $list2[$i];
+    $keys = array_keys($list);
+    shuffle($keys);
+    $keys = array_slice($keys, 0, $n);
+    foreach ($list as $key=>$val) {
+        if (in_array($key, $keys)) {
+            $x[] = $key;
+        }
     }
     return $x;
 }

@@ -162,6 +162,7 @@ EOT;
             // don't show user their own profile
             continue;
         }
+        $found = true;
         if ($profile->signature_filename) {
             echo sprintf('<audio id=a%d><source src="%s/%d.mp3"></source></audio>',
                 $user_id,
@@ -185,17 +186,16 @@ EOT;
 
 $user = get_logged_in_user(true);
 
-if ($user) {
-    $profile = read_profile($user->id, false);
-} else {
-    $profile = read_profile(0, false);
-}
-
 $action = post_str("submit", true);
 if ($action) {
-    $is_comp = post_str("comp", true);
+    $is_comp = post_int("comp");
     search_action($is_comp, $user);
 } else {
+    if ($user) {
+        $profile = read_profile($user->id, $is_comp);
+    } else {
+        $profile = read_profile(0, $is_comp);
+    }
     $is_comp = get_int("comp");
     search_form($profile, $is_comp);
 }

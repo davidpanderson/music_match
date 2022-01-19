@@ -217,23 +217,26 @@ function get_profiles($is_comp) {
 
 // show a list of instruments or styles as a string
 //
-function lists_to_string($master_list, $list, $list2=array()) {
+function lists_to_string($master_list, $list, $list2=null, $sep=',') {
     $x = "";
     $first = true;
     foreach ($list as $i) {
         if ($first) {
             $first = false;
         } else {
-            $x .= ',';
+            $x .= $sep;
         }
         $x .= ' ';
         $x .= $master_list[$i];
+    }
+    if (!$list2) {
+        return $x;
     }
     foreach ($list2 as $i) {
         if ($first) {
             $first = false;
         } else {
-            $x .= ',';
+            $x .= $sep;
         }
         $x .= ' ';
         $x .= "$i";
@@ -241,14 +244,14 @@ function lists_to_string($master_list, $list, $list2=array()) {
     return $x;
 }
 
-function links_to_string($profile) {
+function links_to_string($profile, $sep=',') {
     $x = "";
     $first = true;
     foreach ($profile->link as $link) {
         if ($first) {
             $first = false;
         } else {
-            $x .= ",";
+            $x .= $sep;
         }
         $x .= sprintf(" <a href=%s>%s</a>", $link->url, $link->desc);
     }
@@ -279,7 +282,8 @@ function profile_summary($user, $profile, $is_comp) {
     if ($profile->link) {
         $x .= "<br>Links: ".links_to_string($profile);
     }
-    if ($user->country) {
+    $u = get_logged_in_user();
+    if ($u->id != $user->id && $user->country) {
         $x .= sprintf('<br>Country: %s', country_distance($user));
     }
     return $x;
@@ -318,7 +322,7 @@ function show_profile_2col($user, $profile, $is_comp) {
 
 // return country and - if possible - distance
 //
-function country_distance($user) {
+function country_distance($user, $sep=' ') {
     $cur_user = get_logged_in_user(true);
     if (!$cur_user
         || ($cur_user->country != 'United States')
@@ -332,7 +336,7 @@ function country_distance($user) {
         return $user->country;
     }
     $d = zip_dist($z1, $z2);
-    return sprintf("%s (%d miles)", $user->country, (int)$d);
+    return sprintf("%s%s<small>%d miles</small>", $user->country, $sep, (int)$d);
 }
 
 // show profile as an N-column table row
@@ -343,21 +347,21 @@ function profile_summary_row($user, $profile, $is_comp) {
     $x[] = name_link($user, $profile);
     $x[] = lists_to_string(
         $is_comp?$inst_list_comp:$inst_list_perf,
-        $profile->inst, $profile->inst_custom
+        $profile->inst, $profile->inst_custom, "<br>"
     );
     $x[] = lists_to_string(
-        $style_list, $profile->style, $profile->style_custom
+        $style_list, $profile->style, $profile->style_custom, "<br>"
     );
-    $x[] = lists_to_string($level_list, $profile->level);
+    $x[] = lists_to_string($level_list, $profile->level, null, "<br>");
     if ($is_comp) {
         if ($profile->influence) {
-            $x[] = implode(", ", $profile->influence);
+            $x[] = implode("<br>", $profile->influence);
         } else {
             $x[] = '';
         }
     }
-    $x[] = links_to_string($profile);
-    $x[] = country_distance($user);
+    $x[] = links_to_string($profile, "<br>");
+    $x[] = country_distance($user, "<br>");
     row_array($x);
 }
 

@@ -145,3 +145,22 @@ ratings
 ------------
 Where to deploy?
 
+------------
+
+general text for profile
+    play solo, accompaniment, small/large ensembles
+
+search results, other view:
+    circle w/ you in middle
+    names around you
+    close = better match
+
+ratings
+    how much do you like music? (nonjudgemental)
+    collaborative filtering
+    grouping
+
+negotiation
+
+audio engineers: for composers rendering
+    x voices Y package

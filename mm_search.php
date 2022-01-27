@@ -191,12 +191,12 @@ if ($action) {
     $is_comp = post_int("comp");
     search_action($is_comp, $user);
 } else {
+    $is_comp = get_int("comp");
     if ($user) {
         $profile = read_profile($user->id, $is_comp);
     } else {
         $profile = read_profile(0, $is_comp);
     }
-    $is_comp = get_int("comp");
     search_form($profile, $is_comp);
 }
 

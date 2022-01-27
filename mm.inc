@@ -289,6 +289,41 @@ function profile_summary($user, $profile, $is_comp) {
     return $x;
 }
 
+function profile_summary_table($user, $profile, $is_comp) {
+    global $inst_list_comp, $inst_list_perf, $style_list, $level_list;
+    row2('Instruments',
+        lists_to_string(
+            $is_comp?$inst_list_comp:$inst_list_perf,
+            $profile->inst, $profile->inst_custom
+        )
+    );
+    row2('Styles',
+        lists_to_string(
+            $style_list, $profile->style, $profile->style_custom
+        )
+    );
+    row2('Levels',
+        lists_to_string($level_list, $profile->level)
+    );
+    if ($is_comp && $profile->influence) {
+        row2('Influences',
+            implode(", ", $profile->influence)
+        );
+    }
+    if ($profile->link) {
+        row2('Links',
+            links_to_string($profile)
+        );
+    }
+    $u = get_logged_in_user();
+    if ($u->id != $user->id && $user->country) {
+        row2('Country',
+            country_distance($user)
+        );
+    }
+}
+
+
 // name, with link and audio mouseover
 //
 function name_link($user, $profile) {

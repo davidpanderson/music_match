@@ -164,3 +164,155 @@ negotiation
 
 audio engineers: for composers rendering
     x voices Y package
+
+-----------------
+call 1/2722
+
+my background
+
+my music, groupmuse involvement
+
+I'm looking for composers
+
+I know composers looking for performers
+
+music match
+    profiles
+    searching
+    communication
+
+groupmuse
+    new pieces at groupmuses
+    pay composers
+
+race/gender questions
+
+CNMAT
+databases:
+iceorg.org
+chambermusic america
+https://www.musicbyblackcomposers.org/
+https://www.composerdiversity.com/
+
+protection/hiding/locking
+-------------------
+1/28/22
+
+Tags
+    you can attach "tags" to other users:
+        "like",
+        "looks interesting",
+        "get back to them",
+        or whatever you want.
+    your home page shows lists of tagged users
+    tags are private (?)
+
+notifications
+    shown on home page, and delivered in optional daily/weekly email
+    - you have a new message
+    - new user you might be interested in
+        because of profile or proximity
+    - a user you tagged added a link
+    - new post in a forum or thread
+    goal: keep users involved, keep them coming back
+
+forums:
+    performers looking for performers
+    performers looking for composers
+    composers looking for performers
+    piano and keyboard technology
+    composing technology (score editors)
+    composing: musical issues
+
+Keeping track of the relationship between 2 users
+    A viewed B's user page
+        when?  how many times?
+    A tagged B
+    A sent B a message
+    A replied to B's forum post
+    How to store this?  JSON in file? DB? JSON in DB?
+------------
+1/30/22
+
+The original idea is to hook up composers and performers.
+But if we're going to bring together classical musicians,
+we may as well think of ALL the ways they might want to interact,
+and support as many ways as we easily can.
+
+Use cases
+    performer wants to find pieces to play
+        create account
+        do composer search
+            only composers with scores online?
+        get scores, or communicate with composer to request
+            piece, request changes, etc.
+        Notify performer if new composers arrive
+    performer wants to find composers, commission a piece
+    performer wants to ask composer about a particular piece
+    performer wants to find (local) performers
+        singer seeks accompanist or vice versa
+        group (e.g. string quartet) seeks new member
+        member seeks group
+    composer wants to find performer to play piece
+        create account
+        do performer search
+    composer wants to find performer to perform piece at a Groupmuse
+        possibly local
+        find vetted performer, send them message
+    composer wants help with editing software (score editing/rendering etc.)
+        create account
+        browse message boards
+    performer wants help with recording technology
+        message board
+    composer wants guidance or feedback on a composition, or in general
+    performer/composer agree that a piece will be used in a groupmuse
+        arrange for payment to composer
+
+questions:
+    composers: what editing software do you use?
+        Musescore, Sibelius, Finale
+    flag for composers saying whether they have scores online?
+    require
+        creating an account before doing search?
+        creating a profile before doing search?
+    flag for performer: vetted by Groupmuse
+    provide a chat system?
+
+performer groups
+    string quartet, wind ensemble, choir, piano/violin duo etc.
+    performers can be linked to a group,
+        but the group has its own profile (styles, links etc.)
+    composers can search for groups
+    Implementation: each group is a user,
+    with its own email addr and password.
+    Linking a performer to a group:
+        log in as group
+        send invitation to performer
+        performer accepts
+
+concept: make pieces and recordings explicit
+    In this model, MM knows about individual pieces and recordings of them.
+    composers list compositions and provide scores
+    performers can upload performances of them
+    link the two together:
+        a composer page shows list of pieces,
+        and for each piece a list of recordings,
+        with links to performer pages
+    This is analogous to IMSLP, but we can do this better than IMSLP
+    We could also let performers provide score markings (fingering, phrasing)
+        as separate layers
+
+-----------
+2/15/22
+
+- I'll develop it on my own
+- I'd like review/comments from you, Kyle, Dara etc. if possible
+    - choice of name
+    - list of style names, instruments, etc.
+    - UI, features
+- When it's done, need to get critical mass of both performers and composers
+    can you announce to GM performers?
+    referrals to composers groups would be great (I've learned of a couple)
+- Eventually would be good to integrate into GM somehow.
+    Would be good for me to have a chat with Kyle to discuss
+    how to make this possible/easier

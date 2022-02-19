@@ -7,32 +7,52 @@ require_once("../inc/mm.inc");
 
 function left() {
     global $user;
-    echo "<h3>Your composer profile:</h3>";
+    echo "<h3>Composer profile:</h3>";
     if (profile_exists($user->id, COMPOSER)) {
         $profile = read_profile($user->id, COMPOSER);
-        start_table();
+        start_table('table-striped');
         echo profile_summary_table($user, $profile, COMPOSER);
         echo "<tr><td> </td><td>";
-        show_button_small("profile.php?comp=1", "Edit composer profile");
+        show_button("profile.php?comp=1", "Edit composer profile", null, "btn-success");
         echo "</td></tr>";
         end_table();
     } else {
-        show_button_small("profile.php?comp=1", "Create composer profile");
+        show_button("profile.php?comp=1", "Create composer profile", null, "btn-success");
     }
 
-    echo "<h3>Your performer profile:</h3>";
+    echo "<h3>Performer profile:</h3>";
 
     if (profile_exists($user->id, PERFORMER)) {
         $profile = read_profile($user->id, PERFORMER);
-        start_table();
+        start_table('table-striped');
         echo profile_summary_table($user, $profile, PERFORMER);
         echo "<tr><td> </td><td>";
-        show_button_small("profile.php?comp=0", "Edit performer profile");
+        show_button("profile.php?comp=0", "Edit performer profile", null, "btn-success");
         echo "</td></tr>";
         end_table();
     } else {
-        show_button_small("profile.php?comp=0", "Create performer profile");
+        show_button("profile.php?comp=0", "Create performer profile", null, "btn-success");
     }
+
+    echo "<h3>Technician profile:</h3>";
+    if (profile_exists($user->id, TECHNICIAN)) {
+    } else {
+        show_button("profile.php?comp=0", "Create technician profile", null, "btn-success");
+    }
+
+    echo "<h3>Ensembles</h3>";
+    show_button("ensemble.php", "Add ensemble");
+
+    echo "<h3>Search</h3>";
+    show_button(
+        sprintf("mm_search.php?role=%d", COMPOSER),
+        "Find composers", null, "btn-success"
+    );
+    echo "&nbsp;&nbsp;";
+    show_button(
+        sprintf("mm_search.php?role=%d", PERFORMER),
+        "Find performers", null, "btn-success"
+    );
 }
 
 function right() {
@@ -44,10 +64,6 @@ function right() {
 }
 
 function top() {
-    global $user;
-    show_button("mm_search.php?comp=1", "Find composers", null, "btn-success btn-lg");
-    echo "&nbsp;&nbsp;";
-    show_button("mm_search.php?comp=0", "Find performers", null, "btn-success btn-lg");
 }
 
 function home_page($user) {

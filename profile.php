@@ -15,16 +15,15 @@ define('INFLUENCE_ADD', 'Add influence');
 define('LINK_ADD_URL', 'Add link: URL');
 define('LINK_ADD_DESC', 'Description');
 
-function form($profile, $is_comp) {
-    global $inst_list_comp, $inst_list_perf, $style_list, $level_list;
-    page_head($is_comp?"Composer profile":"Performer profile");
+function form($profile, $role) {
+    page_head($role==COMPOSER?"Composer profile":"Performer profile");
     form_start("profile.php?foo=1", "POST", 'ENCTYPE="multipart/form-data"');
-    form_input_hidden("comp", $is_comp?"1":"0");
+    form_input_hidden("role", $role);
     form_checkboxes(
-        $is_comp?"Instruments you write for:":"Instruments you play",
+        $role==COMPOSER?"Instruments you write for:":"Instruments you play",
         array_merge(
             items_list(
-                $is_comp?$inst_list_comp:$inst_list_perf,
+                $role==COMPOSER?INST_LIST_COARSE:INST_LIST_FINE,
                 $profile->inst, "inst"
             ),
             items_custom($profile->inst_custom, "inst_custom")
@@ -36,9 +35,9 @@ function form($profile, $is_comp) {
     echo "<hr>";
 
     form_checkboxes(
-        $is_comp?"Styles you write in:":"Styles you play",
+        $role==COMPOSER?"Styles you write in:":"Styles you play",
         array_merge(
-            items_list($style_list, $profile->style, "style"),
+            items_list(STYLE_LIST, $profile->style, "style"),
             items_custom($profile->style_custom, "style_custom")
         )
     );
@@ -50,12 +49,12 @@ function form($profile, $is_comp) {
     echo "<hr>";
 
     form_checkboxes(
-        $is_comp?"Technical levels you write for:":"Technical levels you play",
-        items_list($level_list, $profile->level, "level")
+        $role==COMPOSER?"Technical levels you write for:":"Technical levels you play",
+        items_list(LEVEL_LIST, $profile->level, "level")
     );
     echo "<hr>";
 
-    if ($is_comp) {
+    if ($role==COMPOSER) {
         $x = "Composers/musicians who influence your work:";
         if ($profile->influence) {
             form_checkboxes(
@@ -76,7 +75,7 @@ function form($profile, $is_comp) {
     }
 
     $sig_title = sprintf('Audio signature MP3<br><small>A short, representative example of your %s.<br>Max size 128 MB.</small>',
-        $is_comp?"composition":"playing"
+        $role==COMPOSER?"composition":"playing"
     );
     if ($profile->signature_filename) {
         form_checkboxes($sig_title,
@@ -114,23 +113,21 @@ function form($profile, $is_comp) {
 
 // ------------ handle submitted form ---------------
 
-function action($user_id, $profile, $is_comp) {
-    global $inst_list_comp, $inst_list_perf, $style_list, $level_list;
-
+function action($user_id, $profile, $role) {
     $profile2 = new StdClass;
     $profile2->inst = parse_list(
-        $is_comp?$inst_list_comp:$inst_list_perf, "inst"
+        $role==COMPOSER?INST_LIST_COARSE:INST_LIST_FINE, "inst"
     );
     $profile2->inst_custom = parse_custom(
         $profile->inst_custom, "inst_custom", INST_ADD
     );
-    $profile2->style = parse_list($style_list, "style");
+    $profile2->style = parse_list(STYLE_LIST, "style");
     $profile2->style_custom = parse_custom(
         $profile->style_custom, "style_custom", STYLE_ADD
     );
-    $profile2->level = parse_list($level_list, "level");
+    $profile2->level = parse_list(LEVEL_LIST, "level");
 
-    if ($is_comp) {
+    if ($role==COMPOSER) {
         $profile2->influence = parse_custom(
             $profile->influence, "influence", INFLUENCE_ADD
         );
@@ -154,7 +151,7 @@ function action($user_id, $profile, $is_comp) {
                 }
                 // check if it's actully an MP3 file?
                 $new_name = sprintf('%s/%d.mp3',
-                    $is_comp?"composer":"performer", $user_id
+                    $role==COMPOSER?"composer":"performer", $user_id
                 );
                 if (!move_uploaded_file($sig_name, $new_name)) {
                     error_page("Couldn't move uploaded file.");
@@ -193,15 +190,15 @@ function action($user_id, $profile, $is_comp) {
 $user = BOINCUser::lookup_id(1);
 
 if (post_str('submit', true)) {
-    $is_comp = post_int('comp');
-    $profile = read_profile($user->id, $is_comp);
-    $profile = action($user->id, $profile, $is_comp);
-    write_profile($user->id, $profile, $is_comp);
-    Header("Location: profile.php?comp=$is_comp");
+    $role = post_int('role');
+    $profile = read_profile($user->id, $role);
+    $profile = action($user->id, $profile, $role);
+    write_profile($user->id, $profile, $role);
+    Header("Location: profile.php?role=$role");
 } else {
-    $is_comp = get_int('comp');
-    $profile = read_profile($user->id, $is_comp);
-    form($profile, $is_comp);
+    $role = get_int('role');
+    $profile = read_profile($user->id, $role);
+    form($profile, $role);
 }
 
 ?>

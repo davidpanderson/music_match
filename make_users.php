@@ -3,6 +3,8 @@
 // make some random simulated users
 
 require_once("../inc/util.inc");
+require_once("../inc/user_util.inc");
+require_once("../inc/zip.inc");
 require_once("../inc/mm.inc");
 
 $mp3_files = array(
@@ -14,12 +16,12 @@ $mp3_files = array(
     'mompou_prelude_9.mp3',
 );
 
-function rnd_signature($user_id, $is_comp) {
+function rnd_signature($user_id, $role) {
     global $mp3_files;
     $n = count($mp3_files);
     $i = random_int(0, $n-1);
     $cmd = sprintf('cd %s; ln -s ../mp3/%s %d.mp3',
-        $is_comp?"composer":"performer",
+        role_dir($role),
         $mp3_files[$i],
         $user_id
     );
@@ -73,49 +75,69 @@ function rnd_link() {
 }
 
 function rnd_perf($user_id) {
-    global $inst_list_perf, $style_list, $level_list;
     $x = new StdClass;
-    $x->inst = rnd_subset($inst_list_perf);
-    $x->style = rnd_subset($style_list);
-    $x->level = rnd_subset($level_list);
+    $x->inst = rnd_subset(INST_LIST_FINE);
+    $x->style = rnd_subset(STYLE_LIST);
+    $x->level = rnd_subset(LEVEL_LIST);
     $x->signature_filename = rnd_signature($user_id, PERFORMER);
     $x->link = rnd_link();
     return $x;
 }
 
 function rnd_comp($user_id) {
-    global $inst_list_comp, $style_list, $level_list;
     $x = new StdClass;
-    $x->inst = rnd_subset($inst_list_comp);
-    $x->style = rnd_subset($style_list);
-    $x->level = rnd_subset($level_list);
+    $x->inst = rnd_subset(INST_LIST_COARSE);
+    $x->style = rnd_subset(STYLE_LIST);
+    $x->level = rnd_subset(LEVEL_LIST);
     $x->influence = rnd_influence();
     $x->signature_filename = rnd_signature($user_id, COMPOSER);
     $x->link = rnd_link();
     return $x;
 }
 
-function make_users() {
-    $max_id = 99729;
-    $n = 100;
+function random_name() {
+    $first = array("John", "Bob", "Mary", "Alice", "Lucy", "Fred");
+    $last = array("Smith", "Jones", "Adams", "Green", "Brown", "Williams");
+    shuffle($first);
+    shuffle($last);
+    return sprintf("%s %s", $first[0], $last[0]);
+}
 
-    for ($i=$max_id-100; $i<=$max_id; $i++) {
+function make_users() {
+    for ($i=0; $i<100; $i++) {
+        $pc = "";
+        switch (random_int(1,10)) {
+        case 0:
+            $c = "Canada";
+            break;
+        case 1:
+            $c = "Italy";
+            break;
+        default:
+            $c = "United States";
+            $pc = strval(rnd_zip(94000, 94999));
+        }
+        $user = make_user(
+            "fake_user_$i@foo.com",
+            random_name(),
+            "",
+            $c,
+            $pc
+        );
+        if (!$user) {
+            echo "no user"; exit;
+        }
+        $id = $user->id;
+
+
         $x = random_int(1,10);
         if ($x < 5) {
-            write_profile($i, rnd_comp($i), COMPOSER);
+            write_profile($id, rnd_comp($id), COMPOSER);
         } else if ($x < 9) {
-            write_profile($i, rnd_perf($i), PERFORMER);
+            write_profile($id, rnd_perf($id), PERFORMER);
         } else {
-            write_profile($i, rnd_comp($i), COMPOSER);
-            write_profile($i, rnd_perf($i), PERFORMER);
-        }
-
-        if ($i < $max_id-20) {
-            $user = BoincUser::lookup_id($i);
-            $zip = rnd_zip(94000, 94999);
-            $user->update(
-                sprintf("country='United States', postal_code='%d'", $zip)
-            );
+            write_profile($id, rnd_comp($id), COMPOSER);
+            write_profile($id, rnd_perf($id), PERFORMER);
         }
     }
 }

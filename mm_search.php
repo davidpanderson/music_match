@@ -1,29 +1,30 @@
 <?php
 
+// search for composers or performers
+
 require_once("../inc/util.inc");
 require_once("../inc/mm.inc");
 
-function search_form($profile, $is_comp) {
-    global $inst_list_comp, $inst_list_perf, $style_list, $level_list;
+function search_form($profile, $role) {
 
-    page_head(sprintf("Search for %s", $is_comp?"composers":"performers"));
+    page_head(sprintf("Search for %s", $role==COMPOSER?"composers":"performers"));
     form_start("mm_search.php", "POST");
-    form_input_hidden("comp", $is_comp?1:0);
+    form_input_hidden("role", $role);
     form_checkboxes(
-        sprintf("Who %s at least one of:", $is_comp?"write for":"play"),
-        items_list($is_comp?$inst_list_comp:$inst_list_perf,
+        sprintf("Who %s at least one of:", $role==COMPOSER?"write for":"play"),
+        items_list($role==COMPOSER?INST_LIST_COARSE:INST_LIST_FINE,
             $profile->inst, "inst"
         )
     );
     echo "<hr>";
     form_checkboxes(
        "in styles including at least one of:",
-        items_list($style_list, $profile->style, "style")
+        items_list(STYLE_LIST, $profile->style, "style")
     );
     echo "<hr>";
     form_checkboxes(
         "in difficulty levels including at least one of:",
-        items_list($level_list, $profile->level, "level")
+        items_list(LEVEL_LIST, $profile->level, "level")
     );
     echo "<hr>";
     form_checkboxes(
@@ -37,16 +38,15 @@ function search_form($profile, $is_comp) {
 
 // parse form args; return object with arrays of attrs
 //
-function get_form_args($is_comp) {
-    global $inst_list_comp, $inst_list_perf, $style_list, $level_list;
+function get_form_args($role) {
     $x = new StdClass;
-    if ($is_comp) {
-        $x->inst = parse_list($inst_list_comp, "inst");
+    if ($role==COMPOSER) {
+        $x->inst = parse_list(INST_LIST_COARSE, "inst");
     } else {
-        $x->inst = parse_list($inst_list_perf, "inst");
+        $x->inst = parse_list(INST_LIST_FINE, "inst");
     }
-    $x->style = parse_list($style_list, "style");
-    $x->level = parse_list($level_list, "level");
+    $x->style = parse_list(STYLE_LIST, "style");
+    $x->level = parse_list(LEVEL_LIST, "level");
     return $x;
 }
 
@@ -99,7 +99,9 @@ function compare_value($p1, $p2) {
     }
 }
 
-function search_action($is_comp, $user) {
+function search_action($role, $user) {
+    // Javascript for mouse-over audio
+    //
     $head_extra = <<<EOT
 <script language="javascript" type="text/javascript">
 function play_sound(id) {
@@ -121,12 +123,12 @@ function remove() {
 EOT;
 
     page_head(
-        sprintf("%s search results", $is_comp?"Composer":"Performer"),
+        sprintf("%s search results", $role==COMPOSER?"Composer":"Performer"),
         null, false, "",
         $head_extra
     );
-    $form_args = get_form_args($is_comp);
-    $profiles = get_profiles($is_comp);
+    $form_args = get_form_args($role);
+    $profiles = get_profiles($role);
     foreach ($profiles as $user_id=>$profile) {
         $profile->match = match_args($profile, $form_args);
         $profile->value = match_value($profile->match);
@@ -144,11 +146,11 @@ EOT;
             'Name<br><small>click for details<br>mouse over to hear audio sample%s</small>',
             $enable_tag
         );
-        profile_summary_header($name_header, $is_comp);
+        profile_summary_header($name_header, $role);
     } else {
         echo sprintf('<tr><th %s>%s<br><small>click for details<br>mouse over to hear audio sample%s</small></th><th %s>Summary</th></tr>',
             NAME_ATTRS,
-            $is_comp?"Composer":"Performer",
+            $role==COMPOSER?"Composer":"Performer",
             $enable_tag,
             VALUE_ATTRS
         );
@@ -166,15 +168,15 @@ EOT;
         if ($profile->signature_filename) {
             echo sprintf('<audio id=a%d><source src="%s/%d.mp3"></source></audio>',
                 $user_id,
-                $is_comp?"composer":"performer",
+                role_dir($role),
                 $user_id
             );
         }
         $user = BoincUser::lookup_id($user_id);
         if ($ncol) {
-            profile_summary_row($user, $profile, $is_comp);
+            profile_summary_row($user, $profile, $role);
         } else {
-            show_profile_2col($user, $profile, $is_comp);
+            show_profile_2col($user, $profile, $role);
         }
     }
     end_table();
@@ -188,16 +190,16 @@ $user = get_logged_in_user(true);
 
 $action = post_str("submit", true);
 if ($action) {
-    $is_comp = post_int("comp");
-    search_action($is_comp, $user);
+    $role = post_int("role");
+    search_action($role, $user);
 } else {
-    $is_comp = get_int("comp");
+    $role = get_int("role");
     if ($user) {
-        $profile = read_profile($user->id, $is_comp);
+        $profile = read_profile($user->id, $role);
     } else {
-        $profile = read_profile(0, $is_comp);
+        $profile = read_profile(0, $role);
     }
-    search_form($profile, $is_comp);
+    search_form($profile, $role);
 }
 
 ?>

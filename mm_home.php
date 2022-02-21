@@ -2,6 +2,9 @@
 
 require_once("../inc/util.inc");
 require_once("../inc/mm.inc");
+require_once("../inc/mm_profile.inc");
+require_once("../inc/tech.inc");
+require_once("../inc/ensemble.inc");
 
 // user home page
 
@@ -13,11 +16,17 @@ function left() {
         start_table('table-striped');
         echo profile_summary_table($user, $profile, COMPOSER);
         echo "<tr><td> </td><td>";
-        show_button("profile.php?comp=1", "Edit composer profile", null, "btn-success");
+        show_button(
+            sprintf("profile.php?role=%d", COMPOSER),
+            "Edit composer profile", null, "btn-primary"
+        );
         echo "</td></tr>";
         end_table();
     } else {
-        show_button("profile.php?comp=1", "Create composer profile", null, "btn-success");
+        show_button(
+            sprintf("profile.php?role=%d", COMPOSER),
+            "Create composer profile", null, "btn-primary"
+        );
     }
 
     echo "<h3>Performer profile:</h3>";
@@ -27,31 +36,61 @@ function left() {
         start_table('table-striped');
         echo profile_summary_table($user, $profile, PERFORMER);
         echo "<tr><td> </td><td>";
-        show_button("profile.php?comp=0", "Edit performer profile", null, "btn-success");
+        show_button(
+            sprintf("profile.php?role=%d", PERFORMER),
+            "Edit performer profile", null, "btn-primary"
+        );
         echo "</td></tr>";
         end_table();
     } else {
-        show_button("profile.php?comp=0", "Create performer profile", null, "btn-success");
+        show_button(
+            sprintf("profile.php?role=%d", PERFORMER),
+            "Create performer profile", null, "btn-primary"
+        );
     }
 
     echo "<h3>Technician profile:</h3>";
     if (profile_exists($user->id, TECHNICIAN)) {
+        $profile = read_profile($user->id, TECHNICIAN);
+        start_table('table-striped');
+        echo tech_summary_table($user, $profile);
+        echo "<tr><td> </td><td>";
+        show_button(
+            sprintf("tech.php", PERFORMER),
+            "Edit technician profile", null, "btn-primary"
+        );
+        echo "</td></tr>";
+        end_table();
     } else {
-        show_button("profile.php?comp=0", "Create technician profile", null, "btn-success");
+        show_button(
+            "tech.php",
+            "Create technician profile", null, "btn-primary"
+        );
     }
 
     echo "<h3>Ensembles</h3>";
-    show_button("ensemble.php", "Add ensemble");
+    show_ensembles($user);
+    show_button("ensemble_edit.php", "Add ensemble", null, "btn-primary");
 
     echo "<h3>Search</h3>";
     show_button(
         sprintf("mm_search.php?role=%d", COMPOSER),
-        "Find composers", null, "btn-success"
+        "Find composers", null, "btn-primary"
     );
     echo "&nbsp;&nbsp;";
     show_button(
         sprintf("mm_search.php?role=%d", PERFORMER),
-        "Find performers", null, "btn-success"
+        "Find performers", null, "btn-primary"
+    );
+    echo "&nbsp;&nbsp;";
+    show_button(
+        sprintf("mm_search.php?role=%d", TECHNICIAN),
+        "Find technicians", null, "btn-primary"
+    );
+    echo "&nbsp;&nbsp;";
+    show_button(
+        sprintf("mm_search.php?role=%d", ENSEMBLE),
+        "Find ensembles", null, "btn-primary"
     );
 }
 

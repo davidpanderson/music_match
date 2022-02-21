@@ -4,6 +4,7 @@
 
 require_once("../inc/util.inc");
 require_once("../inc/mm.inc");
+require_once("../inc/mm_profile.inc");
 
 function search_form($profile, $role) {
 

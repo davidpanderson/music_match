@@ -7,20 +7,12 @@ require_once("../inc/mm.inc");
 
 // ---------------- form ------------------
 
-// text for custom fields
-
-define('INST_ADD', 'Add instrument');
-define('STYLE_ADD', 'Add style');
-define('INFLUENCE_ADD', 'Add influence');
-define('LINK_ADD_URL', 'Add link: URL');
-define('LINK_ADD_DESC', 'Description');
-
 function form($profile, $role) {
     page_head($role==COMPOSER?"Composer profile":"Performer profile");
-    form_start("profile.php?foo=1", "POST", 'ENCTYPE="multipart/form-data"');
+    form_start("profile.php", "POST", 'ENCTYPE="multipart/form-data"');
     form_input_hidden("role", $role);
     form_checkboxes(
-        $role==COMPOSER?"Instruments you write for:":"Instruments you play",
+        $role==COMPOSER?"Instruments you write for":"Instruments you play",
         array_merge(
             items_list(
                 $role==COMPOSER?INST_LIST_COARSE:INST_LIST_FINE,
@@ -32,10 +24,9 @@ function form($profile, $role) {
     form_input_text('', 'inst_custom_new', INST_ADD, 'text',
         text_input_default(INST_ADD).'class="sm" size="20"'
     );
-    echo "<hr>";
 
     form_checkboxes(
-        $role==COMPOSER?"Styles you write in:":"Styles you play",
+        $role==COMPOSER?"Styles you write in":"Styles you play",
         array_merge(
             items_list(STYLE_LIST, $profile->style, "style"),
             items_custom($profile->style_custom, "style_custom")
@@ -46,16 +37,13 @@ function form($profile, $role) {
         text_input_default(STYLE_ADD).'class="sm" size="20"'
     );
 
-    echo "<hr>";
-
     form_checkboxes(
-        $role==COMPOSER?"Technical levels you write for:":"Technical levels you play",
+        $role==COMPOSER?"Technical levels you write for":"Technical levels you play",
         items_list(LEVEL_LIST, $profile->level, "level")
     );
-    echo "<hr>";
 
     if ($role==COMPOSER) {
-        $x = "Composers/musicians who influence your work:";
+        $x = "Composers/musicians who influence your work";
         if ($profile->influence) {
             form_checkboxes(
                 $x,
@@ -71,7 +59,6 @@ function form($profile, $role) {
                 text_input_default(INFLUENCE_ADD).'class="sm" size="20"'
             );
         }
-        echo "<hr>";
     }
 
     $sig_title = sprintf('Audio signature MP3<br><small>A short, representative example of your %s.<br>Max size 128 MB.</small>',
@@ -84,7 +71,6 @@ function form($profile, $role) {
     } else {
         form_general($sig_title, '<input name=signature_add type=file>');
     }
-    echo "<hr>";
 
     // links
 
@@ -186,8 +172,8 @@ function action($user_id, $profile, $role) {
     return $profile2;
 }
 
-//$user = get_logged_in_user();
-$user = BOINCUser::lookup_id(1);
+$user = get_logged_in_user();
+//$user = BOINCUser::lookup_id(1);
 
 if (post_str('submit', true)) {
     $role = post_int('role');

@@ -3,24 +3,24 @@
 alter table user
     add
 
-# a performing group
+# an ensemble (performing group)
+# Info is kept in ensemble/ID.json
 #
-create table group (
+create table ensemble (
     id              integer     not null auto_increment,
     create_time     double      not null,
-    name            varchar(255)    not null,
     user_id         integer     not null,
     primary key (id)
 ) engine = InnoDB;
 
-create table group_member (
+create table ensemble_member (
     create_time     double      not null,
-    group_id        integer     not null,
+    ensemble_id     integer     not null,
     user_id         integer     not null,
-    pending         shortint    not null,
-        # waiting for group leader to approve
-    unique(group_id, user_id)
-);
+    pending         tinyint     not null,
+        # waiting for ensemble leader to approve
+    unique(ensemble_id, user_id)
+) engine = InnoDB;
 
 # a search and its results
 #

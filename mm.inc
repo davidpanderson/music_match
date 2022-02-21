@@ -4,6 +4,13 @@ define('DEBUG', false);
 
 require_once("../inc/zip.inc");
 
+// values for "role"; each has an associated JSON structure
+//
+define('COMPOSER', 0);
+define('PERFORMER', 1);
+define('TECHNICIAN', 2);
+define('ENSEMBLE', 3);
+
 define('STYLE_LIST', array(
     'baroque' => 'Baroque',
     'classical' => 'Classical',
@@ -25,13 +32,13 @@ define('INST_LIST_COARSE', array(
 ));
 
 define('INST_LIST_FINE', array(
-    'bass' => 'Double bass',
     'cello' => 'Cello',
     'clarinet' => 'Clarinet',
+    'bass' => 'Double bass',
     'flute' => 'Flute',
+    'french_horn' => 'French horn',
     'guitar' => 'Guitar',
     'harp' => 'Harp',
-    'french_horn' => 'French horn',
     'oboe' => 'Oboe',
     'organ' => 'Organ',
     'percussion' => 'Percussion',
@@ -57,18 +64,18 @@ define('ENSEMBLE_TYPE_LIST', array(
     'orchestra' => 'Orchestra',
     'choir' => 'Choir',
     'chamber' => 'Chamber group',
-    'solo' => 'Solo',
-    'solo_accomp' => 'Accompanied solo'
+    'solo' => 'Soloist',
+    'solo_accomp' => 'Accompanied soloist'
 ));
 
 define('TECH_AREA_LIST', array(
-    'recording' => 'Recording',
     'score_edit' => 'Score editing',
-    'post_production' => 'Post production',
+    'recording' => 'Recording',
+    'post_production' => 'Post-production',
     'live_stream' => 'Live streaming',
 ));
 
-define('SOFTWARE_LIST', array(
+define('PROGRAM_LIST', array(
     'logic_pro' => 'Logic Pro',
     'ableton' => 'Ableton Live',
     'garage_band' => 'Garage Band',
@@ -79,6 +86,18 @@ define('SOFTWARE_LIST', array(
 ));
 
 // ---------- Functions for generating and parsing forms
+
+// text for custom fields
+
+define('INST_ADD', 'Add instrument');
+define('STYLE_ADD', 'Add style');
+define('INFLUENCE_ADD', 'Add influence');
+define('LINK_ADD_URL', 'Add link: URL');
+define('LINK_ADD_DESC', 'Description');
+define('ENSEMBLE_TYPE_ADD', 'Add ensemble type');
+
+
+// ----- checkbox stuff
 
 // return a list of (tag/name/checked) triples (for form_checkboxes())
 // for a predefined list of items (like instruments)
@@ -96,11 +115,17 @@ function items_list($list, $current, $prefix) {
 function items_custom($current, $prefix) {
     $x = array();
     foreach ($current as $i=>$name) {
-        $x[] = array(sprintf("%s_%d", $prefix, $i), $name, true);
+        $x[] = array(
+            sprintf("%s_%d", $prefix, $i),
+            $name,
+            true
+        );
     }
     return $x;
 }
 
+// same, for user-supplied links
+//
 function items_link($current, $prefix) {
     $x = array();
     foreach ($current as $i=>$link) {
@@ -141,6 +166,20 @@ function parse_custom($current, $prefix, $exclude) {
     }
     return $x;
 }
+
+// ------- radio
+
+// convert array to list of pairs
+//
+function radio_list($list) {
+    $x = array();
+    foreach ($list as $tag=>$name) {
+        $x[] = array($tag, $name);
+    }
+    return $x;
+}
+
+// ------- other
 
 // return stuff to put into a text <input> to give it a value
 // that goes away if you click there
@@ -189,17 +228,12 @@ function text_input_default($t) {
 //      "comment": "blah blah"
 //  }
 
-// values for "role"
-//
-define('COMPOSER', 0);
-define('PERFORMER', 1);
-define('TECHNICIAN', 2);
-
 function role_dir($role) {
     switch ($role) {
     case COMPOSER: return "composer";
     case PERFORMER: return "performer";
     case TECHNICIAN: return "technician";
+    case ENSEMBLE: return "ensemble";
     }
 }
 
@@ -237,6 +271,23 @@ function read_profile($user_id, $role) {
         if (!array_key_exists('signature_filename', $p)) $p->signature_filename = '';
         if (!array_key_exists('link', $p)) $p->link = array();
         break;
+    case TECHNICIAN:
+        if (!array_key_exists('tech_area', $p)) $p->tech_area = array();
+        if (!array_key_exists('tech_area_custom', $p)) $p->tech_area_custom = array();
+        if (!array_key_exists('program', $p)) $p->program = array();
+        if (!array_key_exists('program_custom', $p)) $p->program_custom = array();
+        break;
+    case ENSEMBLE:
+        if (!array_key_exists('type', $p)) $p->type = '';
+        if (!array_key_exists('style', $p)) $p->style = array();
+        if (!array_key_exists('style_custom', $p)) $p->style_custom = array();
+        if (!array_key_exists('inst', $p)) $p->inst = array();
+        if (!array_key_exists('inst_custom', $p)) $p->inst_custom = array();
+        if (!array_key_exists('level', $p)) $p->level = array();
+        if (!array_key_exists('signature_filename', $p)) $p->signature_filename = '';
+        if (!array_key_exists('seeking_members', $p)) $p->seeking_members = 0;
+        if (!array_key_exists('perf_reg', $p)) $p->perf_reg = 0;
+        if (!array_key_exists('perf_paid', $p)) $p->perf_paid = 0;
     }
     return $p;
 }
@@ -263,7 +314,7 @@ function get_profiles($role) {
 
 // ------------ display -------------
 
-// show a list of instruments or styles as a string
+// show a list of items (instruments, styles etc.) as a string
 //
 function lists_to_string($master_list, $list, $list2=null, $sep=',') {
     $x = "";
@@ -306,102 +357,7 @@ function links_to_string($profile, $sep=',') {
     return $x;
 }
 
-// show profile as a list of name: value lines
-//
-function profile_summary($user, $profile, $role) {
-    $x = sprintf('Instruments: %s',
-        lists_to_string(
-            $role==COMPOSER?INST_LIST_COARSE:INST_LIST_FINE,
-            $profile->inst, $profile->inst_custom
-        )
-    );
-    $x .= sprintf('<br>Styles: %s',
-        lists_to_string(
-            STYLE_LIST, $profile->style, $profile->style_custom
-        )
-    );
-    $x .= sprintf('<br>Levels: %s',
-        lists_to_string(LEVEL_LIST, $profile->level)
-    );
-    if ($role==COMPOSER && $profile->influence) {
-        $x .= "<br>Influences: ".implode(", ", $profile->influence);
-    }
-    if ($profile->link) {
-        $x .= "<br>Links: ".links_to_string($profile);
-    }
-    $u = get_logged_in_user();
-    if ($u->id != $user->id && $user->country) {
-        $x .= sprintf('<br>Country: %s', country_distance($user));
-    }
-    return $x;
-}
-
-function profile_summary_table($user, $profile, $role) {
-    row2('Instruments',
-        lists_to_string(
-            $role==COMPOSER?INST_LIST_COARSE:INST_LIST_FINE,
-            $profile->inst, $profile->inst_custom
-        )
-    );
-    row2('Styles',
-        lists_to_string(
-            STYLE_LIST, $profile->style, $profile->style_custom
-        )
-    );
-    row2('Levels',
-        lists_to_string(LEVEL_LIST, $profile->level)
-    );
-    if ($role==COMPOSER && $profile->influence) {
-        row2('Influences',
-            implode(", ", $profile->influence)
-        );
-    }
-    if ($profile->link) {
-        row2('Links',
-            links_to_string($profile)
-        );
-    }
-    $u = get_logged_in_user();
-    if ($u->id != $user->id && $user->country) {
-        row2('Country',
-            country_distance($user)
-        );
-    }
-}
-
-
-// name, with link and audio mouseover
-//
-function name_link($user, $profile) {
-    $audio = "";
-    if ($profile->signature_filename) {
-        $audio = sprintf(' onmouseenter="play_sound(\'a%d\');" onmouseleave="stop_sound(\'a%d\');" ',
-            $user->id, $user->id
-        );
-    }
-    return sprintf('<a %s href=mm_user.php?user_id=%d>%s</a>',
-        $audio,
-        $user->id, $user->name
-    );
-}
-
-// show a 2-column table row summarizing a composer or performer profile
-//
-function show_profile_2col($user, $profile, $role) {
-    $x1 = name_link($user, $profile);
-    $x2 = profile_summary($user, $profile, $role);
-    if (DEBUG) {
-        $x2 .= sprintf('<br>match: %d (%d, %d, %d)',
-            $profile->value,
-            $profile->match->inst,
-            $profile->match->style,
-            $profile->match->level
-        );
-    }
-    row2($x1, $x2);
-}
-
-// return country and - if possible - distance
+// return string showing country and - if possible - distance
 //
 function country_distance($user, $sep=' ') {
     $cur_user = get_logged_in_user(true);
@@ -418,41 +374,6 @@ function country_distance($user, $sep=' ') {
     }
     $d = zip_dist($z1, $z2);
     return sprintf("%s%s<small>%d miles</small>", $user->country, $sep, (int)$d);
-}
-
-// show profile as an N-column table row
-//
-function profile_summary_row($user, $profile, $role) {
-    $x = array();
-    $x[] = name_link($user, $profile);
-    $x[] = lists_to_string(
-        $role==COMPOSER?INST_LIST_COARSE:INST_LIST_FINE,
-        $profile->inst, $profile->inst_custom, "<br>"
-    );
-    $x[] = lists_to_string(
-        STYLE_LIST, $profile->style, $profile->style_custom, "<br>"
-    );
-    $x[] = lists_to_string(LEVEL_LIST, $profile->level, null, "<br>");
-    if ($role==COMPOSER) {
-        if ($profile->influence) {
-            $x[] = implode("<br>", $profile->influence);
-        } else {
-            $x[] = '';
-        }
-    }
-    $x[] = links_to_string($profile, "<br>");
-    $x[] = country_distance($user, "<br>");
-    row_array($x);
-}
-
-// table header for the above
-//
-function profile_summary_header($name_header, $role) {
-    $x= array($name_header, "Instruments", "Styles", "Level");
-    if ($role==COMPOSER) $x[] = "Influences";
-    $x[] = "Links";
-    $x[] = "Country";
-    row_heading_array($x);
 }
 
 // ------------ utilities -------------

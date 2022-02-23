@@ -4,7 +4,7 @@
 
 require_once("../inc/util.inc");
 require_once("../inc/mm.inc");
-require_once("../inc/mm_profile.inc");
+require_once("../inc/cp_profile.inc");
 
 function search_form($profile, $role) {
 
@@ -12,26 +12,22 @@ function search_form($profile, $role) {
     form_start("mm_search.php", "POST");
     form_input_hidden("role", $role);
     form_checkboxes(
-        sprintf("Who %s at least one of:", $role==COMPOSER?"write for":"play"),
+        sprintf("... who %s at least one of:", $role==COMPOSER?"write for":"play"),
         items_list($role==COMPOSER?INST_LIST_COARSE:INST_LIST_FINE,
             $profile->inst, "inst"
         )
     );
-    echo "<hr>";
     form_checkboxes(
        "in styles including at least one of:",
         items_list(STYLE_LIST, $profile->style, "style")
     );
-    echo "<hr>";
     form_checkboxes(
         "in difficulty levels including at least one of:",
         items_list(LEVEL_LIST, $profile->level, "level")
     );
-    echo "<hr>";
     form_checkboxes(
         "Who live close to me", array(array('close', '', false))
     );
-    echo "<hr>";
     form_submit("Search", 'name=submit value=on');
     form_end();
     page_tail();
@@ -90,16 +86,6 @@ function match_value($match) {
     return $x;
 }
 
-function compare_value($p1, $p2) {
-    if ($p1->value > $p2->value) {
-        return -1;
-    } else if ($p1->value < $p2->value) {
-        return 1;
-    } else {
-        return 0;
-    }
-}
-
 function search_action($role, $user) {
     // Javascript for mouse-over audio
     //
@@ -147,7 +133,7 @@ EOT;
             'Name<br><small>click for details<br>mouse over to hear audio sample%s</small>',
             $enable_tag
         );
-        profile_summary_header($name_header, $role);
+        cp_profile_summary_header($name_header, $role);
     } else {
         echo sprintf('<tr><th %s>%s<br><small>click for details<br>mouse over to hear audio sample%s</small></th><th %s>Summary</th></tr>',
             NAME_ATTRS,
@@ -175,7 +161,7 @@ EOT;
         }
         $user = BoincUser::lookup_id($user_id);
         if ($ncol) {
-            profile_summary_row($user, $profile, $role);
+            cp_profile_summary_row($user, $profile, $role);
         } else {
             show_profile_2col($user, $profile, $role);
         }

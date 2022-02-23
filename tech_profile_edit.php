@@ -10,7 +10,7 @@ define('PROGRAM_ADD', 'Add program');
 
 function tech_form($profile) {
     page_head("Technician profile");
-    form_start("tech.php", "POST");
+    form_start("tech_profile_edit.php", "POST");
     form_checkboxes(
         "Areas of expertise",
         array_merge(
@@ -56,7 +56,7 @@ if (post_str('submit', true)) {
     $profile = read_profile($user->id, TECHNICIAN);
     $profile = tech_action($user->id, $profile);
     write_profile($user->id, $profile, TECHNICIAN);
-    Header("Location: tech.php");
+    Header("Location: tech_profile_edit.php");
 } else {
     $profile = read_profile($user->id, TECHNICIAN);
     tech_form($profile);

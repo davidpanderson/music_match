@@ -25,6 +25,9 @@ define("PROFILE_PATH", "../user_profile/");
 define("PROFILE_URL", "user_profile/");
 define("LANGUAGE_FILE", "languages.txt");
 
+define('NO_COMPUTING', true);
+define('DISABLE_TEAMS', true);
+
 //-------------- contact info
 
 define("SYS_ADMIN_EMAIL", "admin@$master_url");

@@ -9,7 +9,7 @@ require_once("../inc/mm.inc");
 
 function form($profile, $role) {
     page_head($role==COMPOSER?"Composer profile":"Performer profile");
-    form_start("profile.php", "POST", 'ENCTYPE="multipart/form-data"');
+    form_start("cp_profile_edit.php", "POST", 'ENCTYPE="multipart/form-data"');
     form_input_hidden("role", $role);
     form_checkboxes(
         $role==COMPOSER?"Instruments you write for":"Instruments you play",
@@ -93,7 +93,7 @@ function form($profile, $role) {
     form_submit("Update", 'name=submit value=on');
     form_end();
 
-    show_button_small('mm_home.php', 'Return to home page');
+    show_button('mm_home.php', 'Return to home page', null, 'btn-primary');
     page_tail();
 }
 
@@ -132,10 +132,10 @@ function action($user_id, $profile, $role) {
         $orig_name = $sig_file['name'];
         if ($orig_name) {
             if (is_uploaded_file($sig_name)) {
-                if (!str_ends_with(strtolower($orig_name), ".mp3")) {
+                $finfo = finfo_open(FILEINFO_MIME_TYPE);
+                if (finfo_file($finfo, $sig_name) != 'audio/mpeg') {
                     error_page("$orig_name is not an MP3 file.");
                 }
-                // check if it's actully an MP3 file?
                 $new_name = sprintf('%s/%d.mp3',
                     $role==COMPOSER?"composer":"performer", $user_id
                 );
@@ -144,7 +144,7 @@ function action($user_id, $profile, $role) {
                 }
                 $profile2->signature_filename = $orig_name;
             } else {
-                error_page("Couldn't upload $sig_name; it may be too large.");
+                error_page("Couldn't upload $orig_name; it may be too large.");
             }
         }
     }
@@ -180,7 +180,7 @@ if (post_str('submit', true)) {
     $profile = read_profile($user->id, $role);
     $profile = action($user->id, $profile, $role);
     write_profile($user->id, $profile, $role);
-    Header("Location: profile.php?role=$role");
+    Header("Location: cp_profile_edit.php?role=$role");
 } else {
     $role = get_int('role');
     $profile = read_profile($user->id, $role);

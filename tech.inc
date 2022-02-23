@@ -1,6 +1,6 @@
 <?php
 
-function tech_summary_table($user, $profile) {
+function tech_profile_summary_table($user, $profile) {
     row2('Areas',
         lists_to_string(
             TECH_AREA_LIST, $profile->tech_area, $profile->tech_area_custom

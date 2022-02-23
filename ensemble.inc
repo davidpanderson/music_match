@@ -18,4 +18,19 @@ function show_ensembles($user) {
     end_table();
 }
 
+function ens_profile_summary_header() {
+    row_heading_array(array(
+        "Name", "Type", "Instruments"
+    ));
+}
+
+function ens_profile_summary_row($e) {
+    $p = $e->profile;
+    row_array(array(
+        $p->name,
+        ENSEMBLE_TYPE[$p->type],
+        lists_to_string(INST_LIST_FINE, $p->inst, $p->inst_custom, "<br>")
+    ));
+}
+
 ?>

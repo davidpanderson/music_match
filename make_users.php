@@ -6,6 +6,7 @@ require_once("../inc/util.inc");
 require_once("../inc/user_util.inc");
 require_once("../inc/zip.inc");
 require_once("../inc/mm.inc");
+require_once("../inc/mm_db.inc");
 
 $mp3_files = array(
     'bach_babylon.mp3',
@@ -29,18 +30,26 @@ function rnd_signature($user_id, $role) {
     return $mp3_files[$i];
 }
 
-function rnd_subset($list) {
+// select 1..n keys randomly from the given list
+//
+function rnd_subset($list, $n) {
     $x = array();
-    $n = random_int(1,3);
+    $m = random_int(1,$n);
     $keys = array_keys($list);
     shuffle($keys);
-    $keys = array_slice($keys, 0, $n);
+    $keys = array_slice($keys, 0, $m);
     foreach ($list as $key=>$val) {
         if (in_array($key, $keys)) {
             $x[] = $key;
         }
     }
     return $x;
+}
+
+function rnd_key($list) {
+    $keys = array_keys($list);
+    shuffle($keys);
+    return $keys[0];
 }
 
 $influences = array("Zappa", "Mahler", "P.D.Q. Bach", "Sorabji");
@@ -76,9 +85,9 @@ function rnd_link() {
 
 function rnd_perf($user_id) {
     $x = new StdClass;
-    $x->inst = rnd_subset(INST_LIST_FINE);
-    $x->style = rnd_subset(STYLE_LIST);
-    $x->level = rnd_subset(LEVEL_LIST);
+    $x->inst = rnd_subset(INST_LIST_FINE, 3);
+    $x->style = rnd_subset(STYLE_LIST, 4);
+    $x->level = rnd_subset(LEVEL_LIST, 2);
     $x->signature_filename = rnd_signature($user_id, PERFORMER);
     $x->link = rnd_link();
     return $x;
@@ -86,12 +95,33 @@ function rnd_perf($user_id) {
 
 function rnd_comp($user_id) {
     $x = new StdClass;
-    $x->inst = rnd_subset(INST_LIST_COARSE);
-    $x->style = rnd_subset(STYLE_LIST);
-    $x->level = rnd_subset(LEVEL_LIST);
+    $x->inst = rnd_subset(INST_LIST_COARSE, 3);
+    $x->style = rnd_subset(STYLE_LIST, 4);
+    $x->level = rnd_subset(LEVEL_LIST, 2);
     $x->influence = rnd_influence();
     $x->signature_filename = rnd_signature($user_id, COMPOSER);
     $x->link = rnd_link();
+    return $x;
+}
+
+function rnd_tech() {
+    $x = new StdClass;
+    $x->tech_area = rnd_subset(TECH_AREA_LIST, 2);
+    $x->program = rnd_subset(PROGRAM_LIST, 3);
+    return $x;
+}
+
+function rnd_ens($id) {
+    $x = new StdClass;
+    $x->name = "ensemble $id";
+    $x->description = "description of ensemble $id";
+    $x->type = rnd_key(ENSEMBLE_TYPE_LIST);
+    $x->style = rnd_subset(STYLE_LIST, 4);
+    $x->level = rnd_subset(LEVEL_LIST, 2);
+    $x->signature_filename = rnd_signature($id, ENSEMBLE);
+    $x->seeking_members = random_int(0,1);
+    $x->perf_reg = random_int(0,1);
+    $x->perf_paid = random_int(0,1);
     return $x;
 }
 
@@ -103,8 +133,8 @@ function random_name() {
     return sprintf("%s %s", $first[0], $last[0]);
 }
 
-function make_users() {
-    for ($i=0; $i<100; $i++) {
+function make_users($n) {
+    for ($i=0; $i<$n; $i++) {
         $pc = "";
         switch (random_int(1,10)) {
         case 0:
@@ -139,10 +169,49 @@ function make_users() {
             write_profile($id, rnd_comp($id), COMPOSER);
             write_profile($id, rnd_perf($id), PERFORMER);
         }
+        if (random_int(1,5) == 1) {
+            write_profile($id, rnd_tech(), TECHNICIAN);
+        }
     }
 }
 
-make_users();
+function make_ensemble($users) {
+    $nusers = count($users);
+    $user = $users[random_int(0, $nusers-1)];
+    $ens_id = Ensemble::insert(
+        sprintf("(create_time, user_id) values (%d, %d)",
+            time(), $user->id
+        )
+    );
+    if (!$ens_id) die("insert failed");
+    write_profile($ens_id, rnd_ens($ens_id), ENSEMBLE);
+
+    // add some members
+    $members = array();
+    for ($i=0; $i<random_int(0,10); $i++) {
+        $u = $users[random_int(0, $nusers-1)];
+        if ($u->id == $user->id) continue;
+        $members[] = $u->id;
+    }
+    $members = array_unique($members);
+    foreach ($members as $id) {
+        EnsembleMember::insert(
+            sprintf("(create_time, ensemble_id, user_id, pending) values(%d, %d, %d, 0)",
+                time(), $ens_id, $id
+            )
+        );
+    }
+}
+
+function make_ensembles($n) {
+    $users = BoincUser::enum("id>1");
+    for ($i=0; $i<$n; $i++) {
+        make_ensemble($users);
+    }
+}
+
+//make_users(100);
+make_ensembles(20);
 
 
 ?>

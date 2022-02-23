@@ -85,7 +85,7 @@ define('PROGRAM_LIST', array(
     'pro_tools' => 'Pro Tools',
 ));
 
-// ---------- Functions for generating and parsing forms
+// ---------- Functions for generating and parsing forms (search, edit)
 
 // text for custom fields
 
@@ -167,6 +167,12 @@ function parse_custom($current, $prefix, $exclude) {
     return $x;
 }
 
+// parse a boolean checkbox
+//
+function parse_post_bool($name) {
+    return post_str($name, true)?1:0;
+}
+
 // ------- radio
 
 // convert array to list of pairs
@@ -234,6 +240,7 @@ function role_dir($role) {
     case PERFORMER: return "performer";
     case TECHNICIAN: return "technician";
     case ENSEMBLE: return "ensemble";
+    default: die("bad role");
     }
 }
 
@@ -278,6 +285,8 @@ function read_profile($user_id, $role) {
         if (!array_key_exists('program_custom', $p)) $p->program_custom = array();
         break;
     case ENSEMBLE:
+        if (!array_key_exists('name', $p)) $p->name = '';
+        if (!array_key_exists('description', $p)) $p->description = '';
         if (!array_key_exists('type', $p)) $p->type = '';
         if (!array_key_exists('style', $p)) $p->style = array();
         if (!array_key_exists('style_custom', $p)) $p->style_custom = array();
@@ -385,6 +394,16 @@ function str_starts_with ($haystack, $needle) {
 function str_ends_with($haystack, $needle) {
     $length = strlen($needle);
     return $length > 0 ? substr($haystack, -$length) === $needle : true;
+}
+
+function compare_value($p1, $p2) {
+    if ($p1->value > $p2->value) {
+        return -1;
+    } else if ($p1->value < $p2->value) {
+        return 1;
+    } else {
+        return 0;
+    }
 }
 
 ?>

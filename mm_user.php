@@ -2,7 +2,8 @@
 
 require_once("../inc/util.inc");
 require_once("../inc/mm.inc");
-require_once("../inc/mm_profile.inc");
+require_once("../inc/cp_profile.inc");
+require_once("../inc/tech.inc");
 
 // show info on another user
 
@@ -13,7 +14,7 @@ function left() {
         echo "<h3>Composer profile</h3>";
         $profile = read_profile($user->id, COMPOSER);
         start_table();
-        echo profile_summary_table($user, $profile, COMPOSER);
+        echo cp_profile_summary_table($user, $profile, COMPOSER);
         end_table();
     }
 
@@ -21,7 +22,15 @@ function left() {
         echo "<h3>Performer profile</h3>";
         $profile = read_profile($user->id, PERFORMER);
         start_table();
-        echo profile_summary_table($user, $profile, PERFORMER);
+        echo cp_profile_summary_table($user, $profile, PERFORMER);
+        end_table();
+    }
+
+    if (profile_exists($user->id, TECHNICIAN)) {
+        echo "<h3>Technician profile</h3>";
+        $profile = read_profile($user->id, TECHNICIAN);
+        start_table();
+        echo tech_profile_summary_table($user, $profile, PERFORMER);
         end_table();
     }
 }

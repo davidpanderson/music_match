@@ -2,7 +2,7 @@
 
 require_once("../inc/util.inc");
 require_once("../inc/mm.inc");
-require_once("../inc/mm_profile.inc");
+require_once("../inc/cp_profile.inc");
 require_once("../inc/tech.inc");
 require_once("../inc/ensemble.inc");
 
@@ -14,17 +14,17 @@ function left() {
     if (profile_exists($user->id, COMPOSER)) {
         $profile = read_profile($user->id, COMPOSER);
         start_table('table-striped');
-        echo profile_summary_table($user, $profile, COMPOSER);
+        echo cp_profile_summary_table($user, $profile, COMPOSER);
         echo "<tr><td> </td><td>";
         show_button(
-            sprintf("profile.php?role=%d", COMPOSER),
+            sprintf("cp_profile_edit.php?role=%d", COMPOSER),
             "Edit composer profile", null, "btn-primary"
         );
         echo "</td></tr>";
         end_table();
     } else {
         show_button(
-            sprintf("profile.php?role=%d", COMPOSER),
+            sprintf("cp_profile_edit.php?role=%d", COMPOSER),
             "Create composer profile", null, "btn-primary"
         );
     }
@@ -34,17 +34,17 @@ function left() {
     if (profile_exists($user->id, PERFORMER)) {
         $profile = read_profile($user->id, PERFORMER);
         start_table('table-striped');
-        echo profile_summary_table($user, $profile, PERFORMER);
+        echo cp_profile_summary_table($user, $profile, PERFORMER);
         echo "<tr><td> </td><td>";
         show_button(
-            sprintf("profile.php?role=%d", PERFORMER),
+            sprintf("cp_profile_edit.php?role=%d", PERFORMER),
             "Edit performer profile", null, "btn-primary"
         );
         echo "</td></tr>";
         end_table();
     } else {
         show_button(
-            sprintf("profile.php?role=%d", PERFORMER),
+            sprintf("cp_profile_edit.php?role=%d", PERFORMER),
             "Create performer profile", null, "btn-primary"
         );
     }
@@ -53,17 +53,17 @@ function left() {
     if (profile_exists($user->id, TECHNICIAN)) {
         $profile = read_profile($user->id, TECHNICIAN);
         start_table('table-striped');
-        echo tech_summary_table($user, $profile);
+        echo tech_profile_summary_table($user, $profile);
         echo "<tr><td> </td><td>";
         show_button(
-            sprintf("tech.php", PERFORMER),
+            sprintf("tech_profile_edit.php", PERFORMER),
             "Edit technician profile", null, "btn-primary"
         );
         echo "</td></tr>";
         end_table();
     } else {
         show_button(
-            "tech.php",
+            "tech_profile_edit.php",
             "Create technician profile", null, "btn-primary"
         );
     }
@@ -74,22 +74,22 @@ function left() {
 
     echo "<h3>Search</h3>";
     show_button(
-        sprintf("mm_search.php?role=%d", COMPOSER),
+        sprintf("cp_search.php?role=%d", COMPOSER),
         "Find composers", null, "btn-primary"
     );
     echo "&nbsp;&nbsp;";
     show_button(
-        sprintf("mm_search.php?role=%d", PERFORMER),
+        sprintf("cp_search.php?role=%d", PERFORMER),
         "Find performers", null, "btn-primary"
     );
     echo "&nbsp;&nbsp;";
     show_button(
-        sprintf("mm_search.php?role=%d", TECHNICIAN),
+        "tech_search.php",
         "Find technicians", null, "btn-primary"
     );
     echo "&nbsp;&nbsp;";
     show_button(
-        sprintf("mm_search.php?role=%d", ENSEMBLE),
+        "ensemble_search.php",
         "Find ensembles", null, "btn-primary"
     );
 }

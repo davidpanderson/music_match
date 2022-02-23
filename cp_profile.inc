@@ -1,8 +1,12 @@
 <?php
 
+// display composer/performer profiles
+// These are sufficiently similar that we use the same functions
+// with a "role" argument.
+
 // show profile as a list of name: value lines
 //
-function profile_summary($user, $profile, $role) {
+function cp_profile_summary($user, $profile, $role) {
     $x = sprintf('Instruments: %s',
         lists_to_string(
             $role==COMPOSER?INST_LIST_COARSE:INST_LIST_FINE,
@@ -30,7 +34,7 @@ function profile_summary($user, $profile, $role) {
     return $x;
 }
 
-function profile_summary_table($user, $profile, $role) {
+function cp_profile_summary_table($user, $profile, $role) {
     row2('Instruments',
         lists_to_string(
             $role==COMPOSER?INST_LIST_COARSE:INST_LIST_FINE,
@@ -97,7 +101,7 @@ function show_profile_2col($user, $profile, $role) {
 
 // show profile as an N-column table row
 //
-function profile_summary_row($user, $profile, $role) {
+function cp_profile_summary_row($user, $profile, $role) {
     $x = array();
     $x[] = name_link($user, $profile);
     $x[] = lists_to_string(
@@ -122,7 +126,7 @@ function profile_summary_row($user, $profile, $role) {
 
 // table header for the above
 //
-function profile_summary_header($name_header, $role) {
+function cp_profile_summary_header($name_header, $role) {
     $x= array($name_header, "Instruments", "Styles", "Level");
     if ($role==COMPOSER) $x[] = "Influences";
     $x[] = "Links";

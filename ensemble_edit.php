@@ -127,6 +127,9 @@ function ensemble_action($profile) {
     );
     $profile2->level = parse_list(LEVEL_LIST, "level");
     $profile2->description = post_str('description');
+    $profile2->seeking_members = parse_post_bool('seeking_members');
+    $profile2->perf_reg = parse_post_bool('perf_reg');
+    $profile2->perf_paid = parse_post_bool('perf_paid');
     return $profile2;
 }
 
@@ -153,8 +156,7 @@ if (post_str('submit', true)) {
     $profile = read_profile($ens_id, ENSEMBLE);
     $profile = ensemble_action($profile);
     write_profile($ens_id, $profile, ENSEMBLE);
-    echo $ens_id;
-    print_r($profile);
+    Header("Location: ensemble_edit.php?ens_id=$ens_id");
 } else {
     $ens_id = get_int('ens_id', true);
     if ($ens_id) {

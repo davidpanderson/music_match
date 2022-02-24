@@ -4,7 +4,8 @@
 // These are sufficiently similar that we use the same functions
 // with a "role" argument.
 
-// show profile as a list of name: value lines
+// Show profile as a list of name: value lines
+// Not currently used.
 //
 function cp_profile_summary($user, $profile, $role) {
     $x = sprintf('Instruments: %s',
@@ -25,11 +26,11 @@ function cp_profile_summary($user, $profile, $role) {
         $x .= "<br>Influences: ".implode(", ", $profile->influence);
     }
     if ($profile->link) {
-        $x .= "<br>Links: ".links_to_string($profile);
+        $x .= "<br>Links: ".links_to_string($profile->link);
     }
     $u = get_logged_in_user();
     if ($u->id != $user->id && $user->country) {
-        $x .= sprintf('<br>Country: %s', country_distance($user));
+        $x .= sprintf('<br>Country: %s', country_distance($user, $profile->dist));
     }
     return $x;
 }
@@ -56,13 +57,13 @@ function cp_profile_summary_table($user, $profile, $role) {
     }
     if ($profile->link) {
         row2('Links',
-            links_to_string($profile)
+            links_to_string($profile->link)
         );
     }
     $u = get_logged_in_user();
     if ($u->id != $user->id && $user->country) {
         row2('Country',
-            country_distance($user)
+            country_distance($user, user_distance($u, $user), '; ')
         );
     }
 }
@@ -119,8 +120,8 @@ function cp_profile_summary_row($user, $profile, $role) {
             $x[] = '';
         }
     }
-    $x[] = links_to_string($profile, "<br>");
-    $x[] = country_distance($user, "<br>");
+    $x[] = links_to_string($profile->link, "<br>");
+    $x[] = country_distance($user, $profile->dist, "<br>");
     row_array($x);
 }
 

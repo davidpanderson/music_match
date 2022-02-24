@@ -11,11 +11,11 @@ function tech_search_form() {
     form_start("tech_search.php", "POST");
     form_checkboxes(
        "... with expertise in",
-       items_list(TECH_AREA_LIST, array(), "style")
+       items_list(TECH_AREA_LIST, array(), "tech_area")
     );
     form_checkboxes(
        "who are familiar with",
-       items_list(PROGRAM_LIST, array(), "style")
+       items_list(PROGRAM_LIST, array(), "program")
     );
     form_checkboxes(
         "Who live close to me", array(array('close', '', false))
@@ -29,6 +29,7 @@ function get_form_args() {
     $x = new StdClass;
     $x->tech_area = parse_list(TECH_AREA_LIST, "tech_area");
     $x->program = parse_list(PROGRAM_LIST, "program");
+    $x->close = post_str('close', true)=='on';
     return $x;
 }
 
@@ -56,17 +57,45 @@ function match_value($match) {
     return $x;
 }
 
-function tech_search_action($user) {
+function tech_search_action($req_user) {
     page_head("Technician search results");
     $form_args = get_form_args();
-    $profiles = get_profiles(TECHNICIAN);
-    foreach ($profiles as $user_id=>$profile) {
+    [$close_country, $close_zip] = handle_close($form_args, $req_user);
+
+    $profiles_in = get_profiles(TECHNICIAN);
+    $profiles = array();
+    foreach ($profiles_in as $user_id=>$profile) {
+        if ($req_user->id == $user_id) continue;
         $profile->match = match_args($profile, $form_args);
         $profile->value = match_value($profile->match);
+        if ($profile->value == 0) continue;
+        $user = BoincUser::lookup_id($user_id);
+        if ($close_country && $close_country != $user->country) {
+            continue;
+        }
+        if ($close_zip) {
+            $other_zip = str_to_zip($user->postal_code);
+            if (!$other_zip) continue;
+            $dist = zip_dist($close_zip, $other_zip);
+            if ($dist > 60) continue;
+            $profile->value -= $dist;
+            $profile->dist = $dist;
+        } else {
+            $profile->dist = -1;
+        }
+        $profile->user = $user;
+        $profiles[] = $profile;
+    }
+    if (!$profiles) {
+        echo "No results found.  Try expanding your criteria.";
+        page_tail();
+        return;
     }
     uasort($profiles, 'compare_value');
     start_table("table-striped");
+    tech_summary_header();
     foreach ($profiles as $user_id=>$profile) {
+        tech_summary_row($profile->user, $profile);
     }
     end_table();
     page_tail();

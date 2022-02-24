@@ -115,9 +115,11 @@ function rnd_ens($id) {
     $x = new StdClass;
     $x->name = "ensemble $id";
     $x->description = "description of ensemble $id";
+    $x->inst = rnd_subset(INST_LIST_FINE, random_int(1, 5));
     $x->type = rnd_key(ENSEMBLE_TYPE_LIST);
     $x->style = rnd_subset(STYLE_LIST, 4);
     $x->level = rnd_subset(LEVEL_LIST, 2);
+    $x->link = rnd_link();
     $x->signature_filename = rnd_signature($id, ENSEMBLE);
     $x->seeking_members = random_int(0,1);
     $x->perf_reg = random_int(0,1);

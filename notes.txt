@@ -304,7 +304,7 @@ concept: make pieces and recordings explicit
 
 -----------
 2/15/22
-
+talk with Mosa
 - I'll develop it on my own
 - I'd like review/comments from you, Kyle, Dara etc. if possible
     - choice of name
@@ -316,3 +316,17 @@ concept: make pieces and recordings explicit
 - Eventually would be good to integrate into GM somehow.
     Would be good for me to have a chat with Kyle to discuss
     how to make this possible/easier
+
+------------
+"close" search criteria
+
+I searcher is outside the US
+    show only results from same country
+else
+    if searcher's zip code not recognized
+        say that
+        show results IN US
+    else
+        show only results with zip, and distance < 100 miles
+        subtract distance from value
+        show distance in result

@@ -113,6 +113,19 @@ function ensemble_form($ens, $ens_id, $create) {
 
 function ensemble_action($profile) {
     $profile2 = new StdClass;
+
+    // If a radio button is checked, that's the type
+
+    $t = post_str('type', true);
+    $tc = post_str('type_custom');
+    if (!$t) {
+        if ($tc) {
+            $t = $tc;
+        } else {
+            error_page("You must specify an ensemble type.");
+        }
+    }
+    $profile2->type = $t;
     $profile2->name = post_str('name');
     if (!$profile2->name) {
         error_page("You must provide an ensemble name");

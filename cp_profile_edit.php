@@ -7,7 +7,7 @@ require_once("../inc/mm.inc");
 
 // ---------------- form ------------------
 
-function form($profile, $role) {
+function cp_form($user, $profile, $role) {
     page_head($role==COMPOSER?"Composer profile":"Performer profile");
     form_start("cp_profile_edit.php", "POST", 'ENCTYPE="multipart/form-data"');
     form_input_hidden("role", $role);
@@ -66,7 +66,15 @@ function form($profile, $role) {
     );
     if ($profile->signature_filename) {
         form_checkboxes($sig_title,
-            array(array("signature_check", $profile->signature_filename, true))
+            array(array(
+                "signature_check",
+                sprintf("<a href=%s/%d.mp3>%s</a>",
+                    role_dir($role),
+                    $user->id,
+                    $profile->signature_filename
+                ),
+                true
+            ))
         );
     } else {
         form_general($sig_title, '<input name=signature_add type=file>');
@@ -184,7 +192,7 @@ if (post_str('submit', true)) {
 } else {
     $role = get_int('role');
     $profile = read_profile($user->id, $role);
-    form($profile, $role);
+    cp_form($user, $profile, $role);
 }
 
 ?>

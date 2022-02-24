@@ -185,6 +185,21 @@ function radio_list($list) {
     return $x;
 }
 
+// show yes/no/either radio buttons for a bool
+//
+function radio_bool($label, $name) {
+    form_radio_buttons(
+        $label,
+        $name,
+        array(
+            array('yes', 'Yes'),
+            array('no', 'No'),
+            array('either', 'Either')
+        ),
+        'either'
+    );
+}
+
 // ------- other
 
 // return stuff to put into a text <input> to give it a value
@@ -196,6 +211,36 @@ function text_input_default($t) {
         onblur="if(this.value==\'\'){this.value=\'%s\';}"',
         $t, $t
     );
+}
+
+// If "close" was specified in a search (user or ensemble),
+// decide what this means, and tell the user
+//
+function handle_close($form_args, $req_user) {
+    $close_country = null;
+    $close_zip = 0;
+    if ($form_args->close) {
+        $close_country = $req_user->country;
+        if ($req_user->country) {
+            if ($req_user->country == 'United States') {
+                if ($req_user->postal_code){
+                    $close_zip = str_to_zip($req_user->postal_code);
+                    if ($close_zip) {
+                        echo "<p>Distance estimates are based on your postal code ($req_user->postal_code)<p>";
+                    } else {
+                        echo "<p>Your postal code ($req_user->postal_code) isn't in our database.  Showing results from the United States.<p>";
+                    }
+                } else {
+                    echo "<p>You haven't <a href=home.php>specified your postal code.  Showing results from the United States.<p>";
+                }
+            } else {
+                echo "<p>Showing only results from $req_user->country.<p>";
+            }
+        } else {
+            echo "<p>You haven't <a href=home.php>specified your country</a>, so we don't know who's close to you.<p>";
+        }
+    }
+    return [$close_country, $close_zip];
 }
 
 // ---------- reading and writing profiles
@@ -294,6 +339,7 @@ function read_profile($user_id, $role) {
         if (!array_key_exists('inst_custom', $p)) $p->inst_custom = array();
         if (!array_key_exists('level', $p)) $p->level = array();
         if (!array_key_exists('signature_filename', $p)) $p->signature_filename = '';
+        if (!array_key_exists('link', $p)) $p->link = array();
         if (!array_key_exists('seeking_members', $p)) $p->seeking_members = 0;
         if (!array_key_exists('perf_reg', $p)) $p->perf_reg = 0;
         if (!array_key_exists('perf_paid', $p)) $p->perf_paid = 0;
@@ -352,10 +398,10 @@ function lists_to_string($master_list, $list, $list2=null, $sep=',') {
     return $x;
 }
 
-function links_to_string($profile, $sep=',') {
+function links_to_string($links, $sep=',') {
     $x = "";
     $first = true;
-    foreach ($profile->link as $link) {
+    foreach ($links as $link) {
         if ($first) {
             $first = false;
         } else {
@@ -366,23 +412,14 @@ function links_to_string($profile, $sep=',') {
     return $x;
 }
 
-// return string showing country and - if possible - distance
+// return string showing country and - if relevant - distance
 //
-function country_distance($user, $sep=' ') {
-    $cur_user = get_logged_in_user(true);
-    if (!$cur_user
-        || ($cur_user->country != 'United States')
-        || ($user->country != 'United States')
-    ) {
+function country_distance($user, $dist, $sep=' ') {
+    if ($dist >= 0) {
+        return sprintf("%s%s<small>%d miles</small>", $user->country, $sep, (int)$dist);
+    } else {
         return $user->country;
     }
-    $z1 = str_to_zip($cur_user->postal_code);
-    $z2 = str_to_zip($user->postal_code);
-    if (!$z1 || !$z2) {
-        return $user->country;
-    }
-    $d = zip_dist($z1, $z2);
-    return sprintf("%s%s<small>%d miles</small>", $user->country, $sep, (int)$d);
 }
 
 // ------------ utilities -------------
@@ -404,6 +441,16 @@ function compare_value($p1, $p2) {
     } else {
         return 0;
     }
+}
+
+function user_distance($u1, $u2) {
+    if ($u1->country != 'United States') return -1;
+    if ($u2->country != 'United States') return -1;
+    $z1 = str_to_zip($u1->postal_code);
+    if (!$z1) return -1;
+    $z2 = str_to_zip($u2->postal_code);
+    if (!$z2) return -1;
+    return zip_dist($z1, $z2);
 }
 
 ?>

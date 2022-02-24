@@ -7,9 +7,8 @@ require_once("../inc/mm.inc");
 require_once("../inc/cp_profile.inc");
 
 function search_form($profile, $role) {
-
     page_head(sprintf("Search for %s", $role==COMPOSER?"composers":"performers"));
-    form_start("mm_search.php", "POST");
+    form_start("cp_search.php", "POST");
     form_input_hidden("role", $role);
     form_checkboxes(
         sprintf("... who %s at least one of:", $role==COMPOSER?"write for":"play"),
@@ -44,6 +43,7 @@ function get_form_args($role) {
     }
     $x->style = parse_list(STYLE_LIST, "style");
     $x->level = parse_list(LEVEL_LIST, "level");
+    $x->close = post_str('close', true)=='on';
     return $x;
 }
 
@@ -74,7 +74,6 @@ function match_args($profile, $args) {
     return $x;
 }
 
-
 // each match is a triple (inst, style, level).
 // compute the "value" of the match (for ranking search results)
 //
@@ -86,7 +85,7 @@ function match_value($match) {
     return $x;
 }
 
-function search_action($role, $user) {
+function search_action($role, $req_user) {
     // Javascript for mouse-over audio
     //
     $head_extra = <<<EOT
@@ -115,12 +114,48 @@ EOT;
         $head_extra
     );
     $form_args = get_form_args($role);
-    $profiles = get_profiles($role);
-    foreach ($profiles as $user_id=>$profile) {
+
+    [$close_country, $close_zip] = handle_close($form_args, $req_user);
+
+    $profiles_in = get_profiles($role);
+    $profiles = array();
+    foreach ($profiles_in as $user_id=>$profile) {
+        if ($req_user->id == $user_id) {
+            // don't show user their own profile
+            continue;
+        }
         $profile->match = match_args($profile, $form_args);
         $profile->value = match_value($profile->match);
+        if ($profile->value == 0) {
+            // skip if no criteria matched
+            continue;
+        }
+        $user = BoincUser::lookup_id($user_id);
+        if ($close_country && $close_country != $user->country) {
+            continue;
+        }
+        if ($close_zip) {
+            $other_zip = str_to_zip($user->postal_code);
+            if (!$other_zip) continue;
+            $dist = zip_dist($close_zip, $other_zip);
+            if ($dist > 60) continue;
+            $profile->value -= $dist;
+            $profile->dist = $dist;
+        } else {
+            $profile->dist = -1;
+        }
+        $profile->user = $user;
+        $profiles[] = $profile;
     }
+
+    if (!$profiles) {
+        echo "No results found.  Try expanding your criteria.";
+        page_tail();
+        return;
+    }
+
     uasort($profiles, 'compare_value');
+
     start_table("table-striped");
     $enable_tag = '<br><a id="enable" onclick="remove()" href=#>Enable mouse-over audio</a>';
 
@@ -142,16 +177,7 @@ EOT;
             VALUE_ATTRS
         );
     }
-    $found = false;
     foreach ($profiles as $user_id=>$profile) {
-        if ($profile->value == 0) {
-            continue;
-        }
-        if ($user && $user->id == $user_id) {
-            // don't show user their own profile
-            continue;
-        }
-        $found = true;
         if ($profile->signature_filename) {
             echo sprintf('<audio id=a%d><source src="%s/%d.mp3"></source></audio>',
                 $user_id,
@@ -159,17 +185,13 @@ EOT;
                 $user_id
             );
         }
-        $user = BoincUser::lookup_id($user_id);
         if ($ncol) {
-            cp_profile_summary_row($user, $profile, $role);
+            cp_profile_summary_row($profile->user, $profile, $role);
         } else {
-            show_profile_2col($user, $profile, $role);
+            show_profile_2col($profile->user, $profile, $role);
         }
     }
     end_table();
-    if (!$found) {
-        echo "No results found.  Try expanding your criteria.";
-    }
     page_tail();
 }
 

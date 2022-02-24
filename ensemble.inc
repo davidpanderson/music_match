@@ -20,18 +20,21 @@ function show_ensembles($user) {
 
 function ens_profile_summary_header() {
     row_heading_array(array(
-        "Name", "Type", "Instruments", "Style", "Level"
+        "Name", "Type", "Instruments", "Style", "Level", "Founder", "Country"
     ));
 }
 
 function ens_profile_summary_row($e) {
     $p = $e->profile;
+    $user = $e->user;
     row_array(array(
         "<a href=ensemble.php?ens_id=$e->id>$p->name</a>",
         ENSEMBLE_TYPE_LIST[$p->type],
         lists_to_string(INST_LIST_FINE, $p->inst, $p->inst_custom, "<br>"),
         lists_to_string(STYLE_LIST, $p->style, $p->style_custom, "<br>"),
-        lists_to_string(LEVEL_LIST, $p->level, null, "<br>")
+        lists_to_string(LEVEL_LIST, $p->level, null, "<br>"),
+        "<a href=mm_user.php?user_id=$user->id>$user->name</a>",
+        country_distance($user, $e->dist, "<br>")
     ));
 }
 

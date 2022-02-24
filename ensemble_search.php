@@ -37,6 +37,7 @@ function get_form_args() {
     $x->inst = parse_list(INST_LIST_FINE, "inst");
     $x->style = parse_list(STYLE_LIST, "style");
     $x->level = parse_list(LEVEL_LIST, "level");
+    $x->close = post_str('close', true)=='on';
     return $x;
 }
 
@@ -76,34 +77,54 @@ function match_value($match) {
     return $x;
 }
 
-function search_action() {
+function search_action($req_user) {
     page_head("Search results");
     $form_args = get_form_args();
-    $ensembles = Ensemble::enum("");
-    foreach ($ensembles as $e) {
+    [$close_country, $close_zip] = handle_close($form_args, $req_user);
+    $ensembles_in = Ensemble::enum("");
+    $ensembles = array();
+    foreach ($ensembles_in as $e) {
         $e->profile = read_profile($e->id, ENSEMBLE);
         $e->match = match_args($e->profile, $form_args);
         $e->value = match_value($e->match);
+        if ($e->value == 0) continue;
+        $user = BoincUser::lookup_id($e->user_id);
+        if ($close_country && $close_country != $user->country) {
+            continue;
+        }
+        if ($close_zip) {
+            $other_zip = str_to_zip($user->postal_code);
+            if (!$other_zip) continue;
+            $dist = zip_dist($close_zip, $other_zip);
+            if ($dist > 60) continue;
+            $e->value -= $dist;
+            $e->dist = $dist;
+        } else {
+            $e->dist = -1;
+        }
+        $e->user = $user;
+        $ensembles[] = $e;
+    }
+    if (!$ensembles) {
+        echo "No results found.  Try expanding your criteria.";
+        page_tail();
+        return;
     }
     uasort($ensembles, 'compare_value');
     start_table('table-striped');
     ens_profile_summary_header();
-    $found = false;
     foreach ($ensembles as $e) {
         if ($e->value == 0) continue;
-        $found = true;
         ens_profile_summary_row($e);
     }
     end_table();
-    if (!$found) {
-        echo "No ensembles found.  Try expanding your search.";
-    }
     page_tail();
 }
 
 $action = post_str("submit", true);
+$user = get_logged_in_user();
 if ($action) {
-    search_action();
+    search_action($user);
 } else {
     search_form();
 }

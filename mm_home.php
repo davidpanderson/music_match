@@ -10,87 +10,99 @@ require_once("../inc/ensemble.inc");
 
 function left() {
     global $user;
-    echo "<h3>Composer profile:</h3>";
+    echo "<h3>Composer profile</h3>";
+    start_table();
     if (profile_exists($user->id, COMPOSER)) {
         $profile = read_profile($user->id, COMPOSER);
-        start_table('table-striped');
         echo cp_profile_summary_table($user, $profile, COMPOSER);
-        echo "<tr><td> </td><td>";
-        show_button(
-            sprintf("cp_profile_edit.php?role=%d", COMPOSER),
-            "Edit composer profile", null, "btn-primary"
+        row2('',
+            button_text(
+                sprintf("cp_profile_edit.php?role=%d", COMPOSER),
+                "Edit composer profile", null, "btn-primary"
+            )
         );
-        echo "</td></tr>";
-        end_table();
     } else {
-        show_button(
-            sprintf("cp_profile_edit.php?role=%d", COMPOSER),
-            "Create composer profile", null, "btn-primary"
+        row2('',
+            button_text(
+                sprintf("cp_profile_edit.php?role=%d", COMPOSER),
+                "Create composer profile", null, "btn-primary"
+            )
         );
     }
+    end_table();
 
-    echo "<h3>Performer profile:</h3>";
+    echo "<h3>Performer profile</h3>";
 
     if (profile_exists($user->id, PERFORMER)) {
         $profile = read_profile($user->id, PERFORMER);
-        start_table('table-striped');
+        start_table();
         echo cp_profile_summary_table($user, $profile, PERFORMER);
-        echo "<tr><td> </td><td>";
-        show_button(
-            sprintf("cp_profile_edit.php?role=%d", PERFORMER),
-            "Edit performer profile", null, "btn-primary"
+        row2('',
+            button_text(
+                sprintf("cp_profile_edit.php?role=%d", PERFORMER),
+                "Edit performer profile", null, "btn-primary"
+            )
         );
-        echo "</td></tr>";
         end_table();
     } else {
-        show_button(
-            sprintf("cp_profile_edit.php?role=%d", PERFORMER),
-            "Create performer profile", null, "btn-primary"
+        row2('',
+            button_text(
+                sprintf("cp_profile_edit.php?role=%d", PERFORMER),
+                "Create performer profile", null, "btn-primary"
+            )
         );
     }
 
-    echo "<h3>Technician profile:</h3>";
+    echo "<h3>Technician profile</h3>";
     if (profile_exists($user->id, TECHNICIAN)) {
         $profile = read_profile($user->id, TECHNICIAN);
-        start_table('table-striped');
+        start_table();
         echo tech_profile_summary_table($user, $profile);
-        echo "<tr><td> </td><td>";
-        show_button(
-            sprintf("tech_profile_edit.php", PERFORMER),
-            "Edit technician profile", null, "btn-primary"
+        row2('',
+            button_text(
+                sprintf("tech_profile_edit.php", PERFORMER),
+                "Edit technician profile", null, "btn-primary"
+            )
         );
-        echo "</td></tr>";
         end_table();
     } else {
-        show_button(
-            "tech_profile_edit.php",
-            "Create technician profile", null, "btn-primary"
+        row2('',
+            button_text(
+                "tech_profile_edit.php",
+                "Create technician profile", null, "btn-primary"
+            )
         );
     }
 
     echo "<h3>Ensembles</h3>";
+    start_table();
     show_ensembles($user);
-    show_button("ensemble_edit.php", "Add ensemble", null, "btn-primary");
+    row2('',
+        button_text(
+            "ensemble_edit.php", "Add ensemble", null, "btn-primary"
+        )
+    );
+    end_table();
 
-    echo "<h3>Search</h3>";
+    echo "<h3>Find musicians</h3>";
     show_button(
         sprintf("cp_search.php?role=%d", COMPOSER),
-        "Find composers", null, "btn-primary"
+        "Composers", null, "btn-primary"
     );
     echo "&nbsp;&nbsp;";
     show_button(
         sprintf("cp_search.php?role=%d", PERFORMER),
-        "Find performers", null, "btn-primary"
+        "Performers", null, "btn-primary"
     );
     echo "&nbsp;&nbsp;";
     show_button(
         "tech_search.php",
-        "Find technicians", null, "btn-primary"
+        "Technicians", null, "btn-primary"
     );
     echo "&nbsp;&nbsp;";
     show_button(
         "ensemble_search.php",
-        "Find ensembles", null, "btn-primary"
+        "Ensembles", null, "btn-primary"
     );
 }
 

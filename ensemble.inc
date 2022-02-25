@@ -8,27 +8,40 @@ function show_ensembles($user) {
     $ensembles_own = Ensemble::enum("user_id = $user->id");
     $ensembles_belong = EnsembleMember::enum("user_id = $user->id");
     if (!$ensembles_own && !$ensembles_belong) return;
-    start_table("table-striped");
     foreach ($ensembles_own as $e) {
         $ens_info = read_profile($e->id, ENSEMBLE);
         row2($ens_info->name,
             "<a href=ensemble_edit.php?ens_id=$e->id>edit</a>"
         );
     }
-    end_table();
 }
 
-function ens_profile_summary_header() {
+function ens_profile_summary_header($name_header) {
     row_heading_array(array(
-        "Name", "Type", "Instruments", "Style", "Level", "Founder", "Country"
+        $name_header, "Type", "Instruments", "Style", "Level", "Founder", "Country"
     ));
 }
 
+// name, with link and audio mouseover
+//
+function name_link($ens, $profile) {
+    $audio = "";
+    if ($profile->signature_filename) {
+        $audio = sprintf(' onmouseenter="play_sound(\'a%d\');" onmouseleave="stop_sound(\'a%d\');" ',
+            $ens->id, $ens->id
+        );
+    }
+    return sprintf('<a %s href=ensemble.php?ens_id=%d>%s%s</a>',
+        $audio,
+        $ens->id, $profile->name,
+        $profile->signature_filename?"&nbsp;&nbsp;<img height=24px src=note.png>":""
+    );
+}
 function ens_profile_summary_row($e) {
     $p = $e->profile;
     $user = $e->user;
     row_array(array(
-        "<a href=ensemble.php?ens_id=$e->id>$p->name</a>",
+        name_link($e, $p),
         ENSEMBLE_TYPE_LIST[$p->type],
         lists_to_string(INST_LIST_FINE, $p->inst, $p->inst_custom, "<br>"),
         lists_to_string(STYLE_LIST, $p->style, $p->style_custom, "<br>"),

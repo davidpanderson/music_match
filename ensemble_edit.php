@@ -8,7 +8,7 @@ require_once("../inc/mm_db.inc");
 
 function ensemble_form($ens, $ens_id, $create) {
     page_head($create?"Add ensemble":"Edit ensemble");
-    form_start("ensemble_edit.php", "POST");
+    form_start("ensemble_edit.php", "POST", 'ENCTYPE="multipart/form-data"');
     if ($ens_id) {
         form_input_hidden('ens_id', $ens_id);
     }
@@ -80,7 +80,13 @@ function ensemble_form($ens, $ens_id, $create) {
 
     if ($ens->signature_filename) {
         form_checkboxes($sig_title,
-            array(array("signature_check", $profile->signature_filename, true))
+            array(array(
+                "signature_check",
+                sprintf('<a href=%s/%d.mp3>%s</a>',
+                    role_dir(ENSEMBLE), $ens_id, $ens->signature_filename
+                ),
+                true
+            ))
         );
     } else {
         form_general($sig_title, '<input name=signature_add type=file>');
@@ -111,7 +117,7 @@ function ensemble_form($ens, $ens_id, $create) {
     page_tail();
 }
 
-function ensemble_action($profile) {
+function ensemble_action($profile, $ens_id) {
     $profile2 = new StdClass;
 
     // If a radio button is checked, that's the type
@@ -143,6 +149,9 @@ function ensemble_action($profile) {
     $profile2->seeking_members = parse_post_bool('seeking_members');
     $profile2->perf_reg = parse_post_bool('perf_reg');
     $profile2->perf_paid = parse_post_bool('perf_paid');
+    $profile2 = handle_audio_signature_upload(
+        $profile, $profile2, ENSEMBLE, $ens_id
+    );
     return $profile2;
 }
 
@@ -167,7 +176,7 @@ if (post_str('submit', true)) {
         }
     }
     $profile = read_profile($ens_id, ENSEMBLE);
-    $profile = ensemble_action($profile);
+    $profile = ensemble_action($profile, $ens_id);
     write_profile($ens_id, $profile, ENSEMBLE);
     Header("Location: ensemble_edit.php?ens_id=$ens_id");
 } else {

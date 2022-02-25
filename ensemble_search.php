@@ -5,7 +5,7 @@ require_once("../inc/mm.inc");
 require_once("../inc/mm_db.inc");
 require_once("../inc/ensemble.inc");
 
-function search_form() {
+function ens_search_form() {
     page_head("Ensemble search");
     form_start("ensemble_search.php", "POST");
     form_checkboxes("Ensemble type",
@@ -77,8 +77,9 @@ function match_value($match) {
     return $x;
 }
 
-function search_action($req_user) {
-    page_head("Search results");
+function ens_search_action($req_user) {
+    global $audio_head_extra;
+    page_head("Ensemble search results", null, false, "", $audio_head_extra);
     $form_args = get_form_args();
     [$close_country, $close_zip] = handle_close($form_args, $req_user);
     $ensembles_in = Ensemble::enum("");
@@ -112,9 +113,22 @@ function search_action($req_user) {
     }
     uasort($ensembles, 'compare_value');
     start_table('table-striped');
-    ens_profile_summary_header();
+    $enable_tag = '<br><a id="enable" onclick="remove()" href=#>Enable mouse-over audio</a>';
+    $name_header = sprintf(
+        'Name<br><small>click for details<br>mouse over to hear audio sample%s</small>',
+        $enable_tag
+    );
+
+    ens_profile_summary_header($name_header);
     foreach ($ensembles as $e) {
-        if ($e->value == 0) continue;
+        $profile = $e->profile;
+        if ($profile->signature_filename) {
+            echo sprintf('<audio id=a%d><source src="%s/%d.mp3"></source></audio>',
+                $e->id,
+                role_dir(ENSEMBLE),
+                $e->id
+            );
+        }
         ens_profile_summary_row($e);
     }
     end_table();
@@ -124,9 +138,9 @@ function search_action($req_user) {
 $action = post_str("submit", true);
 $user = get_logged_in_user();
 if ($action) {
-    search_action($user);
+    ens_search_action($user);
 } else {
-    search_form();
+    ens_search_form();
 }
 
 ?>

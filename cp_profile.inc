@@ -78,9 +78,10 @@ function name_link($user, $profile) {
             $user->id, $user->id
         );
     }
-    return sprintf('<a %s href=mm_user.php?user_id=%d>%s</a>',
+    return sprintf('<a %s href=mm_user.php?user_id=%d>%s%s</a>',
         $audio,
-        $user->id, $user->name
+        $user->id, $user->name,
+        $profile->signature_filename?"&nbsp;&nbsp;<img height=24px src=note.png>":""
     );
 }
 

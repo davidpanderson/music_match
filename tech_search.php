@@ -84,7 +84,7 @@ function tech_search_action($req_user) {
             $profile->dist = -1;
         }
         $profile->user = $user;
-        $profiles[] = $profile;
+        $profiles[$user->id] = $profile;
     }
     if (!$profiles) {
         echo "No results found.  Try expanding your criteria.";

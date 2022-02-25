@@ -127,35 +127,9 @@ function action($user_id, $profile, $role) {
         );
     }
 
-    if ($profile->signature_filename) {
-        if (post_str(sprintf('signature_check'), true)) {
-            $profile2->signature_filename = $profile->signature_filename;
-        } else {
-            $profile2->signature_filename = '';
-            // remove MP3 file?
-        }
-    } else {
-        $sig_file = $_FILES['signature_add'];
-        $sig_name = $sig_file['tmp_name'];
-        $orig_name = $sig_file['name'];
-        if ($orig_name) {
-            if (is_uploaded_file($sig_name)) {
-                $finfo = finfo_open(FILEINFO_MIME_TYPE);
-                if (finfo_file($finfo, $sig_name) != 'audio/mpeg') {
-                    error_page("$orig_name is not an MP3 file.");
-                }
-                $new_name = sprintf('%s/%d.mp3',
-                    $role==COMPOSER?"composer":"performer", $user_id
-                );
-                if (!move_uploaded_file($sig_name, $new_name)) {
-                    error_page("Couldn't move uploaded file.");
-                }
-                $profile2->signature_filename = $orig_name;
-            } else {
-                error_page("Couldn't upload $orig_name; it may be too large.");
-            }
-        }
-    }
+    $profile2 = handle_audio_signature_upload(
+        $profile, $profile2, $role, $user_id
+    );
 
     foreach ($profile->link as $i=>$link) {
         if (post_str(sprintf('link_%d', $i), true)) {

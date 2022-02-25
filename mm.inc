@@ -243,6 +243,42 @@ function handle_close($form_args, $req_user) {
     return [$close_country, $close_zip];
 }
 
+// handle the upload of an MP3 file
+// $id is that of either a user or an ensemble
+//
+function handle_audio_signature_upload($profile, $profile2, $role, $id) {
+    if ($profile->signature_filename) {
+        if (post_str('signature_check', true)) {
+            $profile2->signature_filename = $profile->signature_filename;
+        } else {
+            $profile2->signature_filename = '';
+            unlink(sprintf('%s/%d.mp3', role_dir($role), $id));
+        }
+    } else {
+        $sig_file = $_FILES['signature_add'];
+        $sig_name = $sig_file['tmp_name'];
+        $orig_name = $sig_file['name'];
+        if ($orig_name) {
+            if (is_uploaded_file($sig_name)) {
+                $finfo = finfo_open(FILEINFO_MIME_TYPE);
+                if (finfo_file($finfo, $sig_name) != 'audio/mpeg') {
+                    error_page("$orig_name is not an MP3 file.");
+                }
+                $new_name = sprintf('%s/%d.mp3',
+                    role_dir($role), $id
+                );
+                if (!move_uploaded_file($sig_name, $new_name)) {
+                    error_page("Couldn't move uploaded file.");
+                }
+                $profile2->signature_filename = $orig_name;
+            } else {
+                error_page("Couldn't upload $orig_name; it may be too large.");
+            }
+        }
+    }
+    return $profile2;
+}
+
 // ---------- reading and writing profiles
 
 // example composer profile
@@ -368,6 +404,28 @@ function get_profiles($role) {
 }
 
 // ------------ display -------------
+
+
+// Javascript for mouse-over audio
+//
+$audio_head_extra = <<<EOT
+<script language="javascript" type="text/javascript">
+function play_sound(id) {
+    var audio = document.getElementById(id);
+    audio.currentTime = 0;
+    audio.play();
+}
+
+function stop_sound(id) {
+    var audio = document.getElementById(id);
+    audio.pause();
+}
+function remove() {
+    var e = document.getElementById("enable");
+    e.innerHTML = "";
+}
+</script>
+EOT;
 
 // show a list of items (instruments, styles etc.) as a string
 //

@@ -29,6 +29,7 @@ define('NO_COMPUTING', true);
 define('DISABLE_TEAMS', true);
 define('POSTAL_CODE', true);
 define('USER_HOME', "mm_home.php");
+define('SHORTCUT_ICON', "icon.png");
 
 //-------------- contact info
 

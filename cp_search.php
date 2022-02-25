@@ -6,7 +6,7 @@ require_once("../inc/util.inc");
 require_once("../inc/mm.inc");
 require_once("../inc/cp_profile.inc");
 
-function search_form($profile, $role) {
+function cp_search_form($profile, $role) {
     page_head(sprintf("Search for %s", $role==COMPOSER?"composers":"performers"));
     form_start("cp_search.php", "POST");
     form_input_hidden("role", $role);
@@ -85,33 +85,13 @@ function match_value($match) {
     return $x;
 }
 
-function search_action($role, $req_user) {
-    // Javascript for mouse-over audio
-    //
-    $head_extra = <<<EOT
-<script language="javascript" type="text/javascript">
-function play_sound(id) {
-    var audio = document.getElementById(id);
-    audio.currentTime = 0;
-    audio.play();
-}
-
-function stop_sound(id) {
-    var audio = document.getElementById(id);
-    audio.pause();
-}
-function remove() {
-    var e = document.getElementById("enable");
-    e.innerHTML = "";
-}
-
-</script>
-EOT;
+function cp_search_action($role, $req_user) {
+    global $audio_head_extra;
 
     page_head(
         sprintf("%s search results", $role==COMPOSER?"Composer":"Performer"),
         null, false, "",
-        $head_extra
+        $audio_head_extra
     );
     $form_args = get_form_args($role);
 
@@ -145,7 +125,7 @@ EOT;
             $profile->dist = -1;
         }
         $profile->user = $user;
-        $profiles[] = $profile;
+        $profiles[$user->id] = $profile;
     }
 
     if (!$profiles) {
@@ -200,7 +180,7 @@ $user = get_logged_in_user(true);
 $action = post_str("submit", true);
 if ($action) {
     $role = post_int("role");
-    search_action($role, $user);
+    cp_search_action($role, $user);
 } else {
     $role = get_int("role");
     if ($user) {
@@ -208,7 +188,7 @@ if ($action) {
     } else {
         $profile = read_profile(0, $role);
     }
-    search_form($profile, $role);
+    cp_search_form($profile, $role);
 }
 
 ?>

@@ -1,16 +1,59 @@
 <?php
 
+require_once("../inc/util.inc");
+require_once("../inc/bootstrap.inc");
+require_once("../inc/mm.inc");
+
 page_head("Music Match");
+text_start();
 
 echo "
-Music Match helps composers and performers find each other.
+<p>
+Music Match lets people involved in classical and modern music -
+performers, composers, technicians -
+find each other, communicate, and collaborate.
+<p>
+<h3>Performers:</h3>
 <ul>
-<li> If you're a composer,
-find instrumentalists and singers to play and perform your music.
-<li> If you're a perfomer who likes contemporary music,
-find new music you'll want to play.
+<li> Find composers who write music for your instrument,
+in your style and level.
+Try their compositions, or get them to write new ones for you.
+<li> Find local musicians to play and perform music with.
+
 </ul>
 
-JOIN
+<h3>Composers:</h3>
+<ul>
+<li> Find performers to play, perform, and record
+your compositions.
+<li> Get (and give) help with score editing and rendering software.
+</ul>
+
+<p>
+<center>
+";
+
+$user = get_logged_in_user(true);
+if ($user) {
+    show_button("mm_home.php", "Go to home page", null, "btn-primary btn-lg");
+} else {
+    mm_show_button("create_account_form.php", "JOIN", BUTTON_BIG);
+}
+
+echo "
+</center>
+<hr>
+<p>
+Music Match is a volunteer-based, non-profit project
+based at the University of California, Berkeley.
+<p>
+The data collected by Music Match will not be
+sold, distributed, or used for other purposes.
+You can delete your account, in which case all
+data about you will be removed.
+";
+
+text_end();
+page_tail();
 
 ?>

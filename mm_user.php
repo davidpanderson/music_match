@@ -4,8 +4,44 @@ require_once("../inc/util.inc");
 require_once("../inc/mm.inc");
 require_once("../inc/cp_profile.inc");
 require_once("../inc/tech.inc");
+require_once("../inc/mm_db.inc");
 
 // show info on another user
+
+function show_ensembles($user) {
+    $es = Ensemble::enum("user_id=$user->id");
+    $ems = EnsembleMember::enum("user_id=$user->id and pending=0");
+    if (!$es && !$ems) return;
+    echo "<h3>Ensembles</h3>";
+    start_table();
+    if ($es) {
+        $x = array_map(
+            function($e) {
+                return "<a href=ensemble.php?ens_id=$e->id>$e->name</a>";
+            },
+            $es
+        );
+        row2(
+            "Founder of",
+            implode($x, '<br>')
+        );
+    }
+    if ($ems) {
+        $x = array_map(
+            function($em) {
+                $e = Ensemble::lookup_id($em->ensemble_id);
+                $p = read_profile($e->id, ENSEMBLE);
+                return "<a href=ensemble.php?ens_id=$e->id>$p->name</a>";
+            },
+            $ems
+        );
+        row2(
+            "Member of",
+            implode($x, '<br>')
+        );
+    }
+    end_table();
+}
 
 function left() {
     global $user;
@@ -33,6 +69,9 @@ function left() {
         echo tech_profile_summary_table($user, $profile, PERFORMER);
         end_table();
     }
+
+    show_ensembles($user);
+
 }
 
 function right() {

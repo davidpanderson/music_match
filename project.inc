@@ -29,7 +29,7 @@ define('NO_COMPUTING', true);
 define('DISABLE_TEAMS', true);
 define('POSTAL_CODE', true);
 define('USER_HOME', "mm_home.php");
-define('SHORTCUT_ICON', "icon.png");
+define('SHORTCUT_ICON', "icon.jpg");
 
 //-------------- contact info
 
@@ -55,7 +55,7 @@ define("POST_REPORT_EMAILS", "moderator1@$master_url|moderator2@$master_url");
 //-------------- CSS styling
 
 // add your own stylesheets (included after bootstrap)
-//define("STYLESHEET", "aaa.css");
+//define("STYLESHEET", "custom_dark.css");
 //define("STYLESHEET2", "bbb.css");
 
 //-------------- enable/disable web features
@@ -112,15 +112,14 @@ function make_php_mailer() {
 // if you need to open divs here close them in project_footer()
 //
 function project_banner($title, $prefix, $is_main) {
-    if ($is_main) {
-        echo '<img class="img-responsive" style="width:100%" src="img/water.jpg">';
-    }
-    sample_navbar(secure_url_base(), get_logged_in_user(false), false);
+//    if ($is_main) {
+//        echo '<img class="img-responsive" style="width:100%" src="img/water.jpg">';
+//    }
+    mm_navbar(secure_url_base(), get_logged_in_user(false), false);
     if ($title) {
         echo "<h2>$title</h2>\n";
     }
 }
-//$fixed_navbar = true;
 
 function project_footer($show_return, $show_date, $prefix) {
     // If you include any links, prepend URL with $prefix
@@ -208,78 +207,49 @@ function project_delete_account($user) {
     die("This function must be implemented before it can be used");
 }
 
-//-------------- Support for per-app credit
+function mm_navbar(
+    $url_prefix,
+        // prefix for links; needed for pages not in top dir
+    $user,
+        // logged-in user, if any
+    $fixed=false,
+        // if true, navbar is fixed at top of page.
+        // NOTE: if you do this, you must set a global var $fixed_navbar
+        // to true at compile time
+        // (it needs to be set when page_head() is called).
+    $inverse=false
+        // white on black?
+) {
+    global $master_url;
 
-if (0) {
+    $brand = "<a class=\"navbar-brand\" href=$master_url>".PROJECT."</a>";
+    navbar_start($brand, $fixed, $inverse);
 
-// show project-specific credit on user/team pages
-//
-function show_app_credit_user($user, $app_name, $appids) {
-    $t = 0;
-    $a = 0;
-    $n = 0;
-    foreach ($appids as $appid) {
-        $cu = BoincCreditUser::lookup(
-            "userid=$user->id and appid=$appid and credit_type=0"
-        );
-        if ($cu) {
-            $t += $cu->total;
-            $a += $cu->expavg;
-            $n += $cu->njobs;
-        }
+    $x = array();
+    if ($user) {
+        $x[] = array(tra("Account"), $url_prefix.USER_HOME);
+        $x[] = array(tra("Join"), $url_prefix."join.php");
+        //$x[] = array(tra("Preferences"), $url_prefix."prefs.php?subset=project");
     }
-    row2("$app_name credit",
-        format_credit_large($t)." total, ".
-        format_credit($a)." average".
-        " ($n tasks)"
-    );
-}
-function show_app_credit_team($team, $app_name, $appids) {
-    $t = 0;
-    $a = 0;
-    $n = 0;
-    foreach ($appids as $appid) {
-        $ct = BoincCreditTeam::lookup(
-            "teamid=$team->id and appid=$appid and credit_type=0"
-        );
-        if ($ct) {
-            $t += $ct->total;
-            $a += $ct->expavg;
-            $n += $ct->njobs;
-        }
-    }
-    row2("$app_name credit",
-        format_credit_large($t)." total, ".
-        format_credit($a)." average".
-        " ($n tasks)"
-    );
-}
+    $x[] = array(tra("About %1", PROJECT), $url_prefix."about.php");
+    //$x[] = array(tra("Help"), $url_prefix."welcome.php");
+    navbar_menu(tra("Project"), $x);
 
-// a list of "sub-projects", used in the display of per-app credit and badges.
-// A subproject is:
-// - a set of 1 or more apps; an app can belong to at most 1 subproject.
-// - a name, shown on the web site
-// - a short name, used in badge names.  Don't use "total".
-//
-$sub_projects = array(
-    array("name" => "Remote Test", "short_name" => "RT", "appids" => array(16)),
-    array("name" => "Uppercase", "short_name" => "UC", "appids" => array(1, 25)),
-);
+    navbar_menu(tra("Community"), array(
+        array(tra("Message boards"), $url_prefix."forum_index.php"),
+        array(tra("Profiles"), $url_prefix."profile_menu.php"),
+        array(tra("Preferences"), $url_prefix."edit_forum_preferences_form.php"),
+        array(tra("User search"), $url_prefix."user_search.php"),
+        array(tra("User of the day"), $url_prefix."uotd.php"),
+    ));
+    navbar_menu(tra("Site"), array(
+        array(tra("Languages"), $url_prefix."language_select.php")
+    ));
 
-function project_user_credit($user){
-    global $sub_projects;
-    foreach ($sub_projects as $sp) {
-        show_app_credit_user($user, $sp["name"], $sp["appids"]);
-    }
+    // add your own menu here if you want
+
+    navbar_right($user);
+    navbar_end();
 }
-
-function project_team_credit($team) {
-    global $sub_projects;
-    foreach ($sub_projects as $sp) {
-        show_app_credit_team($team, $sp["name"], $sp["appids"]);
-    }
-}
-
-}   // if(0)
 
 ?>

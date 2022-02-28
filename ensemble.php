@@ -41,7 +41,7 @@ function show_ensemble($id) {
         row2("Other members", $x);
     }
 
-    $x = sprintf("Performers regularly: %s<br>Typically paid to perform: %s",
+    $x = sprintf("Performs regularly: %s<br>Typically paid to perform: %s",
         $profile->perf_reg?"yes":"no",
         $profile->perf_paid?"yes":"no"
     );

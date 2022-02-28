@@ -11,7 +11,7 @@ function show_ensembles($user) {
     foreach ($ensembles_own as $e) {
         $ens_info = read_profile($e->id, ENSEMBLE);
         row2($ens_info->name,
-            "<a href=ensemble_edit.php?ens_id=$e->id>edit</a>"
+            mm_button_text("ensemble_edit.php?ens_id=$e->id", 'Edit', BUTTON_SMALL)
         );
     }
 }
@@ -24,7 +24,7 @@ function ens_profile_summary_header($name_header) {
 
 // name, with link and audio mouseover
 //
-function name_link($ens, $profile) {
+function ens_name_link($ens, $profile) {
     $audio = "";
     if ($profile->signature_filename) {
         $audio = sprintf(' onmouseenter="play_sound(\'a%d\');" onmouseleave="stop_sound(\'a%d\');" ',
@@ -41,7 +41,7 @@ function ens_profile_summary_row($e) {
     $p = $e->profile;
     $user = $e->user;
     row_array(array(
-        name_link($e, $p),
+        ens_name_link($e, $p),
         ENSEMBLE_TYPE_LIST[$p->type],
         lists_to_string(INST_LIST_FINE, $p->inst, $p->inst_custom, "<br>"),
         lists_to_string(STYLE_LIST, $p->style, $p->style_custom, "<br>"),

@@ -17,8 +17,11 @@ create table ensemble_member (
     create_time     double      not null,
     ensemble_id     integer     not null,
     user_id         integer     not null,
-    pending         tinyint     not null,
-        # waiting for ensemble leader to approve
+    status          tinyint     not null,
+        # 0 pending approval
+        # 1 approved (user is member)
+        # 2 declined
+        # 3 removed
     unique(ensemble_id, user_id)
 ) engine = InnoDB;
 

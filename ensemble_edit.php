@@ -114,6 +114,11 @@ function ensemble_form($ens, $ens_id, $create) {
         form_submit("Update", 'name=submit value=on');
     }
     form_end();
+    echo "<p>
+        <a href=ensemble_edit.php?ens_id=$ens_id&action=delete>Delete ensemble</a>
+        <p>
+    ";
+    show_button('mm_home.php', 'Return to home page', null, 'btn-primary');
     page_tail();
 }
 
@@ -155,6 +160,31 @@ function ensemble_action($profile, $ens_id) {
     return $profile2;
 }
 
+function confirm_form($ens, $ens_info) {
+    page_head('Confirm delete ensemble');
+    echo sprintf('<p>Are you sure you want to delete %s?',
+        $ens_info->name
+    );
+    echo "<p>";
+    mm_show_button("ensemble_edit.php?action=confirm&ens_id=$ens->id",
+        "Delete ensemble",
+        BUTTON_DANGER
+    );
+    echo "<p>";
+    mm_show_button("mm_home.php", "Return to home page", BUTTON_NORMAL);
+    page_tail();
+}
+
+function do_delete_ensemble($ens, $ens_info) {
+    page_head("Ensemble deleted");
+    EnsembleMember::delete("ens_id = $ens->id");
+    delete_mm_profile($ens->id, ENSEMBLE);
+    $ens->delete();
+    echo sprintf("The ensemble '%s' has been deleted.", $ens_info->name);
+    mm_show_button("mm_home.php", "Return to home page");
+    page_tail();
+}
+
 $user = get_logged_in_user();
 if (post_str('submit', true)) {
     $ens_id = post_int('ens_id', true);
@@ -189,7 +219,14 @@ if (post_str('submit', true)) {
             error_page("not owner");
         }
         $ens_info = read_profile($ens_id, ENSEMBLE);
-        ensemble_form($ens_info, $ens_id, false);
+        $action = get_str('action', true);
+        if ($action == 'delete') {
+            confirm_form($ens, $ens_info);
+        } else if ($action == 'confirm') {
+            do_delete_ensemble($ens, $ens_info);
+        } else {
+            ensemble_form($ens_info, $ens_id, false);
+        }
     } else {
         // create new ensemble
         //

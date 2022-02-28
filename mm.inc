@@ -325,15 +325,27 @@ function role_dir($role) {
     }
 }
 
-function profile_exists($user_id, $role) {
+function role_name($role) {
+    switch ($role) {
+    case COMPOSER: return "Composer";
+    case PERFORMER: return "Performer";
+    case TECHNICIAN: return "Technician";
+    case ENSEMBLE: return "Ensemble";
+    default: die("bad role");
+    }
+}
+
+// $id can be user ID or ensemble ID
+//
+function profile_exists($id, $role) {
     $dir = role_dir($role);
-    $fname = "$dir/$user_id.json";
+    $fname = "$dir/$id.json";
     return file_exists($fname);
 }
 
-function read_profile($user_id, $role) {
+function read_profile($id, $role) {
     $dir = role_dir($role);
-    $fname = "$dir/$user_id.json";
+    $fname = "$dir/$id.json";
     if (file_exists($fname)) {
         $p = json_decode(file_get_contents($fname));
     } else {
@@ -389,6 +401,12 @@ function write_profile($user_id, $profile, $role) {
     $f = fopen($fname, "w");
     fwrite($f, json_encode($profile, JSON_PRETTY_PRINT));
     fclose($f);
+}
+
+function delete_mm_profile($id, $role) {
+    $dir = role_dir($role);
+    $fname = "$dir/$id.json";
+    unlink($fname);
 }
 
 function get_profiles($role) {
@@ -478,6 +496,32 @@ function country_distance($user, $dist, $sep=' ') {
     } else {
         return $user->country;
     }
+}
+
+// button styles
+//
+define('BUTTON_BIG',
+    ['btn', '#00bc8c', 'black', '<font size=+2><b>', '</b></font>']
+);
+define('BUTTON_NORMAL',
+    ['btn', ' #375a7f', 'white', '<font size=+0>', '</font>']
+);
+define('BUTTON_DANGER',
+    ['btn', ' #ff6060', 'white', '<font size=+0>', '</font>']
+);
+define('BUTTON_SMALL',
+    ['btn-sm', ' #375a7f', 'white', '<font size=+0>', '</font>']
+);
+
+function mm_button_text($url, $label, $style) {
+    return sprintf(
+        '<a class="%s" style="background-color:%s; color:%s" href=%s>%s%s%s</a>',
+        $style[0], $style[1], $style[2], $url, $style[3], $label, $style[4]
+    );
+}
+
+function mm_show_button($url, $label, $style) {
+    echo mm_button_text($url, $label, $style);
 }
 
 // ------------ utilities -------------

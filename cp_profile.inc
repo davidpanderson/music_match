@@ -71,7 +71,7 @@ function cp_profile_summary_table($user, $profile, $role) {
 
 // name, with link and audio mouseover
 //
-function name_link($user, $profile) {
+function cp_name_link($user, $profile) {
     $audio = "";
     if ($profile->signature_filename) {
         $audio = sprintf(' onmouseenter="play_sound(\'a%d\');" onmouseleave="stop_sound(\'a%d\');" ',
@@ -88,7 +88,7 @@ function name_link($user, $profile) {
 // show a 2-column table row summarizing a composer or performer profile
 //
 function show_profile_2col($user, $profile, $role) {
-    $x1 = name_link($user, $profile);
+    $x1 = cp_name_link($user, $profile);
     $x2 = profile_summary($user, $profile, $role);
     if (DEBUG) {
         $x2 .= sprintf('<br>match: %d (%d, %d, %d)',
@@ -105,7 +105,7 @@ function show_profile_2col($user, $profile, $role) {
 //
 function cp_profile_summary_row($user, $profile, $role) {
     $x = array();
-    $x[] = name_link($user, $profile);
+    $x[] = cp_name_link($user, $profile);
     $x[] = lists_to_string(
         $role==COMPOSER?INST_LIST_COARSE:INST_LIST_FINE,
         $profile->inst, $profile->inst_custom, "<br>"

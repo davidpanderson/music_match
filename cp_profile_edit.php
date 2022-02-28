@@ -101,6 +101,10 @@ function cp_form($user, $profile, $role) {
     form_submit("Update", 'name=submit value=on');
     form_end();
 
+    echo "<p>
+        <a href=cp_profile_edit.php?role=$role&action=delete>Delete profile</a>
+        <p>
+    ";
     show_button('mm_home.php', 'Return to home page', null, 'btn-primary');
     page_tail();
 }
@@ -154,6 +158,29 @@ function action($user_id, $profile, $role) {
     return $profile2;
 }
 
+function confirm_form($role) {
+    page_head('Confirm delete profile');
+    echo sprintf('<p>Are you sure you want to delete your %s profile?',
+        role_name($role)
+    );
+    echo "<p>";
+    mm_show_button("cp_profile_edit.php?action=confirm&role=$role",
+        "Delete profile",
+        BUTTON_DANGER
+    );
+    echo "<p>";
+    mm_show_button("mm_home.php", "Return to home page", BUTTON_NORMAL);
+    page_tail();
+}
+
+function do_delete_profile($user, $role) {
+    page_head("Profile deleted");
+    delete_mm_profile($user->id, $role);
+    echo sprintf('Your %s profile has been deleted.', role_name($role));
+    mm_show_button("mm_home.php", "Return to home page");
+    page_tail();
+}
+
 $user = get_logged_in_user();
 //$user = BOINCUser::lookup_id(1);
 
@@ -165,8 +192,15 @@ if (post_str('submit', true)) {
     Header("Location: cp_profile_edit.php?role=$role");
 } else {
     $role = get_int('role');
-    $profile = read_profile($user->id, $role);
-    cp_form($user, $profile, $role);
+    $action = get_str('action', true);
+    if ($action == 'delete') {
+        confirm_form($role);
+    } else if ($action == 'confirm') {
+        do_delete_profile($user, $role);
+    } else {
+        $profile = read_profile($user->id, $role);
+        cp_form($user, $profile, $role);
+    }
 }
 
 ?>

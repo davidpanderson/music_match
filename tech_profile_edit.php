@@ -35,6 +35,11 @@ function tech_form($profile) {
     );
     form_submit("Update", 'name=submit value=on');
     form_end();
+    echo "<p>
+        <a href=tech_profile_edit.php?&action=delete>Delete profile</a>
+        <p>
+    ";
+    show_button('mm_home.php', 'Return to home page', null, 'btn-primary');
     page_tail();
 }
 
@@ -51,6 +56,26 @@ function tech_action($user_id, $profile) {
     return $profile2;
 }
 
+function confirm_form() {
+    page_head('Confirm delete profile');
+    echo '<p>Are you sure you want to delete your Technician profile?';
+    echo "<p>";
+    mm_show_button("tech_profile_edit.php?action=confirm",
+        "Delete profile",
+        BUTTON_DANGER
+    );
+    echo "<p>";
+    mm_show_button("mm_home.php", "Return to home page", BUTTON_NORMAL);
+    page_tail();
+}
+
+function do_delete_profile($user) {
+    page_head("Profile deleted");
+    delete_mm_profile($user->id, TECHNICIAN);
+    echo 'Your Technician profile has been deleted.';
+    mm_show_button("mm_home.php", "Return to home page");
+    page_tail();
+}
 $user = get_logged_in_user();
 if (post_str('submit', true)) {
     $profile = read_profile($user->id, TECHNICIAN);
@@ -58,7 +83,14 @@ if (post_str('submit', true)) {
     write_profile($user->id, $profile, TECHNICIAN);
     Header("Location: tech_profile_edit.php");
 } else {
-    $profile = read_profile($user->id, TECHNICIAN);
-    tech_form($profile);
+    $action = get_str('action', true);
+    if ($action == 'delete') {
+        confirm_form();
+    } else if ($action == 'confirm') {
+        do_delete_profile($user, $role);
+    } else {
+        $profile = read_profile($user->id, TECHNICIAN);
+        tech_form($profile);
+    }
 }
 ?>

@@ -78,8 +78,8 @@ function left() {
     start_table();
     show_ensembles($user);
     row2('',
-        button_text(
-            "ensemble_edit.php", "Add ensemble", null, "btn-primary"
+        mm_button_text(
+            "ensemble_edit.php", "Add ensemble", BUTTON_NORMAL
         )
     );
     end_table();
@@ -111,6 +111,11 @@ function right() {
     echo "<h3>Community</h3>";
     start_table();
     show_community_private($user);
+    end_table();
+
+    echo "<h3>Settings</h3>";
+    start_table();
+    row2("Account settings", "foo");
     end_table();
 }
 

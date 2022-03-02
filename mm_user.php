@@ -10,17 +10,18 @@ require_once("../inc/mm_db.inc");
 
 function show_ensembles($user) {
     $es = Ensemble::enum("user_id=$user->id");
-    $ems = EnsembleMember::enum("user_id=$user->id and pending=0");
+    $ems = EnsembleMember::enum(
+        sprintf('user_id=%d and status=%d', $user->id, EM_APPROVED)
+    );
     if (!$es && !$ems) return;
     echo "<h3>Ensembles</h3>";
     start_table();
     if ($es) {
-        $x = array_map(
-            function($e) {
-                return "<a href=ensemble.php?ens_id=$e->id>$e->name</a>";
-            },
-            $es
-        );
+        $x = array();
+        foreach ($es as $e) {
+            $p = read_profile($e->id, ENSEMBLE);
+            $x[] = "<a href=ensemble.php?ens_id=$e->id>$p->name</a>";
+        }
         row2(
             "Founder of",
             implode($x, '<br>')

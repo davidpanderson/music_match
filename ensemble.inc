@@ -5,13 +5,30 @@ require_once("../inc/mm_db.inc");
 // show ensembles the user either owns or belongs to
 
 function show_ensembles($user) {
-    $ensembles_own = Ensemble::enum("user_id = $user->id");
-    $ensembles_belong = EnsembleMember::enum("user_id = $user->id");
-    if (!$ensembles_own && !$ensembles_belong) return;
-    foreach ($ensembles_own as $e) {
-        $ens_info = read_profile($e->id, ENSEMBLE);
-        row2($ens_info->name,
-            mm_button_text("ensemble_edit.php?ens_id=$e->id", 'Edit', BUTTON_SMALL)
+    $ensembles_founder = Ensemble::enum("user_id = $user->id");
+    $ensembles_member = EnsembleMember::enum("user_id = $user->id");
+    if (!$ensembles_founder && !$ensembles_member) return;
+    foreach ($ensembles_founder as $ens) {
+        $ens_info = read_profile($ens->id, ENSEMBLE);
+        row2(
+            sprintf('<a href=%s>%s</a> (founder)',
+                "ensemble.php?ens_id=$ens->id",
+                $ens_info->name
+            ),
+            mm_button_text("ensemble_edit.php?ens_id=$ens->id", 'Edit', BUTTON_SMALL)
+        );
+    }
+    foreach ($ensembles_member as $em) {
+        if ($em->status == EM_REMOVED) continue;
+        if ($em->status == EM_DECLINED) continue;
+        $ens = Ensemble::lookup_id($em->ensemble_id);
+        $ens_info = read_profile($ens->id, ENSEMBLE);
+        row2(
+            sprintf('<a href=%s>%s</a>',
+                "ensemble.php?ens_id=$ens->id",
+                $ens_info->name
+            ),
+            em_status_string($em->status)
         );
     }
 }
@@ -54,7 +71,9 @@ function ens_profile_summary_row($e) {
 // return members list as links
 //
 function ens_members_string($ens_id) {
-    $ms = EnsembleMember::enum("ensemble_id = $ens_id");
+    $ms = EnsembleMember::enum(
+        sprintf("ensemble_id=%d and status=%d", $ens_id, EM_APPROVED)
+    );
     if (!$ms) return null;
     $x = array();
     foreach ($ms as $m) {

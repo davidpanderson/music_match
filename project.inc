@@ -226,25 +226,19 @@ function mm_navbar(
     navbar_start($brand, $fixed, $inverse);
 
     $x = array();
-    if ($user) {
-        $x[] = array(tra("Account"), $url_prefix.USER_HOME);
-        $x[] = array(tra("Join"), $url_prefix."join.php");
-        //$x[] = array(tra("Preferences"), $url_prefix."prefs.php?subset=project");
-    }
-    $x[] = array(tra("About %1", PROJECT), $url_prefix."about.php");
-    //$x[] = array(tra("Help"), $url_prefix."welcome.php");
+    $x[] = array(tra("About"), $url_prefix."about.php");
+    $x[] = array(tra("Contact"), $url_prefix."contact.php");
     navbar_menu(tra("Project"), $x);
 
     navbar_menu(tra("Community"), array(
         array(tra("Message boards"), $url_prefix."forum_index.php"),
-        array(tra("Profiles"), $url_prefix."profile_menu.php"),
-        array(tra("Preferences"), $url_prefix."edit_forum_preferences_form.php"),
-        array(tra("User search"), $url_prefix."user_search.php"),
-        array(tra("User of the day"), $url_prefix."uotd.php"),
     ));
-    navbar_menu(tra("Site"), array(
-        array(tra("Languages"), $url_prefix."language_select.php")
-    ));
+    if ($user) {
+        navbar_menu(tra("Account"), array(
+            array(tra("Preferences"), $url_prefix."edit_forum_preferences_form.php"),
+            array(tra("Settings"), $url_prefix."account_settings.php"),
+        ));
+    }
 
     // add your own menu here if you want
 

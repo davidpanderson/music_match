@@ -145,8 +145,8 @@ function action($user_id, $profile, $role) {
         if (!filter_var($link_url, FILTER_VALIDATE_URL)) {
             error_page("$link_url is not a valid URL");
         }
-        $link_desc = post_str('link_desc');
-        if ($link_desc == LINK_ADD_DESC) {
+        $link_desc = strip_tags(post_str('link_desc'));
+        if (!$link_desc || $link_desc == LINK_ADD_DESC) {
             error_page("You must supply a link description");
         }
         $x = new StdClass;

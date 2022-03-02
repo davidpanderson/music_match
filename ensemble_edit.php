@@ -128,7 +128,7 @@ function ensemble_action($profile, $ens_id) {
     // If a radio button is checked, that's the type
 
     $t = post_str('type', true);
-    $tc = post_str('type_custom');
+    $tc = strip_tags(post_str('type_custom'));
     if (!$t) {
         if ($tc) {
             $t = $tc;
@@ -137,7 +137,7 @@ function ensemble_action($profile, $ens_id) {
         }
     }
     $profile2->type = $t;
-    $profile2->name = post_str('name');
+    $profile2->name = strip_tags(post_str('name'));
     if (!$profile2->name) {
         error_page("You must provide an ensemble name");
     }
@@ -150,7 +150,7 @@ function ensemble_action($profile, $ens_id) {
         $profile->style_custom, "style_custom", STYLE_ADD
     );
     $profile2->level = parse_list(LEVEL_LIST, "level");
-    $profile2->description = post_str('description');
+    $profile2->description = strip_tags(post_str('description'));
     $profile2->seeking_members = parse_post_bool('seeking_members');
     $profile2->perf_reg = parse_post_bool('perf_reg');
     $profile2->perf_paid = parse_post_bool('perf_paid');

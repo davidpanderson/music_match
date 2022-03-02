@@ -4,6 +4,47 @@ define('DEBUG', false);
 
 require_once("../inc/zip.inc");
 
+// DB fields
+
+// ensemble_member.status
+
+define('EM_PENDING',    0);
+define('EM_APPROVED',   1);
+define('EM_DECLINED',   2);
+define('EM_REMOVED',    3);
+
+// notification.type
+
+define('NOTIFICATION_PM',             0);
+    # id1 is user ID of sender
+define('NOTIFICATION_SEARCH',         1);
+    # a previous search has new result
+    # id1 is search record; id2 is ID of user or ensemble
+define('NOTIFICATION_ENS_DEL',        2);
+    # an ensemble you're in was deleted
+    # id1 is ens ID
+define('NOTIFICATION_FRIEND_REQ',     3);
+    # id1 is user ID of requester
+define('NOTIFICATION_FRIEND_REPLY',   4);
+    # id1 is user ID of accepter
+define('NOTIFICATION_THREAD',         5);
+    # id1 is thread ID
+define('NOTIFICATION_PROFILE',        6);
+    # a friend changed a profile
+    # id1 is user ID; id2 is role
+define('NOTIFICATION_ENS_JOIN_REQ',   7);
+    # someone asked to join an ensemble you founded
+    # id1 is ens ID, id2 is user ID
+define('NOTIFICATION_ENS_JOIN_REPLY', 8);
+    # your ensemble join request was accepted or declined
+    # id1 is ens ID; id2 is 1 if accepted
+define('NOTIFICATION_ENS_REMOVE',     9);
+    # you were removed from an ensemble
+    # id1 is ens ID
+define('NOTIFICATION_ENS_QUIT',       10);
+    # someone quit an ensemble you founded
+    # id1 is ens ID; id2 is user ID
+
 // values for "role"; each has an associated JSON structure
 //
 define('COMPOSER', 0);
@@ -151,7 +192,8 @@ function parse_list($list, $prefix) {
 }
 
 // return the items in $current for which $prefix_item is set;
-// if $prefix_new is present, include that as well
+// if $prefix_new is present, include that as well;
+// apply strip_tags() to it.
 //
 function parse_custom($current, $prefix, $exclude) {
     $x = array();
@@ -162,7 +204,7 @@ function parse_custom($current, $prefix, $exclude) {
     }
     $y = post_str(sprintf("%s_new", $prefix), true);
     if ($y && $y!=$exclude) {
-        $x[] = $y;
+        $x[] = strip_tags($y);
     }
     return $x;
 }
@@ -513,14 +555,14 @@ define('BUTTON_SMALL',
     ['btn-sm', ' #375a7f', 'white', '<font size=+0>', '</font>']
 );
 
-function mm_button_text($url, $label, $style) {
+function mm_button_text($url, $label, $style=BUTTON_NORMAL) {
     return sprintf(
         '<a class="%s" style="background-color:%s; color:%s" href=%s>%s%s%s</a>',
         $style[0], $style[1], $style[2], $url, $style[3], $label, $style[4]
     );
 }
 
-function mm_show_button($url, $label, $style) {
+function mm_show_button($url, $label, $style=BUTTON_NORMAL) {
     echo mm_button_text($url, $label, $style);
 }
 
@@ -553,6 +595,16 @@ function user_distance($u1, $u2) {
     $z2 = str_to_zip($u2->postal_code);
     if (!$z2) return -1;
     return zip_dist($z1, $z2);
+}
+
+function em_status_string($status) {
+    switch ($status) {
+    case EM_PENDING: return 'Membership pending';
+    case EM_APPROVED: return 'Member';
+    case EM_DECLINED: return 'Membership declined';
+    case EM_REMOVED: return 'Membership removed';
+    }
+    return 'unknown';
 }
 
 ?>

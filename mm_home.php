@@ -5,6 +5,7 @@ require_once("../inc/mm.inc");
 require_once("../inc/cp_profile.inc");
 require_once("../inc/tech.inc");
 require_once("../inc/ensemble.inc");
+require_once("../inc/notification.inc");
 
 // user home page
 
@@ -113,9 +114,9 @@ function right() {
     show_community_private($user);
     end_table();
 
-    echo "<h3>Settings</h3>";
+    echo "<h3>Notifications</h3>";
     start_table();
-    row2("Account settings", "foo");
+    show_notifications($user);
     end_table();
 }
 

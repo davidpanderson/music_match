@@ -7,7 +7,7 @@ require_once("../inc/mm.inc");
 require_once("../inc/ensemble.inc");
 require_once("../inc/mm_db.inc");
 
-function show_ensemble($id) {
+function show_ensemble($id, $user) {
     $profile = read_profile($id, ENSEMBLE);
     $e = Ensemble::lookup_id($id);
     page_head(sprintf("Ensemble: %s", $profile->name));
@@ -47,10 +47,20 @@ function show_ensemble($id) {
     );
     row2("Performance", "$x");
 
-    if ($profile->seeking_members) {
-        $x = "<a href=ensemble_join?ens_id=$e->id>Request membership</a>";
+    if ($e->user_id == $user->id) {
+        // founder
+        $x = $profile->seeking_members?"Seeking new members":"Not seeking new members";
     } else {
-        $x = "Not currently seeking new members";
+        $em = EnsembleMember::lookup("user_id=$user->id and ensemble_id=$id");
+        if ($em) {
+            $x = em_status_string($em->status);
+        } else {
+            if ($profile->seeking_members) {
+                $x = "<a href=ensemble_join.php?ens_id=$e->id>Request membership</a>";
+            } else {
+                $x = "Not seeking new members";
+            }
+        }
     }
     row2("Membership", $x);
 
@@ -58,7 +68,8 @@ function show_ensemble($id) {
     page_tail();
 }
 
+$user = get_logged_in_user();
 $id = get_int('ens_id');
-show_ensemble($id);
+show_ensemble($id, $user);
 
 ?>

@@ -37,6 +37,9 @@ function get_form_args() {
     $x->inst = parse_list(INST_LIST_FINE, "inst");
     $x->style = parse_list(STYLE_LIST, "style");
     $x->level = parse_list(LEVEL_LIST, "level");
+    $x->seeking_members = post_str('seeking_members');
+    $x->perf_reg = post_str('perf_reg');
+    $x->perf_paid = post_str('perf_paid');
     $x->close = post_str('close', true)=='on';
     return $x;
 }
@@ -77,6 +80,14 @@ function match_value($match) {
     return $x;
 }
 
+function check_bool($arg, $value) {
+    switch ($arg) {
+    case 'yes': return $value;
+    case 'no': return !$value;
+    }
+    return true;
+}
+
 function ens_search_action($req_user) {
     global $audio_head_extra;
     page_head("Ensemble search results", null, false, "", $audio_head_extra);
@@ -85,7 +96,17 @@ function ens_search_action($req_user) {
     $ensembles_in = Ensemble::enum("");
     $ensembles = array();
     foreach ($ensembles_in as $e) {
-        $e->profile = read_profile($e->id, ENSEMBLE);
+        $profile = read_profile($e->id, ENSEMBLE);
+        if (!check_bool($form_args->seeking_members, $profile->seeking_members)) {
+            continue;
+        }
+        if (!check_bool($form_args->perf_reg, $profile->perf_reg)) {
+            continue;
+        }
+        if (!check_bool($form_args->perf_paid, $profile->perf_paid)) {
+            continue;
+        }
+        $e->profile = $profile;
         $e->match = match_args($e->profile, $form_args);
         $e->value = match_value($e->match);
         if ($e->value == 0) continue;

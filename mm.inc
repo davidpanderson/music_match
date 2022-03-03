@@ -420,7 +420,6 @@ function read_profile($id, $role) {
         if (!array_key_exists('program_custom', $p)) $p->program_custom = array();
         break;
     case ENSEMBLE:
-        if (!array_key_exists('name', $p)) $p->name = '';
         if (!array_key_exists('description', $p)) $p->description = '';
         if (!array_key_exists('type', $p)) $p->type = '';
         if (!array_key_exists('style', $p)) $p->style = array();

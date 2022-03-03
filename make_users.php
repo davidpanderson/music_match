@@ -113,7 +113,6 @@ function rnd_tech() {
 
 function rnd_ens($id) {
     $x = new StdClass;
-    $x->name = "ensemble $id";
     $x->description = "description of ensemble $id";
     $x->inst = rnd_subset(INST_LIST_FINE, random_int(1, 5));
     $x->type = rnd_key(ENSEMBLE_TYPE_LIST);
@@ -177,15 +176,17 @@ function make_users($n) {
     }
 }
 
-function make_ensemble($users) {
+function make_ensemble($name, $users) {
     $nusers = count($users);
     $user = $users[random_int(0, $nusers-1)];
     $ens_id = Ensemble::insert(
-        sprintf("(create_time, user_id) values (%d, %d)",
-            time(), $user->id
+        sprintf("(create_time, user_id, name) values (%d, %d, '%s')",
+            time(), $user->id, $name
         )
     );
     if (!$ens_id) die("insert failed");
+    $ens = Ensemble::lookup($ens_id);
+    $ens->update("name='ensemble $ens_id'");
     write_profile($ens_id, rnd_ens($ens_id), ENSEMBLE);
 
     // add some members
@@ -198,8 +199,8 @@ function make_ensemble($users) {
     $members = array_unique($members);
     foreach ($members as $id) {
         EnsembleMember::insert(
-            sprintf("(create_time, ensemble_id, user_id, pending) values(%d, %d, %d, 0)",
-                time(), $ens_id, $id
+            sprintf("(create_time, ensemble_id, user_id, status) values(%d, %d, %d, %d)",
+                time(), $ens_id, $id, EM_APPROVED
             )
         );
     }
@@ -208,7 +209,7 @@ function make_ensemble($users) {
 function make_ensembles($n) {
     $users = BoincUser::enum("id>1");
     for ($i=0; $i<$n; $i++) {
-        make_ensemble($users);
+        make_ensemble("ensemble $i", $users);
     }
 }
 

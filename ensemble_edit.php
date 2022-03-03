@@ -5,31 +5,32 @@ require_once("../inc/mm.inc");
 require_once("../inc/mm_db.inc");
 
 // create/edit ensembles
+// $ens is non-null if editing
 
-function ensemble_form($ens, $ens_id, $create) {
-    page_head($create?"Add ensemble":"Edit ensemble");
+function ensemble_form($ens, $ens_info) {
+    page_head($ens?"Edit ensemble":"Add ensemble");
     form_start("ensemble_edit.php", "POST", 'ENCTYPE="multipart/form-data"');
-    if ($ens_id) {
-        form_input_hidden('ens_id', $ens_id);
+    if ($ens) {
+        form_input_hidden('ens_id', $ens->id);
     }
 
     // name
-    form_input_text('Ensemble name', 'name', $ens->name);
+    form_input_text('Ensemble name', 'name', $ens?$ens->name:'');
 
     // ensemble type
     $list = radio_list(ENSEMBLE_TYPE_LIST);
-    if (!$ens->type || array_key_exists($ens->type, ENSEMBLE_TYPE_LIST)) {
+    if (!$ens_info->type || array_key_exists($ens_info->type, ENSEMBLE_TYPE_LIST)) {
         $list[] = array('custom',
             sprintf('<input name=type_custom %s value="%s" size="20">',
                 text_input_default(ENSEMBLE_TYPE_ADD),
                 ENSEMBLE_TYPE_ADD
             )
         );
-        $selected = $ens->type;
+        $selected = $ens_info->type;
     } else {
         $list[] = array('custom',
             sprintf('<input name=type_custom value="%s" size="20">',
-                $ens->type
+                $ens_info->type
             )
         );
         $selected = "custom";
@@ -45,8 +46,8 @@ function ensemble_form($ens, $ens_id, $create) {
     form_checkboxes(
         "Instruments in the ensemble",
         array_merge(
-            items_list(INST_LIST_FINE, $ens->inst, "inst"),
-            items_custom($ens->inst_custom, "inst_custom")
+            items_list(INST_LIST_FINE, $ens_info->inst, "inst"),
+            items_custom($ens_info->inst_custom, "inst_custom")
         )
     );
     form_input_text('', 'inst_custom_new', INST_ADD, 'text',
@@ -57,8 +58,8 @@ function ensemble_form($ens, $ens_id, $create) {
     form_checkboxes(
         "Styles",
         array_merge(
-            items_list(STYLE_LIST, $ens->style, "style"),
-            items_custom($ens->style_custom, "style_custom")
+            items_list(STYLE_LIST, $ens_info->style, "style"),
+            items_custom($ens_info->style_custom, "style_custom")
         )
     );
     form_input_text(
@@ -69,21 +70,21 @@ function ensemble_form($ens, $ens_id, $create) {
     // tech level
     form_checkboxes(
         "Technical levels",
-        items_list(LEVEL_LIST, $ens->level, "level")
+        items_list(LEVEL_LIST, $ens_info->level, "level")
     );
 
     // intro
-    form_input_textarea('Description', 'description', $ens->description);
+    form_input_textarea('Description', 'description', $ens_info->description);
 
     // audio sig
     $sig_title = "Audio signature MP3<br><small>A short, representative example of the ensemble's playing.<br>Max size 128 MB.</small>";
 
-    if ($ens->signature_filename) {
+    if ($ens_info->signature_filename) {
         form_checkboxes($sig_title,
             array(array(
                 "signature_check",
                 sprintf('<a href=%s/%d.mp3>%s</a>',
-                    role_dir(ENSEMBLE), $ens_id, $ens->signature_filename
+                    role_dir(ENSEMBLE), $ens->id, $ens_info->signature_filename
                 ),
                 true
             ))
@@ -94,30 +95,32 @@ function ensemble_form($ens, $ens_id, $create) {
 
     // looking for members?
     form_checkboxes('Is the ensemble seeking new members?',
-        array(array('seeking_members', '', $ens->seeking_members))
+        array(array('seeking_members', '', $ens_info->seeking_members))
     );
 
 
     // perf reg?
     form_checkboxes('Does the ensemble perform regularly?',
-        array(array('perf_reg', '', $ens->perf_reg))
+        array(array('perf_reg', '', $ens_info->perf_reg))
     );
 
     // money?
     form_checkboxes('Does the ensemble typically get paid to perform?',
-        array(array('perf_paid', '', $ens->perf_paid))
+        array(array('perf_paid', '', $ens_info->perf_paid))
     );
 
-    if ($create) {
-        form_submit("Add", 'name=submit value=on');
-    } else {
+    if ($ens) {
         form_submit("Update", 'name=submit value=on');
+    } else {
+        form_submit("Add", 'name=submit value=on');
     }
     form_end();
-    echo "<p>
-        <a href=ensemble_edit.php?ens_id=$ens_id&action=delete>Delete ensemble</a>
-        <p>
-    ";
+    if ($ens) {
+        echo "<p>
+            <a href=ensemble_edit.php?ens_id=$ens->id&action=delete>Delete ensemble</a>
+            <p>
+        ";
+    }
     show_button('mm_home.php', 'Return to home page', null, 'btn-primary');
     page_tail();
 }
@@ -137,10 +140,6 @@ function ensemble_action($profile, $ens_id) {
         }
     }
     $profile2->type = $t;
-    $profile2->name = strip_tags(post_str('name'));
-    if (!$profile2->name) {
-        error_page("You must provide an ensemble name");
-    }
     $profile2->inst = parse_list(INST_LIST_FINE, "inst");
     $profile2->inst_custom = parse_custom(
         $profile->inst_custom, "inst_custom", INST_ADD
@@ -188,17 +187,30 @@ function do_delete_ensemble($ens, $ens_info) {
 $user = get_logged_in_user();
 if (post_str('submit', true)) {
     $ens_id = post_int('ens_id', true);
+    $name = strip_tags(post_str('name'));
+    if (!$name) {
+        error_page("You must provide an ensemble name");
+    }
     if ($ens_id) {
         // update existing
         $ens = Ensemble::lookup_id($ens_id);
         if (!$ens || $ens->user_id != $user->id) {
             error_page("not owner");
         }
+        if ($ens->name != $name) {
+            if (Ensemble::lookup("name='$name'")) {
+                error_page("The name $name is already in use.");
+            }
+        }
+        $ens->update("name='$name'");
     } else {
         // create new
+        if (Ensemble::lookup("name='$name'")) {
+            error_page("The name $name is already in use.");
+        }
         $ens_id = Ensemble::insert(
-            sprintf("(create_time, user_id) value (%f, %d)",
-                time(), $user->id
+            sprintf("(create_time, user_id, name) value (%f, %d, '%s')",
+                time(), $user->id, $name
             )
         );
         if (!$ens_id) {
@@ -208,7 +220,7 @@ if (post_str('submit', true)) {
     $profile = read_profile($ens_id, ENSEMBLE);
     $profile = ensemble_action($profile, $ens_id);
     write_profile($ens_id, $profile, ENSEMBLE);
-    Header("Location: ensemble_edit.php?ens_id=$ens_id");
+    Header("Location: ensemble.php?ens_id=$ens_id");
 } else {
     $ens_id = get_int('ens_id', true);
     if ($ens_id) {
@@ -225,13 +237,13 @@ if (post_str('submit', true)) {
         } else if ($action == 'confirm') {
             do_delete_ensemble($ens, $ens_info);
         } else {
-            ensemble_form($ens_info, $ens_id, false);
+            ensemble_form($ens, $ens_info, $ens_id, false);
         }
     } else {
         // create new ensemble
         //
         $ens_info = read_profile(0, ENSEMBLE);
-        ensemble_form($ens_info, 0, true);
+        ensemble_form(null, $ens_info, 0, true);
     }
 }
 

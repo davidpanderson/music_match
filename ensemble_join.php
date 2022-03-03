@@ -14,8 +14,8 @@ require_once("../inc/mm.inc");
 require_once("../inc/mm_db.inc");
 
 function join_form($ens, $ens_info) {
-    page_head("Request membership in $ens_info->name");
-    echo "Click below to request membership in $ens_info->name.
+    page_head("Request membership in $ens->name");
+    echo "Click below to request membership in $ens->name.
         You will be notified when the founder
         accepts or declines your request.
         <p>
@@ -42,7 +42,7 @@ function join_action($ens, $ens_info, $user) {
         )
     );
     page_head("Request submitted");
-    echo "Your request to join $ens_info->name has been submitted.<p>";
+    echo "Your request to join $ens->name has been submitted.<p>";
     mm_show_button("mm_home.php", "Return to home page");
     page_tail();
 }
@@ -51,7 +51,7 @@ function join_action($ens, $ens_info, $user) {
 //
 function review_form($ens, $ens_info) {
     $ems = EnsembleMember::enum("ensemble_id=$ens->id");
-    page_head("Membership requests for $ens_info->name");
+    page_head("Membership requests for $ens->name");
     start_table();
     table_header("Name", "When", "Click to accept or reject");
     foreach ($ems as $em) {
@@ -83,7 +83,7 @@ function decide_form($ens, $ens_info, $user_id) {
     check_request_pending($ens->id, $user_id);
     page_head("Accept or decline membership request");
     $user = BoincUser::lookup_id($user_id);
-    echo "<a href=hm_user.php?user_id=$user->id>$user->name</a> has requested membership in $ens_info->name.<p>";
+    echo "<a href=hm_user.php?user_id=$user->id>$user->name</a> has requested membership in $ens->name.<p>";
     form_start("ensemble_join.php");
     form_input_hidden('user_id', $user_id);
     form_input_hidden('ens_id', $ens->id);
@@ -118,7 +118,7 @@ function decide_action($ens, $ens_info, $user_id) {
         'You %s the request by %s for membership in %s.<p>',
         $accept?"accepted":"declined",
         $user->name,
-        $ens_info->name
+        $ens->name
     );
     mm_show_button('mm_home.php', 'Return to home page');
     page_tail();

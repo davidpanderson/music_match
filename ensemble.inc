@@ -13,7 +13,7 @@ function show_ensembles($user) {
         row2(
             sprintf('<a href=%s>%s</a> (founder)',
                 "ensemble.php?ens_id=$ens->id",
-                $ens_info->name
+                $ens->name
             ),
             mm_button_text("ensemble_edit.php?ens_id=$ens->id", 'Edit', BUTTON_SMALL)
         );
@@ -26,7 +26,7 @@ function show_ensembles($user) {
         row2(
             sprintf('<a href=%s>%s</a>',
                 "ensemble.php?ens_id=$ens->id",
-                $ens_info->name
+                $ens->name
             ),
             em_status_string($em->status)
         );
@@ -50,7 +50,7 @@ function ens_name_link($ens, $profile) {
     }
     return sprintf('<a %s href=ensemble.php?ens_id=%d>%s%s</a>',
         $audio,
-        $ens->id, $profile->name,
+        $ens->id, $ens->name,
         $profile->signature_filename?"&nbsp;&nbsp;<img height=24px src=note.png>":""
     );
 }

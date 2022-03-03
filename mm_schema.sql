@@ -10,6 +10,8 @@ create table ensemble (
     id              integer     not null auto_increment,
     create_time     double      not null,
     user_id         integer     not null,
+    name            varchar(255)    not null default '',
+    unique(name),
     primary key (id)
 ) engine = InnoDB;
 
@@ -22,8 +24,8 @@ create table ensemble_member (
         # 1 approved (user is member)
         # 2 declined
         # 3 removed
-    req_msg         varchar(255)    not null,
-    reply_msg       varchar(255)    not null,
+    req_msg         varchar(255)    not null default '',
+    reply_msg       varchar(255)    not null default '',
     unique(ensemble_id, user_id)
 ) engine = InnoDB;
 

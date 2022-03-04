@@ -82,5 +82,19 @@ function show_notifications($user) {
     }
 }
 
+// we user host.send_email to store prefs
+//
+
+define('NOTIFY_NEVER', 0);
+define('NOTIFY_DAILY', 1);
+define('NOTIFY_WEEKLY', 2);
+define('NOTIFY_IMMEDIATE', 3);
+
+define('NOTIFY_LIST', array(
+    NOTIFY_DAILY => 'Daily',
+    NOTIFY_WEEKLY => 'Weekly',
+    NOTIFY_IMMEDIATE => 'Immediately',
+    NOTIFY_NEVER => 'Never'
+));
 
 ?>

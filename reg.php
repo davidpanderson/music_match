@@ -150,7 +150,8 @@ function handler3() {
 
     $user->update(
         sprintf("email_validated=1, passwd_hash='%s', country='%s', postal_code='%s'",
-            $passwd_hash, $country, BoincDb::escape_string($postal_code)
+            $passwd_hash, BoincDb::escape_string($country),
+            BoincDb::escape_string($postal_code)
         )
     );
     Header("Location: intro.php");

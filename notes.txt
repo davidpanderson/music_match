@@ -381,3 +381,8 @@ Account page: change
     password
     name
     country, postal code
+
+"forgot password"? currently emails you a link that logs you in
+    and takes you to home.php
+
+instead,

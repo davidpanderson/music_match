@@ -235,8 +235,7 @@ function mm_navbar(
     ));
     if ($user) {
         navbar_menu(tra("Account"), array(
-            array(tra("Preferences"), $url_prefix."edit_forum_preferences_form.php"),
-            array(tra("Settings"), $url_prefix."account_settings.php"),
+            array(tra("Settings"), $url_prefix."settings.php"),
         ));
     }
 

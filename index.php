@@ -37,7 +37,7 @@ $user = get_logged_in_user(true);
 if ($user) {
     show_button("mm_home.php", "Go to home page", null, "btn-primary btn-lg");
 } else {
-    mm_show_button("create_account_form.php", "JOIN", BUTTON_BIG);
+    mm_show_button("reg.php", "JOIN", BUTTON_BIG);
 }
 
 echo "

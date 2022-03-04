@@ -334,3 +334,50 @@ else
 ---------
 American Composers Orchestra:
 https://americancomposers.org/
+---------
+Signup experience:
+
+- home page: read blurb. click Join
+
+- reg1.php: registration form (post)
+    user name
+    email address
+
+- reg1.php: handler
+    if user name is taken, complain
+    if email is taken:
+        if unverified, continue
+        else complain
+    else
+        create user record, unverified
+    send an email with 6-digit code, store in user rec
+    send cookie with user auth
+    redirect to reg2
+
+- reg2: form
+    we sent you a code; check spam folder
+    enter code
+
+- reg2.php handler
+    check code, complain if wrong
+    show form to finish reg
+        password
+        country
+        postal code
+        pass code,hidden
+
+- reg3.php handler
+    check code
+    mark account as verified
+    redirect to Intro page
+
+make a version of get_logged_in_user() that checks verified.
+if not, redirect to a variant of reg1.php
+Use this in most places
+
+----------
+Account page: change
+    email
+    password
+    name
+    country, postal code

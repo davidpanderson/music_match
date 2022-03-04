@@ -567,6 +567,14 @@ function mm_show_button($url, $label, $style=BUTTON_NORMAL) {
 
 // ------------ utilities -------------
 
+function mm_get_logged_in_user() {
+    $user = get_logged_in_user();
+    if ($user && !$user->email_validated) {
+        Header("Location: reg.php?action=verify");
+    }
+    return $user;
+}
+
 function str_starts_with ($haystack, $needle) {
     return strpos( $haystack , $needle ) === 0;
 }

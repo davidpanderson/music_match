@@ -10,10 +10,20 @@ require_once("../inc/notification.inc");
 // user home page
 
 function left() {
+    show_search();
+    echo "<hr>";
+    show_profiles();
+    echo "<hr>";
+    show_ens();
+}
+
+function show_profiles() {
     global $user;
-    echo "<h3>Composer profile</h3>";
-    start_table();
+    echo "<h3>Your profiles</h3>
+        <h3>Composer</h3>
+    ";
     if (profile_exists($user->id, COMPOSER)) {
+        start_table();
         $profile = read_profile($user->id, COMPOSER);
         echo cp_profile_summary_table($user, $profile, COMPOSER);
         row2('',
@@ -22,17 +32,15 @@ function left() {
                 "Edit composer profile", null, "btn-primary"
             )
         );
+        end_table();
     } else {
-        row2('',
-            button_text(
-                sprintf("cp_profile_edit.php?role=%d", COMPOSER),
-                "Create composer profile", null, "btn-primary"
-            )
+        mm_show_button(
+            sprintf("cp_profile_edit.php?role=%d", COMPOSER),
+            "Create composer profile"
         );
     }
-    end_table();
 
-    echo "<h3>Performer profile</h3>";
+    echo "<h3>Performer</h3>";
 
     if (profile_exists($user->id, PERFORMER)) {
         $profile = read_profile($user->id, PERFORMER);
@@ -46,15 +54,13 @@ function left() {
         );
         end_table();
     } else {
-        row2('',
-            button_text(
-                sprintf("cp_profile_edit.php?role=%d", PERFORMER),
-                "Create performer profile", null, "btn-primary"
-            )
+        mm_show_button(
+            sprintf("cp_profile_edit.php?role=%d", PERFORMER),
+            "Create performer profile"
         );
     }
 
-    echo "<h3>Technician profile</h3>";
+    echo "<h3>Technician</h3>";
     if (profile_exists($user->id, TECHNICIAN)) {
         $profile = read_profile($user->id, TECHNICIAN);
         start_table();
@@ -67,24 +73,25 @@ function left() {
         );
         end_table();
     } else {
-        row2('',
-            button_text(
-                "tech_profile_edit.php",
-                "Create technician profile", null, "btn-primary"
-            )
+        mm_show_button(
+            "tech_profile_edit.php",
+            "Create technician profile"
         );
     }
+}
 
-    echo "<h3>Ensembles</h3>";
+function show_ens() {
+    global $user;
+    echo "<h3>Your ensembles</h3>";
     start_table();
     show_ensembles($user);
-    row2('',
-        mm_button_text(
-            "ensemble_edit.php", "Add ensemble", BUTTON_NORMAL
-        )
-    );
     end_table();
+    mm_show_button(
+        "ensemble_edit.php", "Add ensemble"
+    );
+}
 
+function show_search() {
     echo "<h3>Find musicians</h3>";
     show_button(
         sprintf("cp_search.php?role=%d", COMPOSER),
@@ -132,9 +139,8 @@ function home_page($user) {
     page_tail();
 }
 
-$user = get_logged_in_user();
+$user = mm_get_logged_in_user();
 BoincForumPrefs::lookup($user);
-
 
 home_page($user);
 ?>

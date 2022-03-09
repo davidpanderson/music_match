@@ -74,6 +74,10 @@ function notification_email($n) {
 
 function show_notifications($user) {
     $ns = Notification::enum("user_id = $user->id");
+    if (!$ns) {
+        row2('No recent notifications', '');
+        return;
+    }
     foreach ($ns as $n) {
         $s = show_notification($n);
         if (!$s) continue;

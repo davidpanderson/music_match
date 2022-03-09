@@ -25,6 +25,22 @@ function cp_form($user, $profile, $role) {
         text_input_default(INST_ADD).'class="sm" size="20"'
     );
 
+    if ($role==COMPOSER) {
+        form_checkboxes(
+            "Ensemble types you write for",
+            array_merge(
+                items_list(
+                    ENSEMBLE_TYPE_LIST,
+                    $profile->ens_type, "ens_type"
+                ),
+                items_custom($profile->ens_type_custom, "ens_type_custom")
+            )
+        );
+        form_input_text('', 'ens_type_custom_new', ENSEMBLE_TYPE_ADD, 'text',
+            text_input_default(ENSEMBLE_TYPE_ADD).'class="sm" size="20"'
+        );
+    }
+
     form_checkboxes(
         $role==COMPOSER?"Styles you write in":"Styles you play",
         array_merge(
@@ -103,9 +119,8 @@ function cp_form($user, $profile, $role) {
 
     echo "<p>
         <a href=cp_profile_edit.php?role=$role&action=delete>Delete profile</a>
-        <p>
     ";
-    show_button('mm_home.php', 'Return to home page', null, 'btn-primary');
+    home_button();
     page_tail();
 }
 
@@ -119,6 +134,16 @@ function action($user_id, $profile, $role) {
     $profile2->inst_custom = parse_custom(
         $profile->inst_custom, "inst_custom", INST_ADD
     );
+
+    if ($role==COMPOSER) {
+        $profile2->ens_type = parse_list(
+            ENSEMBLE_TYPE_LIST, "ens_type"
+        );
+        $profile2->ens_type_custom = parse_custom(
+            $profile->ens_type_custom, "ens_type_custom", ENSEMBLE_TYPE_ADD
+        );
+    }
+
     $profile2->style = parse_list(STYLE_LIST, "style");
     $profile2->style_custom = parse_custom(
         $profile->style_custom, "style_custom", STYLE_ADD
@@ -168,8 +193,7 @@ function confirm_form($role) {
         "Delete profile",
         BUTTON_DANGER
     );
-    echo "<p>";
-    mm_show_button("mm_home.php", "Return to home page", BUTTON_NORMAL);
+    home_button();
     page_tail();
 }
 
@@ -177,7 +201,7 @@ function do_delete_profile($user, $role) {
     page_head("Profile deleted");
     delete_mm_profile($user->id, $role);
     echo sprintf('Your %s profile has been deleted.', role_name($role));
-    mm_show_button("mm_home.php", "Return to home page");
+    home_button();
     page_tail();
 }
 

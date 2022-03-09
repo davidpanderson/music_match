@@ -96,6 +96,7 @@ function rnd_perf($user_id) {
 function rnd_comp($user_id) {
     $x = new StdClass;
     $x->inst = rnd_subset(INST_LIST_COARSE, 3);
+    $x->ens_type = rnd_subset(ENSEMBLE_TYPE_LIST, 2);
     $x->style = rnd_subset(STYLE_LIST, 4);
     $x->level = rnd_subset(LEVEL_LIST, 2);
     $x->influence = rnd_influence();

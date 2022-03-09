@@ -11,17 +11,23 @@ function cp_search_form($profile, $role) {
     form_start("cp_search.php", "POST");
     form_input_hidden("role", $role);
     form_checkboxes(
-        sprintf("... who %s at least one of:", $role==COMPOSER?"write for":"play"),
+        sprintf("who %s", $role==COMPOSER?"write for":"play"),
         items_list($role==COMPOSER?INST_LIST_COARSE:INST_LIST_FINE,
             $profile->inst, "inst"
         )
     );
+    if ($role == COMPOSER) {
+        form_checkboxes(
+            "who write for",
+            items_list(ENSEMBLE_TYPE_LIST, array(), "ens_type")
+        );
+    }
     form_checkboxes(
-       "in styles including at least one of:",
+       "in styles including",
         items_list(STYLE_LIST, $profile->style, "style")
     );
     form_checkboxes(
-        "in difficulty levels including at least one of:",
+        "in difficulty levels including",
         items_list(LEVEL_LIST, $profile->level, "level")
     );
     form_checkboxes(
@@ -29,6 +35,7 @@ function cp_search_form($profile, $role) {
     );
     form_submit("Search", 'name=submit value=on');
     form_end();
+    home_button();
     page_tail();
 }
 
@@ -38,6 +45,7 @@ function get_form_args($role) {
     $x = new StdClass;
     if ($role==COMPOSER) {
         $x->inst = parse_list(INST_LIST_COARSE, "inst");
+        $x->ens_type = parse_list(ENSEMBLE_TYPE_LIST, "ens_type");
     } else {
         $x->inst = parse_list(INST_LIST_FINE, "inst");
     }
@@ -51,7 +59,7 @@ function get_form_args($role) {
 // Return object w/ number of matches of each type
 // (inst, style, level)
 //
-function match_args($profile, $args) {
+function match_args($role, $profile, $args) {
     $x = new StdClass;
     $x->inst = 0;
     $x->style = 0;
@@ -71,17 +79,28 @@ function match_args($profile, $args) {
             $x->level++;
         }
     }
+    if ($role == COMPOSER) {
+        $x->ens_type = 0;
+        foreach ($profile->ens_type as $i) {
+            if (in_array($i, $args->ens_type)) {
+                $x->ens_type++;
+            }
+        }
+    }
     return $x;
 }
 
 // each match is a triple (inst, style, level).
 // compute the "value" of the match (for ranking search results)
 //
-function match_value($match) {
+function match_value($role, $match) {
     $x = 0;
     if ($match->inst) $x += 100 + $match->inst;
     if ($match->style) $x += 100 + $match->style;
     if ($match->level) $x += 100 + $match->level;
+    if ($role == COMPOSER) {
+        if ($match->ens_type) $x += 100 + $match->ens_type;
+    }
     return $x;
 }
 
@@ -104,8 +123,8 @@ function cp_search_action($role, $req_user) {
             // don't show user their own profile
             continue;
         }
-        $profile->match = match_args($profile, $form_args);
-        $profile->value = match_value($profile->match);
+        $profile->match = match_args($role, $profile, $form_args);
+        $profile->value = match_value($role, $profile->match);
         if ($profile->value == 0) {
             // skip if no criteria matched
             continue;
@@ -130,6 +149,7 @@ function cp_search_action($role, $req_user) {
 
     if (!$profiles) {
         echo "No results found.  Try expanding your criteria.";
+        home_button();
         page_tail();
         return;
     }
@@ -172,6 +192,7 @@ function cp_search_action($role, $req_user) {
         }
     }
     end_table();
+    home_button();
     page_tail();
 }
 

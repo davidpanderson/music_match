@@ -12,7 +12,12 @@ function show_ensemble($ens_id, $user) {
     $ens = Ensemble::lookup_id($ens_id);
     page_head(sprintf("Ensemble: %s", $ens->name));
     start_table();
-    row2("Ensemble type", ENSEMBLE_TYPE_LIST[$profile->type]);
+    if (array_key_exists($profile->type, ENSEMBLE_TYPE_LIST)) {
+        $t = ENSEMBLE_TYPE_LIST[$profile->type];
+    } else {
+        $t = $profile->type;
+    }
+    row2("Ensemble type", $t);
     row2("Instruments",
         lists_to_string(
             INST_LIST_FINE, $profile->inst, $profile->inst_custom
@@ -41,6 +46,7 @@ function show_ensemble($ens_id, $user) {
         row2("Other members", $x);
     }
 
+    row2("Description", $profile->description);
     $x = sprintf("Performs regularly: %s<br>Typically paid to perform: %s",
         $profile->perf_reg?"yes":"no",
         $profile->perf_paid?"yes":"no"
@@ -68,7 +74,7 @@ function show_ensemble($ens_id, $user) {
     }
 
     end_table();
-    mm_show_button("mm_home.php", "Return to home page");
+    home_button();
     page_tail();
 }
 

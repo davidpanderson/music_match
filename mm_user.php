@@ -19,8 +19,7 @@ function show_ensembles($user) {
     if ($es) {
         $x = array();
         foreach ($es as $e) {
-            $p = read_profile($e->id, ENSEMBLE);
-            $x[] = "<a href=ensemble.php?ens_id=$e->id>$p->name</a>";
+            $x[] = "<a href=ensemble.php?ens_id=$e->id>$e->name</a>";
         }
         row2(
             "Founder of",
@@ -86,6 +85,7 @@ function right() {
 function show_user($user) {
     page_head($user->name);
     grid(null, 'left', 'right', 6);
+    home_button();
     page_tail();
 }
 

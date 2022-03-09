@@ -28,23 +28,24 @@ Try their compositions, or get them to write new ones for you.
 your compositions.
 <li> Get (and give) help with score editing and rendering software.
 </ul>
-
+<p>
+<a href=intro.php>Learn more about Music Match.</a>
 <p>
 <center>
 ";
 
 $user = get_logged_in_user(true);
 if ($user) {
-    show_button("mm_home.php", "Go to home page", null, "btn-primary btn-lg");
+    home_button();
 } else {
-    mm_show_button("reg.php", "JOIN", BUTTON_BIG);
+    join_button();
 }
 
 echo "
 </center>
 <hr>
 <p>
-Music Match is a volunteer-based, non-profit project
+Music Match is a non-profit project
 based at the University of California, Berkeley.
 <p>
 The data collected by Music Match will not be

@@ -49,6 +49,7 @@ function show_settings($user) {
     );
     row2("Member since", date_str($user->create_time));
     end_table();
+    home_button();
     page_tail();
 }
 
@@ -165,6 +166,7 @@ if ($action) {
             form_input_text('User name', 'name', $user->name);
             form_submit('Update', 'name=action value=name');
             form_end();
+            home_button();
             page_tail();
             break;
         case 'email_addr':
@@ -175,6 +177,7 @@ if ($action) {
             form_general('', '<a href=get_passwd.php>Forgot password?</a>');
             form_submit('Update email address', 'name=action value=email_addr');
             form_end();
+            home_button();
             page_tail();
             break;
         case 'password':
@@ -183,6 +186,7 @@ if ($action) {
             form_input_text("New password", "passwd", "", "password", 'id="passwd"', passwd_visible_checkbox("passwd"));
             form_submit('Update', 'name=action value=password');
             form_end();
+            home_button();
             page_tail();
             break;
         case 'country':
@@ -191,14 +195,16 @@ if ($action) {
             form_select('Country', 'country', country_select_options());
             form_submit('Update', 'name=action value=country');
             form_end();
+            home_button();
             page_tail();
             break;
         case 'postal_code':
             page_head("Change postal code");
             form_start("settings.php", "POST");
-            form_input_text('Postal code', 'postal_code');
+            form_input_text('Postal code', 'postal_code', $user->postal_code);
             form_submit('Update', 'name=action value=postal_code');
             form_end();
+            home_button();
             page_tail();
             break;
         case 'notification':
@@ -211,6 +217,7 @@ if ($action) {
             );
             form_submit('Update', 'name=action value=notification');
             form_end();
+            home_button();
             page_tail();
             break;
         default:

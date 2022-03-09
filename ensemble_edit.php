@@ -121,7 +121,7 @@ function ensemble_form($ens, $ens_info) {
             <p>
         ";
     }
-    show_button('mm_home.php', 'Return to home page', null, 'btn-primary');
+    home_button();
     page_tail();
 }
 
@@ -131,13 +131,12 @@ function ensemble_action($profile, $ens_id) {
     // If a radio button is checked, that's the type
 
     $t = post_str('type', true);
-    $tc = strip_tags(post_str('type_custom'));
+    if ($t == 'custom') {
+        $t = strip_tags(post_str('type_custom'));
+    }
+
     if (!$t) {
-        if ($tc) {
-            $t = $tc;
-        } else {
-            error_page("You must specify an ensemble type.");
-        }
+        error_page("You must specify an ensemble type.");
     }
     $profile2->type = $t;
     $profile2->inst = parse_list(INST_LIST_FINE, "inst");
@@ -169,8 +168,7 @@ function confirm_form($ens, $ens_info) {
         "Delete ensemble",
         BUTTON_DANGER
     );
-    echo "<p>";
-    mm_show_button("mm_home.php", "Return to home page", BUTTON_NORMAL);
+    home_button();
     page_tail();
 }
 
@@ -180,7 +178,7 @@ function do_delete_ensemble($ens, $ens_info) {
     delete_mm_profile($ens->id, ENSEMBLE);
     $ens->delete();
     echo sprintf("The ensemble '%s' has been deleted.", $ens_info->name);
-    mm_show_button("mm_home.php", "Return to home page");
+    home_button();
     page_tail();
 }
 

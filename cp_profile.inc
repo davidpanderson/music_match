@@ -42,6 +42,14 @@ function cp_profile_summary_table($user, $profile, $role) {
             $profile->inst, $profile->inst_custom
         )
     );
+    if ($role == COMPOSER) {
+        row2('Ensemble types',
+            lists_to_string(
+                ENSEMBLE_TYPE_LIST,
+                $profile->ens_type, $profile->ens_type_custom
+            )
+        );
+    }
     row2('Styles',
         lists_to_string(
             STYLE_LIST, $profile->style, $profile->style_custom
@@ -110,6 +118,12 @@ function cp_profile_summary_row($user, $profile, $role) {
         $role==COMPOSER?INST_LIST_COARSE:INST_LIST_FINE,
         $profile->inst, $profile->inst_custom, "<br>"
     );
+    if ($role==COMPOSER) {
+        $x[] = lists_to_string(
+            ENSEMBLE_TYPE_LIST,
+            $profile->ens_type, $profile->ens_type_custom, "<br>"
+        );
+    }
     $x[] = lists_to_string(
         STYLE_LIST, $profile->style, $profile->style_custom, "<br>"
     );
@@ -129,7 +143,12 @@ function cp_profile_summary_row($user, $profile, $role) {
 // table header for the above
 //
 function cp_profile_summary_header($name_header, $role) {
-    $x= array($name_header, "Instruments", "Styles", "Level");
+    $x= [$name_header, "Instruments"];
+    if ($role == COMPOSER) {
+        $x[] = "Ensemble types";
+    }
+    $x[] = "Styles";
+    $x[] = "Level";
     if ($role==COMPOSER) $x[] = "Influences";
     $x[] = "Links";
     $x[] = "Country";

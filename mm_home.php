@@ -132,10 +132,7 @@ function top() {
 
 function home_page($user) {
     page_head("");
-
     grid('top', 'left', 'right', 6);
-
-
     page_tail();
 }
 

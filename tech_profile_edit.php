@@ -39,7 +39,7 @@ function tech_form($profile) {
         <a href=tech_profile_edit.php?&action=delete>Delete profile</a>
         <p>
     ";
-    show_button('mm_home.php', 'Return to home page', null, 'btn-primary');
+    home_button();
     page_tail();
 }
 
@@ -65,7 +65,7 @@ function confirm_form() {
         BUTTON_DANGER
     );
     echo "<p>";
-    mm_show_button("mm_home.php", "Return to home page", BUTTON_NORMAL);
+    home_button();
     page_tail();
 }
 
@@ -73,7 +73,7 @@ function do_delete_profile($user) {
     page_head("Profile deleted");
     delete_mm_profile($user->id, TECHNICIAN);
     echo 'Your Technician profile has been deleted.';
-    mm_show_button("mm_home.php", "Return to home page");
+    home_button();
     page_tail();
 }
 $user = get_logged_in_user();

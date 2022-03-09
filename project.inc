@@ -33,10 +33,8 @@ define('SHORTCUT_ICON', "icon.jpg");
 
 //-------------- contact info
 
-define("SYS_ADMIN_EMAIL", "admin@$master_url");
-define("UOTD_ADMIN_EMAIL", "admin@$master_url");
-    // who gets emails about user of the day pool running low?
-define("POST_REPORT_EMAILS", "moderator1@$master_url|moderator2@$master_url");
+define("SYS_ADMIN_EMAIL", "davea@berkeley.edu");
+define("POST_REPORT_EMAILS", "davea@berkeley.edu");
     // Email addresses separated by pipe ( | ) that will receive user reports
     // of offensive forum posts.
 
@@ -122,6 +120,7 @@ function project_banner($title, $prefix, $is_main) {
 }
 
 function project_footer($show_return, $show_date, $prefix) {
+    return;
     // If you include any links, prepend URL with $prefix
     //
     echo '<br>
@@ -226,7 +225,7 @@ function mm_navbar(
     navbar_start($brand, $fixed, $inverse);
 
     $x = array();
-    $x[] = array(tra("About"), $url_prefix."about.php");
+    $x[] = array(tra("About"), $url_prefix."intro.php");
     $x[] = array(tra("Contact"), $url_prefix."contact.php");
     navbar_menu(tra("Project"), $x);
 

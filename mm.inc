@@ -104,9 +104,9 @@ define('LEVEL_LIST', array(
 define('ENSEMBLE_TYPE_LIST', array(
     'orchestra' => 'Orchestra',
     'choir' => 'Choir',
+    'opera' => 'Opera company',
     'chamber' => 'Chamber group',
-    'solo' => 'Soloist',
-    'solo_accomp' => 'Accompanied soloist'
+    'duo' => 'Duo',
 ));
 
 define('TECH_AREA_LIST', array(
@@ -130,12 +130,12 @@ define('PROGRAM_LIST', array(
 
 // text for custom fields
 
-define('INST_ADD', 'Add instrument');
-define('STYLE_ADD', 'Add style');
+define('INST_ADD', 'Other instrument');
+define('STYLE_ADD', 'Other style');
 define('INFLUENCE_ADD', 'Add influence');
 define('LINK_ADD_URL', 'Add link: URL');
 define('LINK_ADD_DESC', 'Description');
-define('ENSEMBLE_TYPE_ADD', 'Add ensemble type');
+define('ENSEMBLE_TYPE_ADD', 'Other ensemble type');
 
 
 // ----- checkbox stuff
@@ -399,6 +399,8 @@ function read_profile($id, $role) {
         if (!array_key_exists('style_custom', $p)) $p->style_custom = array();
         if (!array_key_exists('inst', $p)) $p->inst = array();
         if (!array_key_exists('inst_custom', $p)) $p->inst_custom = array();
+        if (!array_key_exists('ens_type', $p)) $p->ens_type = array();
+        if (!array_key_exists('ens_type_custom', $p)) $p->ens_type_custom = array();
         if (!array_key_exists('level', $p)) $p->level = array();
         if (!array_key_exists('influence', $p)) $p->influence = array();
         if (!array_key_exists('signature_filename', $p)) $p->signature_filename = '';
@@ -612,6 +614,16 @@ function em_status_string($status) {
     case EM_REMOVED: return 'Membership removed';
     }
     return 'unknown';
+}
+
+function home_button() {
+    echo "<p>";
+    mm_show_button("mm_home.php", "Return to home page");
+}
+
+function join_button() {
+    echo "<p>";
+    mm_show_button("reg.php", "JOIN", BUTTON_BIG);
 }
 
 ?>

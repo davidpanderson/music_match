@@ -44,9 +44,9 @@
 //      show Intro page
 
 require_once("../inc/mm_util.inc");
-require_once("../inc/user_util.inc");
+require_once("../inc/mm_user_util.inc");
 require_once("../inc/boinc_db.inc");
-require_once("../inc/account.inc");
+require_once("../inc/mm_account.inc");
 
 function form1() {
     page_head("Create account");

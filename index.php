@@ -17,7 +17,6 @@
 // --------------------------------------------------------------------
 
 require_once("../inc/mm_util.inc");
-require_once("../inc/bootstrap.inc");
 require_once("../inc/mm.inc");
 
 page_head("Music Match");

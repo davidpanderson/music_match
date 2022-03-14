@@ -17,6 +17,7 @@
 // --------------------------------------------------------------------
 
 require_once("../inc/mm_util.inc");
+require_once("../inc/mm_email.inc");
 require_once("../inc/mm.inc");
 
 function form($user) {

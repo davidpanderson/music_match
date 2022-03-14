@@ -155,7 +155,7 @@ echo '
 
 $reply_url = "";
 if (!$logged_in_user) {
-    echo "To post messages, you must <a href=login_form.php>log in</a>.";
+    echo "To post messages, you must <a href=mm_login_form.php>log in</a>.";
 } else {
     if (can_reply($thread, $forum, $logged_in_user)) {
         $reply_url = "forum_reply.php?thread=".$thread->id."#input";

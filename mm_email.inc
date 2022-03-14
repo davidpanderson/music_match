@@ -96,7 +96,7 @@ function send_auth_email($user) {
     $body = "This email was sent in response to a request on the ".PROJECT." web site.
 
 To log in to your ".PROJECT." account, visit:
-".secure_url_base()."login_action.php?id=$user->id&t=$now&h=$x
+".secure_url_base()."mm_login_action.php?id=$user->id&t=$now&h=$x
 (This link is valid for 1 day).
 After logging in, you can change your account's password or email address.
 ";

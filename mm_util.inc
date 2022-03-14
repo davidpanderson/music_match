@@ -31,7 +31,7 @@ require_once("../inc/db.inc");
 require_once("../inc/boinc_db.inc");
 require_once("../inc/translation.inc");
 //require_once("../inc/profile.inc");
-require_once("../inc/bootstrap.inc");
+require_once("../inc/mm_bootstrap.inc");
 
 // parse some stuff from config.xml (do it here for efficiency)
 //
@@ -196,7 +196,7 @@ function get_logged_in_user($must_be_logged_in=true) {
             }
         }
         $next_url = urlencode($next_url);
-        Header("Location: ".url_base()."login_form.php?next_url=$next_url");
+        Header("Location: ".url_base()."mm_login_form.php?next_url=$next_url");
         exit;
     }
     $got_logged_in_user = true;
@@ -207,9 +207,9 @@ function show_login_info($prefix="") {
     $user = get_logged_in_user(false);
     if ($user) {
         $url_tokens = url_tokens($user->authenticator);
-        echo "<nobr>$user->name &middot; <a href=".$prefix."logout.php?$url_tokens>".tra("log out")."</a></nobr>";
+        echo "<nobr>$user->name &middot; <a href=".$prefix."mm_logout.php?$url_tokens>".tra("log out")."</a></nobr>";
     } else {
-        echo "<a href=".$prefix."login_form.php>".tra("log in")."</a>";
+        echo "<a href=".$prefix."mm_login_form.php>".tra("log in")."</a>";
     }
 }
 
@@ -682,7 +682,7 @@ function close_output_buffer($filename) {
 }
 
 function bbcode_info() {
-    return "<br><a href=bbcode.php target=new><small>".tra("Use BBCode tags to format your text")."</small></a>\n";
+    return "<br><a href=mm_bbcode.php target=new><small>".tra("Use BBCode tags to format your text")."</small></a>\n";
 }
 
 // strip slashes if magic quotes in effect

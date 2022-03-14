@@ -1,12 +1,29 @@
 <?php
+// This file is part of Music Match.
+// Copyright (C) 2022 David P. Anderson
+//
+// Music Match is free software; you can redistribute it and/or modify it
+// under the terms of the GNU Lesser General Public License
+// as published by the Free Software Foundation,
+// either version 3 of the License, or (at your option) any later version.
+//
+// Music Match is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+// See the GNU Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public License
+// along with Music Match.  If not, see <http://www.gnu.org/licenses/>.
+// --------------------------------------------------------------------
 
-require_once("../inc/util.inc");
+// show info on another user
+
+require_once("../inc/mm_util.inc");
 require_once("../inc/mm.inc");
 require_once("../inc/cp_profile.inc");
 require_once("../inc/tech.inc");
 require_once("../inc/mm_db.inc");
-
-// show info on another user
+require_once("../inc/mm_user.inc");
 
 function show_ensembles($user) {
     $es = Ensemble::enum("user_id=$user->id");
@@ -30,8 +47,7 @@ function show_ensembles($user) {
         $x = array_map(
             function($em) {
                 $e = Ensemble::lookup_id($em->ensemble_id);
-                $p = read_profile($e->id, ENSEMBLE);
-                return "<a href=ensemble.php?ens_id=$e->id>$p->name</a>";
+                return "<a href=ensemble.php?ens_id=$e->id>$e->name</a>";
             },
             $ems
         );

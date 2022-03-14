@@ -1,6 +1,23 @@
 <?php
+// This file is part of Music Match.
+// Copyright (C) 2022 David P. Anderson
+//
+// Music Match is free software; you can redistribute it and/or modify it
+// under the terms of the GNU Lesser General Public License
+// as published by the Free Software Foundation,
+// either version 3 of the License, or (at your option) any later version.
+//
+// Music Match is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+// See the GNU Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public License
+// along with Music Match.  If not, see <http://www.gnu.org/licenses/>.
+// --------------------------------------------------------------------
 
-require_once("../inc/util.inc");
+require_once("../inc/mm_util.inc");
+require_once("../inc/forum_db.inc");
 require_once("../inc/mm.inc");
 require_once("../inc/cp_profile.inc");
 require_once("../inc/tech.inc");
@@ -118,7 +135,24 @@ function right() {
     global $user;
     echo "<h3>Community</h3>";
     start_table();
-    show_community_private($user);
+    row2("Private messages",
+        sprintf(
+            '<a href=%s>Inbox</a><br><small>%d messages, %d unread</small>',
+            'mm_pm.php?action=inbox',
+            BoincPrivateMessage::count("userid=$user->id"),
+            BoincPrivateMessage::count("userid=$user->id AND opened=0")
+        )
+    );
+    $friends = BoincFriend::enum("user_src=$user->id and reciprocated=1");
+    $x = [];
+    foreach ($friends as $friend) {
+        $fuser = BoincUser::lookup_id($friend->user_dest);
+        if (!$fuser) continue;
+        $x[] = '<a href=user.php?user_id=$fuser->id>$fuser->name</a>';
+    }
+    if ($x) {
+        row2('Friends', implode($x, '<br>'));
+    }
     end_table();
 
     echo "<h3>Notifications</h3>";

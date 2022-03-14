@@ -376,13 +376,25 @@ if not, redirect to a variant of reg1.php
 Use this in most places
 
 ----------
-Account page: change
-    email
-    password
-    name
-    country, postal code
+private messages
 
-"forgot password"? currently emails you a link that logs you in
-    and takes you to home.php
+eventual; for starters
+    just user/user
+    simplify send form
 
-instead,
+"send message" link on
+    user page (send msg to this user)
+    ensemble.php (if member or founder)
+        send message to ensemble members
+    home page
+        if have friends, "message friends"
+
+in write message page,
+   have add/change recipients button
+
+add/change recipients page
+    show current list of recipients w/ checkboxes
+    "add user by name" field
+    "add my friends" button
+    "add ensemble members" button for each ensemble
+    "return to message" button

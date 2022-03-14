@@ -1,6 +1,38 @@
 <?php
+// This file is part of Music Match.
+// Copyright (C) 2022 David P. Anderson
+//
+// Music Match is free software; you can redistribute it and/or modify it
+// under the terms of the GNU Lesser General Public License
+// as published by the Free Software Foundation,
+// either version 3 of the License, or (at your option) any later version.
+//
+// Music Match is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+// See the GNU Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public License
+// along with Music Match.  If not, see <http://www.gnu.org/licenses/>.
+// --------------------------------------------------------------------
 
 require_once("../inc/mm.inc");
+
+// we use:
+//      user.send_email to store prefs
+//      user.expavg_time to store time of last email
+
+define('NOTIFY_NEVER', 0);
+define('NOTIFY_DAILY', 1);
+define('NOTIFY_WEEKLY', 2);
+define('NOTIFY_IMMEDIATE', 3);
+
+define('NOTIFY_LIST', array(
+    NOTIFY_DAILY => 'Daily',
+    NOTIFY_WEEKLY => 'Weekly',
+    NOTIFY_IMMEDIATE => 'Immediately',
+    NOTIFY_NEVER => 'Never'
+));
 
 // show notification on web, with links where relevant
 //
@@ -85,20 +117,5 @@ function show_notifications($user) {
         $n->update(sprintf('last_view=%d', time()));
     }
 }
-
-// we user host.send_email to store prefs
-//
-
-define('NOTIFY_NEVER', 0);
-define('NOTIFY_DAILY', 1);
-define('NOTIFY_WEEKLY', 2);
-define('NOTIFY_IMMEDIATE', 3);
-
-define('NOTIFY_LIST', array(
-    NOTIFY_DAILY => 'Daily',
-    NOTIFY_WEEKLY => 'Weekly',
-    NOTIFY_IMMEDIATE => 'Immediately',
-    NOTIFY_NEVER => 'Never'
-));
 
 ?>

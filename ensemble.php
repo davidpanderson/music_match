@@ -1,8 +1,24 @@
 <?php
+// This file is part of Music Match.
+// Copyright (C) 2022 David P. Anderson
+//
+// Music Match is free software; you can redistribute it and/or modify it
+// under the terms of the GNU Lesser General Public License
+// as published by the Free Software Foundation,
+// either version 3 of the License, or (at your option) any later version.
+//
+// Music Match is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+// See the GNU Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public License
+// along with Music Match.  If not, see <http://www.gnu.org/licenses/>.
+// --------------------------------------------------------------------
 
 // ensemble page
 
-require_once("../inc/util.inc");
+require_once("../inc/mm_util.inc");
 require_once("../inc/mm.inc");
 require_once("../inc/ensemble.inc");
 require_once("../inc/mm_db.inc");
@@ -51,6 +67,15 @@ function show_ensemble($ens_id, $user) {
         $profile->perf_reg?"yes":"no",
         $profile->perf_paid?"yes":"no"
     );
+
+    if ($profile->signature_filename) {
+        row2('Audio signature',
+            sprintf('<a href=%s/%d.mp3>%s</a>',
+                role_dir(ENSEMBLE), $ens_id, $profile->signature_filename
+            )
+        );
+    }
+
     row2("Performance", "$x");
 
     if ($ens->user_id == $user->id) {

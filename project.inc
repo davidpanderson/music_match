@@ -8,7 +8,7 @@
 // see inc/translation.inc and
 // https://boinc.berkeley.edu/trac/wiki/TranslateProject for details
 
-require_once("../inc/util.inc");
+require_once("../inc/mm_util.inc");
 
 //-------------- Project name and owner
 
@@ -230,7 +230,7 @@ function mm_navbar(
     navbar_menu(tra("Project"), $x);
 
     navbar_menu(tra("Community"), array(
-        array(tra("Message boards"), $url_prefix."forum_index.php"),
+        array(tra("Message boards"), $url_prefix."mm_forum_index.php"),
     ));
     if ($user) {
         navbar_menu(tra("Account"), array(

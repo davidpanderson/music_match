@@ -67,20 +67,4 @@ class EnsembleMember {
     }
 }
 
-class Notification {
-    static function insert($clause) {
-        $db = BoincDb::get();
-        $ret = $db->insert('notification', $clause);
-        if (!$ret) return 0;
-    }
-    static function enum($where_clause=null) {
-        $db = BoincDb::get();
-        return $db->enum('notification', 'Notification', $where_clause);
-    }
-    function update($clause) {
-        $db = BoincDb::get();
-        return $db->update($this, 'notification', $clause);
-    }
-}
-
 ?>

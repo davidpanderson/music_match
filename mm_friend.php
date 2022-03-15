@@ -69,16 +69,13 @@ function handle_add($user) {
     check_pending($user, $destuser);
     check_ignoring($user, $destuser);
 
-    page_head(tra("Add friend"));
+    page_head(tra("Send friend request to $destuser->name"));
     echo "
         <form method=post action=mm_friend.php>
         <input type=hidden name=userid value=$destid>
         <input type=hidden name=action value=add_confirm>" .
-        tra("You have asked to add %1 as a friend. We will notify %1 and will ask him/her to confirm that you are friends.",
-        "<b>".$destuser->name."</b>") ."
-        <p>" .
-        tra("Add an optional message here:") ."
-        <br>
+        tra("Add an optional message:") ."
+        <p><p>
         ".textarea_with_counter("message", 250, "")."
         <p>
         <input class=\"btn btn-primary\" type=submit value=\"".tra("OK")."\">

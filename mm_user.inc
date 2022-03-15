@@ -19,8 +19,8 @@
 require_once("../inc/credit.inc");
 require_once("../inc/mm_email.inc");
 require_once("../inc/mm_util.inc");
-//require_once("../inc/team.inc");
-require_once("../inc/friend.inc");
+require_once("../inc/mm_forum.inc");
+require_once("../inc/mm_friend.inc");
 require_once("../inc/forum_db.inc");
 require_once("../inc/notify.inc");
 require_once("../inc/ldap.inc");
@@ -330,7 +330,7 @@ function friend_links($user) {
         $alt = tra("Profile");
         $x .= ' <a href="'.url_base().'view_profile.php?userid='.$user->id.'"><img title="'.$title.'" src="'.$img_url.'" alt="'.$alt.'"></a><br>';
     }
-    $x .= " <a href=\"".url_base()."show_user.php?userid=".$user->id."\">".$user->name."</a>";
+    $x .= " <a href=\"".url_base()."mm_user.php?user_id=".$user->id."\">".$user->name."</a>";
     if (function_exists("project_user_links")) {
         $x .= project_user_links($user);
     }
@@ -356,7 +356,7 @@ function user_links($user, $badge_height=0, $name_limit=0) {
     if ($name_limit && strlen($name) > $name_limit) {
         $name = substr($name, 0, $name_limit)."...";
     }
-    $x .= " <a href=\"".url_base()."show_user.php?userid=".$user->id."\">".$name."</a>";
+    $x .= " <a href=\"".url_base()."mm_user.php?user_id=".$user->id."\">".$name."</a>";
     if (function_exists("project_user_links")){
         $x .= project_user_links($user);
     }
@@ -379,7 +379,7 @@ function show_community_private($user) {
     if (!DISABLE_FORUMS) {
         $tot = total_posts($user);
         if ($tot) {
-            row2(tra("Message boards"), "<a href=\"".url_base()."forum_user_posts.php?userid=$user->id\">".tra("%1 posts", $tot)."</a>");
+            row2(tra("Message boards"), "<a href=\"".url_base()."mm_forum_user_posts.php?userid=$user->id\">".tra("%1 posts", $tot)."</a>");
         }
     }
 
@@ -513,7 +513,7 @@ function community_links($clo, $logged_in_user){
     }
     if (!DISABLE_FORUMS) {
         if ($tot) {
-            row2(tra("Message boards"), "<a href=\"".url_base()."forum_user_posts.php?userid=$user->id\">".tra("%1 posts", $tot)."</a>");
+            row2(tra("Message boards"), "<a href=\"".url_base()."mm_forum_user_posts.php?userid=$user->id\">".tra("%1 posts", $tot)."</a>");
         }
     }
     if ($logged_in_user && $logged_in_user->id != $user->id) {
@@ -526,7 +526,7 @@ function community_links($clo, $logged_in_user){
         } else if ($friend) {
             row2(tra("Friends"),  "<a href=\"mm_friend.php?action=add&userid=$user->id\">".tra("Request pending")."</a>");
         } else {
-            row2(tra("Friends"),  "<a href=\"mm_friend.php?action=add&userid=$user->id\">".tra("Add as friend")."</a>");
+            row2(tra("Friends"),  "<a href=\"mm_friend.php?action=add&userid=$user->id\">".tra("Send friend request")."</a>");
         }
     }
 

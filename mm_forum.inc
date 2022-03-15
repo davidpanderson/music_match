@@ -188,7 +188,7 @@ function show_forum_title($category, $forum, $thread, $link_thread=false) {
             <a href=\"mm_forum_forum.php?id=".$forum->id."\">", $forum->title, "</a> : 
         ";
         if ($link_thread) {
-            echo "<a href=forum_thread.php?id=$thread->id>";
+            echo "<a href=mm_forum_thread.php?id=$thread->id>";
         }
         echo cleanup_title($thread->title);
         if ($link_thread) {
@@ -210,7 +210,7 @@ function show_team_forum_title($forum, $thread=null, $link_thread=false) {
             <a href=team_forum.php?teamid=$team->id>".tra("%1 message board", $team->name)."</a>
         ";
         if ($link_thread) {
-            echo " : <a href=forum_thread.php?id=$thread->id>$thread->title</a>";
+            echo " : <a href=mm_forum_thread.php?id=$thread->id>$thread->title</a>";
         } else {
             echo " : $thread->title";
         }
@@ -411,7 +411,7 @@ function show_posts(
     }
 
     $page_nav = page_links(
-        "forum_thread.php?id=$thread->id&sort_style=$sort_style",
+        "mm_forum_thread.php?id=$thread->id&sort_style=$sort_style",
         sizeof($posts),
         $num_to_show,
         $start
@@ -658,12 +658,12 @@ function show_post(
         show_image(NEW_IMAGE, tra("You haven't read this message yet"), tra("Unread"), NEW_IMAGE_HEIGHT);
     }
 
-    echo " <a href=\"forum_thread.php?id=".$thread->id."&amp;postid=$post->id\">".tra("Message %1", $post->id)."</a> - ";
+    echo " <a href=\"mm_forum_thread.php?id=".$thread->id."&amp;postid=$post->id\">".tra("Message %1", $post->id)."</a> - ";
     if ($post->hidden) echo "<font color=red>[".tra("hidden")."] </font>";
     echo tra("Posted: %1", pretty_time_str($post->timestamp)), " ";
 
     if ($post->parent_post) {
-        echo tra(" - in response to ")."<a href=\"forum_thread.php?id=".$thread->id."&amp;postid=".$post->parent_post."\">".tra("Message %1", $post->parent_post)."</a>. &nbsp; ";
+        echo tra(" - in response to ")."<a href=\"mm_forum_thread.php?id=".$thread->id."&amp;postid=".$post->parent_post."\">".tra("Message %1", $post->parent_post)."</a>. &nbsp; ";
     }
     if ($can_edit && $controls != NO_CONTROLS) {
         show_button_small("forum_edit.php?id=".$post->id."$tokens", tra("Edit"), tra("Edit this message"));
@@ -730,10 +730,10 @@ function show_post(
         }
         if (($controls == FORUM_CONTROLS) && (can_reply($thread, $forum, $logged_in_user))) {
             echo "&nbsp;&nbsp;&nbsp;&nbsp;";
-            $url = "forum_reply.php?thread=" . $thread->id . "&amp;post=" . $post->id . "&amp;no_quote=1#input";
+            $url = "mm_forum_reply.php?thread=" . $thread->id . "&amp;post=" . $post->id . "&amp;no_quote=1#input";
             // "Reply" is used as a verb
             show_button($url, tra("Reply"), tra("Post a reply to this message"));
-            $url = "forum_reply.php?thread=" . $thread->id . "&amp;post=" . $post->id . "#input";
+            $url = "mm_forum_reply.php?thread=" . $thread->id . "&amp;post=" . $post->id . "#input";
             // "Quote" is used as a verb
             show_button($url, tra("Quote"), tra("Post a reply by quoting this message"));
         }
@@ -781,7 +781,7 @@ function show_post_and_context($post, $thread, $forum, $options, $n) {
         break;
     }
     echo "
-        (<a href=\"forum_thread.php?id=".$thread->id."&amp;postid=".$post->id."\">".tra("Message %1", $post->id)."</a>)
+        (<a href=\"mm_forum_thread.php?id=".$thread->id."&amp;postid=".$post->id."\">".tra("Message %1", $post->id)."</a>)
         <br>
         ".tra("Posted %1 by %2", $when, user_links($user))." $deleted
         <br>
@@ -842,6 +842,7 @@ function post_rules() {
 }
 
 function post_warning($forum=null) {
+    return '';
     $x = "<br><br>
         <table><tr><td align=left>
     ";
@@ -1374,14 +1375,14 @@ function subscribed_post_email_line($notify) {
 
 function subscribed_post_web_line($notify) {
     $thread = BoincThread::lookup_id($notify->opaque);
-    return tra("New posts in the thread %1","<a href=forum_thread.php?id=$thread->id>$thread->title</a>");
+    return tra("New posts in the thread %1","<a href=mm_forum_thread.php?id=$thread->id>$thread->title</a>");
 }
 
 function subscribe_rss($notify, &$title, &$msg, &$url) {
     $thread = BoincThread::lookup_id($notify->opaque);
     $title = tra("New posts in subscribed thread");
     $msg = tra("There are new posts in the thread '%1'",$thread->title);
-    $url = secure_url_base()."forum_thread.php?id=$thread->id";
+    $url = secure_url_base()."mm_forum_thread.php?id=$thread->id";
 }
 
 function show_mark_as_read_button($user) {

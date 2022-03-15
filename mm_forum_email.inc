@@ -85,7 +85,7 @@ For assistance with ".PROJECT." go to ".$master_url;
 
     $body = "Because of moderation by $moderator->name (ID $moderator->id),
 The following email was sent to $user->name (ID $user->id)
-".secure_url_base()."forum_user_posts.php?userid=$user->id
+".secure_url_base()."mm_forum_user_posts.php?userid=$user->id
 ------------------------------
 Subject: $subject
 

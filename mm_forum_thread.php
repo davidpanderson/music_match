@@ -158,7 +158,7 @@ if (!$logged_in_user) {
     echo "To post messages, you must <a href=mm_login_form.php>log in</a>.";
 } else {
     if (can_reply($thread, $forum, $logged_in_user)) {
-        $reply_url = "forum_reply.php?thread=".$thread->id."#input";
+        $reply_url = "mm_forum_reply.php?thread=".$thread->id."#input";
         show_button_small(
             $reply_url,
             tra("Post to thread"),
@@ -171,14 +171,14 @@ if (!$logged_in_user) {
         BoincNotify::delete_aux(
             "userid=$logged_in_user->id and type=$type and opaque=$thread->id"
         );
-        $url = "forum_subscribe.php?action=unsubscribe&amp;thread=".$thread->id."$tokens";
+        $url = "mm_forum_subscribe.php?action=unsubscribe&amp;thread=".$thread->id."$tokens";
         show_button_small(
             $url,
             tra("Unsubscribe"),
             tra("You are subscribed to this thread.  Click here to unsubscribe.")
         );
     } else {
-        $url = "forum_subscribe.php?action=subscribe&amp;thread=".$thread->id."$tokens";
+        $url = "mm_forum_subscribe.php?action=subscribe&amp;thread=".$thread->id."$tokens";
         show_button_small(
             $url,
             tra("Subscribe"),

@@ -22,7 +22,7 @@
 require_once('../inc/mm_util.inc');
 require_once('../inc/mm_forum_email.inc');
 require_once('../inc/mm_forum.inc');
-require_once('../inc/bbcode_html.inc');
+require_once('../inc/mm_bbcode_html.inc');
 require_once('../inc/akismet.inc');
 
 if (DISABLE_FORUMS) error_page("Forums are disabled");
@@ -84,7 +84,7 @@ if ($content && (!$preview)){
             $thread, $add_signature
         );
         if ($post_id) {
-            header("Location: forum_thread.php?id=$thread->id&postid=$post_id");
+            header("Location: mm_forum_thread.php?id=$thread->id&postid=$post_id");
         } else {
             error_page("Can't create post.  $forum_error");
         }
@@ -147,7 +147,7 @@ function show_message_row($thread, $parent_post) {
     if ($parent_post) {
         $x2 .=" ".tra("reply to %1 Message ID %2:", "<a href=#".$parent_post->id.">", " ".$parent_post->id."</a>");
     }
-    $x2 .= "<form action=forum_reply.php?thread=".$thread->id;
+    $x2 .= "<form action=mm_forum_reply.php?thread=".$thread->id;
 
     if ($parent_post) {
         $x2 .= "&post=".$parent_post->id;

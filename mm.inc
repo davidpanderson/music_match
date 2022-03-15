@@ -29,37 +29,32 @@ define('EM_APPROVED',   1);
 define('EM_DECLINED',   2);
 define('EM_REMOVED',    3);
 
-// notification.type
+// notify.type
 
-define('NOTIFICATION_PM',             0);
-    # id1 is user ID of sender
-define('NOTIFICATION_SEARCH',         1);
+// 1-4 are defined in forum_db.inc
+// friend req, friend accept, pm, subscribed post
+
+define('NOTIFY_SEARCH',         5);
     # a previous search has new result
-    # id1 is search record; id2 is ID of user or ensemble
-define('NOTIFICATION_ENS_DEL',        2);
+    # opaque is search record; id2 is ID of user or ensemble
+define('NOTIFY_ENS_DEL',        6);
     # an ensemble you're in was deleted
-    # id1 is ens ID
-define('NOTIFICATION_FRIEND_REQ',     3);
-    # id1 is user ID of requester
-define('NOTIFICATION_FRIEND_REPLY',   4);
-    # id1 is user ID of accepter
-define('NOTIFICATION_THREAD',         5);
-    # id1 is thread ID
-define('NOTIFICATION_PROFILE',        6);
+    # opaque is ens ID
+define('NOTIFY_PROFILE',        7);
     # a friend changed a profile
-    # id1 is user ID; id2 is role
-define('NOTIFICATION_ENS_JOIN_REQ',   7);
+    # opaque is user ID; id2 is role
+define('NOTIFY_ENS_JOIN_REQ',   8);
     # someone asked to join an ensemble you founded
-    # id1 is ens ID, id2 is user ID
-define('NOTIFICATION_ENS_JOIN_REPLY', 8);
+    # opaque is ens ID, id2 is user ID
+define('NOTIFY_ENS_JOIN_REPLY', 9);
     # your ensemble join request was accepted or declined
-    # id1 is ens ID; id2 is 1 if accepted
-define('NOTIFICATION_ENS_REMOVE',     9);
+    # opaque is ens ID; id2 is 1 if accepted
+define('NOTIFY_ENS_REMOVE',     10);
     # you were removed from an ensemble
-    # id1 is ens ID
-define('NOTIFICATION_ENS_QUIT',       10);
+    # opaque is ens ID
+define('NOTIFY_ENS_QUIT',       11);
     # someone quit an ensemble you founded
-    # id1 is ens ID; id2 is user ID
+    # opaque is ens ID; id2 is user ID
 
 // values for "role"; each has an associated JSON structure
 //

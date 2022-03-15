@@ -19,13 +19,14 @@
 // send notification emails
 
 require_once("../inc/mm.inc");
+require_once("../inc/forum_db.inc");
 
 // send notifications since max(last email, 1 week ago)
 //
 function send_email($user) {
     $now = time();
     $cutoff = max($user->expavg_time, $now-7*86400);
-    $ns = Notification::enum("user_id=$user->id and create_time>$cutoff order by create_time desc");
+    $ns = BoincNotify::enum("userid=$user->id and create_time>$cutoff order by create_time desc");
     if (!$ns) return;
     $x = "";
     foreach ($ns as $n) {

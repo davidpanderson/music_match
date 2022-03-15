@@ -148,7 +148,7 @@ function right() {
     foreach ($friends as $friend) {
         $fuser = BoincUser::lookup_id($friend->user_dest);
         if (!$fuser) continue;
-        $x[] = '<a href=user.php?user_id=$fuser->id>$fuser->name</a>';
+        $x[] = "<a href=mm_user.php?user_id=$fuser->id>$fuser->name</a>";
     }
     if ($x) {
         row2('Friends', implode($x, '<br>'));

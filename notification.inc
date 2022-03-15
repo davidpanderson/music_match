@@ -17,6 +17,8 @@
 // --------------------------------------------------------------------
 
 require_once("../inc/mm.inc");
+require_once("../inc/forum_db.inc");
+require_once("../inc/mm_user.inc");
 
 // we use:
 //      user.send_email to store prefs
@@ -38,25 +40,30 @@ define('NOTIFY_LIST', array(
 //
 function show_notification($n) {
     switch($n->type) {
-    case NOTIFICATION_PM:
-        $u = BoincUser::lookup_id($n->id1);
-        if (!$u) return null;
+    case NOTIFY_PM:
+        $pm = BoincPrivateMessage::lookup_id($n->opaque);
+        if (!$pm) return "no pm $n->opaque";
+        $u = BoincUser::lookup_id($pm->senderid);
+        if (!$u) return "no user $pm->senderid";
         return sprintf(
             'You received <a href=%s>a message from %s</a>',
-            'pm.php?action=inbox', $u->name
+            'mm_pm.php?action=inbox', $u->name
         );
         break;
-    case NOTIFICATION_SEARCH:
-    case NOTIFICATION_ENS_DEL:
-        $ens = Ensemble::lookup_id($n->id1);
+    case NOTIFY_SEARCH:
+    case NOTIFY_ENS_DEL:
+        $ens = Ensemble::lookup_id($n->opaque);
         if (!$ens) return null;
         return sprintf('The ensemble %s was removed by its founder', $ens->name);
-    case NOTIFICATION_FRIEND_REQ:
-    case NOTIFICATION_FRIEND_REPLY:
-    case NOTIFICATION_THREAD:
-    case NOTIFICATION_PROFILE:
-    case NOTIFICATION_ENS_JOIN_REQ:
-        $ens = Ensemble::lookup_id($n->id1);
+    case NOTIFY_FRIEND_REQ:
+        return friend_notify_req_web_line($n);
+    case NOTIFY_FRIEND_ACCEPT:
+        return friend_notify_accept_web_line($n);
+    case NOTIFY_SUBSCRIBED_POST:
+        return subscribed_post_web_line($n);
+    case NOTIFY_PROFILE:
+    case NOTIFY_ENS_JOIN_REQ:
+        $ens = Ensemble::lookup_id($n->opaque);
         if (!$ens) return null;
         $u = BoincUser::lookup_id($n->id2);
         if (!$u) return null;
@@ -65,24 +72,26 @@ function show_notification($n) {
             $u->name, $ens->name,
             'ensemble_join.php?action=review', $ens->id
         );
-    case NOTIFICATION_ENS_JOIN_REPLY:
-        $ens = Ensemble::lookup_id($n->id1);
+    case NOTIFY_ENS_JOIN_REPLY:
+        $ens = Ensemble::lookup_id($n->opaque);
         if (!$ens) return null;
         return sprintf(
             'Your request to join <a href=ensemble.php?ens_id=%d>%s</a> was %s.',
-            $n->id1,
+            $n->opaque,
             $ens->name, $n->id2?"accepted":"declined"
         );
-    case NOTIFICATION_ENS_REMOVE:
-        $ens = Ensemble::lookup_id($n->id1);
+    case NOTIFY_ENS_REMOVE:
+        $ens = Ensemble::lookup_id($n->opaque);
         if (!$ens) return null;
         return sprintf('You were removed from %s', $ens->name);
-    case NOTIFICATION_ENS_QUIT:
-        $ens = Ensemble::lookup_id($n->id1);
+    case NOTIFY_ENS_QUIT:
+        $ens = Ensemble::lookup_id($n->opaque);
         if (!$ens) return null;
         $u = BoincUser::lookup_id($n->id2);
         return sprintf('%s resigned from %s', $u->name, $ens->name);
         break;
+    default:
+        return "unknown type $n->type";
     }
 }
 
@@ -90,22 +99,22 @@ function show_notification($n) {
 //
 function notification_email($n) {
     switch($n->type) {
-    case NOTIFICATION_PM:
-    case NOTIFICATION_SEARCH:
-    case NOTIFICATION_ENS_DEL:
-    case NOTIFICATION_FRIEND_REQ:
-    case NOTIFICATION_FRIEND_REPLY:
-    case NOTIFICATION_THREAD:
-    case NOTIFICATION_PROFILE:
-    case NOTIFICATION_ENS_JOIN:
-    case NOTIFICATION_ENS_REMOVE:
-    case NOTIFICATION_ENS_QUIT:
+    case NOTIFY_PM:
+    case NOTIFY_SEARCH:
+    case NOTIFY_ENS_DEL:
+    case NOTIFY_FRIEND_REQ:
+    case NOTIFY_FRIEND_REPLY:
+    case NOTIFY_THREAD:
+    case NOTIFY_PROFILE:
+    case NOTIFY_ENS_JOIN:
+    case NOTIFY_ENS_REMOVE:
+    case NOTIFY_ENS_QUIT:
         break;
     }
 }
 
 function show_notifications($user) {
-    $ns = Notification::enum("user_id = $user->id");
+    $ns = BoincNotify::enum("userid = $user->id");
     if (!$ns) {
         row2('No recent notifications', '');
         return;

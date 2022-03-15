@@ -1,8 +1,3 @@
-# extra fields for user table
-#
-alter table user
-    add
-
 # an ensemble (performing group)
 # Info is kept in ensemble/ID.json
 #
@@ -41,6 +36,12 @@ create table notification (
     index(user_id),
     primary key (id)
 ) engine = InnoDB;
+
+alter table notify
+    add column sent_by_email double not null default 0,
+    add column last_view double not null default 0,
+    add column id2 integer not null default 0
+;
 
 # a search and its results
 #

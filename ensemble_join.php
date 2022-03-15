@@ -52,10 +52,10 @@ function join_action($ens, $ens_info, $user) {
             time(), $ens->id, $user->id, EM_PENDING
         )
     );
-    Notification::insert(
+    BoincNotify::insert(
         sprintf(
-            "(create_time, user_id, type, id1, id2) values (%d, %d, %d, %d, %d)",
-            time(), $ens->user_id, NOTIFICATION_ENS_JOIN_REQ, $ens->id, $user->id
+            "(create_time, userid, type, opaque, id2) values (%d, %d, %d, %d, %d)",
+            time(), $ens->user_id, NOTIFY_ENS_JOIN_REQ, $ens->id, $user->id
         )
     );
     page_head("Request submitted");
@@ -123,10 +123,10 @@ function decide_action($ens, $ens_info, $user_id) {
             $ens->id, $user_id
         )
     );
-    Notification::insert(
+    BoincNotify::insert(
         sprintf(
-            "(create_time, user_id, type, id1, id2) values (%d, %d, %d, %d, %d)",
-            time(), $user_id, NOTIFICATION_ENS_JOIN_REPLY, $ens->id, $accept
+            "(create_time, userid, type, opaque, id2) values (%d, %d, %d, %d, %d)",
+            time(), $user_id, NOTIFY_ENS_JOIN_REPLY, $ens->id, $accept
         )
     );
     page_head(

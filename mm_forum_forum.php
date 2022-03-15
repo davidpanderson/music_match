@@ -220,7 +220,7 @@ function show_forum($forum, $start, $sort_style, $user) {
         //if (strlen($title) > $titlelength) {
         //    $title = substr($title, 0, $titlelength)."...";
         //}
-        echo "<td><a href=\"forum_thread.php?id=$thread->id\">$title</a><br></td>";
+        echo "<td><a href=\"mm_forum_thread.php?id=$thread->id\">$title</a><br></td>";
 
         echo '
             <td>'.($thread->replies+1).'</td>

@@ -71,7 +71,7 @@ if ($content && $title && (!$preview)){
             $title, $content, $logged_in_user, $forum, $add_signature, $export
         );
         if ($thread) {
-            header('Location: forum_thread.php?id=' . $thread->id);
+            header('Location: mm_forum_thread.php?id=' . $thread->id);
         } else {
             error_page("Can't create thread.  $forum_error");
         }

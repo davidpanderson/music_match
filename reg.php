@@ -43,8 +43,8 @@
 //      update user record, mark as verified
 //      show Intro page
 
-require_once("../inc/mm_util.inc");
-require_once("../inc/mm_user_util.inc");
+require_once("../inc/util.inc");
+require_once("../inc/user_util.inc");
 require_once("../inc/boinc_db.inc");
 require_once("../inc/mm_account.inc");
 

@@ -18,7 +18,7 @@
 
 // create/edit a technician profile
 
-require_once("../inc/mm_util.inc");
+require_once("../inc/util.inc");
 require_once("../inc/mm.inc");
 
 define('TECH_AREA_ADD', 'Add area');

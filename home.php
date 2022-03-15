@@ -16,7 +16,7 @@
 // along with Music Match.  If not, see <http://www.gnu.org/licenses/>.
 // --------------------------------------------------------------------
 
-require_once("../inc/mm_util.inc");
+require_once("../inc/util.inc");
 require_once("../inc/forum_db.inc");
 require_once("../inc/mm.inc");
 require_once("../inc/cp_profile.inc");
@@ -138,7 +138,7 @@ function right() {
     row2("Private messages",
         sprintf(
             '<a href=%s>Inbox</a><br><small>%d messages, %d unread</small>',
-            'mm_pm.php?action=inbox',
+            'pm.php?action=inbox',
             BoincPrivateMessage::count("userid=$user->id"),
             BoincPrivateMessage::count("userid=$user->id AND opened=0")
         )
@@ -148,7 +148,7 @@ function right() {
     foreach ($friends as $friend) {
         $fuser = BoincUser::lookup_id($friend->user_dest);
         if (!$fuser) continue;
-        $x[] = "<a href=mm_user.php?user_id=$fuser->id>$fuser->name</a>";
+        $x[] = "<a href=user.php?user_id=$fuser->id>$fuser->name</a>";
     }
     if ($x) {
         row2('Friends', implode($x, '<br>'));

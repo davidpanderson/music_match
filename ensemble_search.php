@@ -16,7 +16,7 @@
 // along with Music Match.  If not, see <http://www.gnu.org/licenses/>.
 // --------------------------------------------------------------------
 
-require_once("../inc/mm_util.inc");
+require_once("../inc/util.inc");
 require_once("../inc/mm.inc");
 require_once("../inc/mm_db.inc");
 require_once("../inc/ensemble.inc");

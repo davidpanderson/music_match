@@ -8,7 +8,7 @@
 // see inc/translation.inc and
 // https://boinc.berkeley.edu/trac/wiki/TranslateProject for details
 
-require_once("../inc/mm_util.inc");
+require_once("../inc/util.inc");
 
 //-------------- Project name and owner
 
@@ -28,7 +28,7 @@ define("LANGUAGE_FILE", "languages.txt");
 define('NO_COMPUTING', true);
 define('DISABLE_TEAMS', true);
 define('POSTAL_CODE', true);
-define('USER_HOME', "mm_home.php");
+//define('USER_HOME', "home.php");
 define('SHORTCUT_ICON', "icon.jpg");
 
 //-------------- contact info
@@ -230,7 +230,7 @@ function mm_navbar(
     navbar_menu(tra("Project"), $x);
 
     navbar_menu(tra("Community"), array(
-        array(tra("Message boards"), $url_prefix."mm_forum_index.php"),
+        array(tra("Message boards"), $url_prefix."forum_index.php"),
     ));
     if ($user) {
         navbar_menu(tra("Account"), array(

@@ -18,7 +18,7 @@
 
 // ensemble page
 
-require_once("../inc/mm_util.inc");
+require_once("../inc_util.inc");
 require_once("../inc/mm.inc");
 require_once("../inc/ensemble.inc");
 require_once("../inc/mm_db.inc");
@@ -54,7 +54,7 @@ function show_ensemble($ens_id, $user) {
 
     $founder = BoincUser::lookup_id($ens->user_id);
     row2("Founder",
-        "<a href=mm_user.php?user_id=$founder->id>$founder->name</a>"
+        "<a href=user.php?user_id=$founder->id>$founder->name</a>"
     );
 
     $x = ens_members_string($ens->id);

@@ -18,7 +18,7 @@
 
 // create/edit a composer or performer profile
 
-require_once("../inc/mm_util.inc");
+require_once("../inc/util.inc");
 require_once("../inc/mm.inc");
 
 // ---------------- form ------------------
@@ -230,7 +230,7 @@ if (post_str('submit', true)) {
     $profile = action($user->id, $profile, $role);
     write_profile($user->id, $profile, $role);
     //Header("Location: cp_profile_edit.php?role=$role");
-    Header("Location: mm_home.php");
+    Header("Location: home.php");
 } else {
     $role = get_int('role');
     $action = get_str('action', true);

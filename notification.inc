@@ -18,7 +18,7 @@
 
 require_once("../inc/mm.inc");
 require_once("../inc/forum_db.inc");
-require_once("../inc/mm_user.inc");
+require_once("../inc/user.inc");
 
 // we use:
 //      user.send_email to store prefs
@@ -47,7 +47,7 @@ function show_notification($n) {
         if (!$u) return "no user $pm->senderid";
         return sprintf(
             'You received <a href=%s>a message from %s</a>',
-            'mm_pm.php?action=inbox', $u->name
+            'pm.php?action=inbox', $u->name
         );
         break;
     case NOTIFY_SEARCH:

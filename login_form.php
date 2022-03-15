@@ -17,8 +17,8 @@
 // along with BOINC.  If not, see <http://www.gnu.org/licenses/>.
 
 require_once("../inc/db.inc");
-require_once("../inc/mm_util.inc");
-require_once("../inc/mm_account.inc");
+require_once("../inc/util.inc");
+require_once("../inc/account.inc");
 
 check_get_args(array("next_url"));
 
@@ -31,7 +31,7 @@ $user = get_logged_in_user(false);
 if ($user) {
     page_head(tra("Already logged in"));
     row2(tra("You are logged in as %1.", $user->name),
-        sprintf(' <a href="mm_logout.php?%s">%s</a>',
+        sprintf(' <a href="logout.php?%s">%s</a>',
             url_tokens($user->authenticator),
             tra("Log out")
         )

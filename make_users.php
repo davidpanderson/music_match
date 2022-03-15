@@ -18,8 +18,8 @@
 
 // make some random simulated users
 
-require_once("../inc/mm_util.inc");
-require_once("../inc/mm_user_util.inc");
+require_once("../inc/util.inc");
+require_once("../inc/user_util.inc");
 require_once("../inc/zip.inc");
 require_once("../inc/mm.inc");
 require_once("../inc/mm_db.inc");

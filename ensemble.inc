@@ -79,7 +79,7 @@ function ens_profile_summary_row($e) {
         lists_to_string(INST_LIST_FINE, $p->inst, $p->inst_custom, "<br>"),
         lists_to_string(STYLE_LIST, $p->style, $p->style_custom, "<br>"),
         lists_to_string(LEVEL_LIST, $p->level, null, "<br>"),
-        "<a href=mm_user.php?user_id=$user->id>$user->name</a>",
+        "<a href=user.php?user_id=$user->id>$user->name</a>",
         country_distance($user, $e->dist, "<br>")
     ));
 }
@@ -94,7 +94,7 @@ function ens_members_string($ens_id) {
     $x = array();
     foreach ($ms as $m) {
         $u = BoincUser::lookup_id($m->user_id);
-        $x[] = "<a href=mm_user.php?user_id=$u->id>$u->name</a>";
+        $x[] = "<a href=user.php?user_id=$u->id>$u->name</a>";
     }
     return implode("<br>", $x);
 }

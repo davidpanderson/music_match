@@ -19,7 +19,7 @@
 // stuff related to "buddy lists"
 
 require_once("../inc/forum_db.inc");
-require_once("../inc/mm_forum.inc");
+require_once("../inc/forum.inc");
 //require_once("../inc/profile.inc");
 
 check_get_args(array("target_userid", "userid", "action"));
@@ -71,7 +71,7 @@ function handle_add($user) {
 
     page_head(tra("Send friend request to $destuser->name"));
     echo "
-        <form method=post action=mm_friend.php>
+        <form method=post action=friend.php>
         <input type=hidden name=userid value=$destid>
         <input type=hidden name=action value=add_confirm>" .
         tra("Add an optional message:") ."
@@ -144,13 +144,13 @@ function handle_query($user) {
     }
     echo "<p>";
     show_button(
-        "mm_friend.php?action=accept&userid=".$srcid, tra("Accept friendship"),
+        "friend.php?action=accept&userid=".$srcid, tra("Accept friendship"),
         tra("Click accept if %1 is in fact a friend",
         $srcuser->name)
     );
     echo " ";
     show_button(
-        "mm_friend.php?action=ignore&userid=".$srcid, tra("Decline"),
+        "friend.php?action=ignore&userid=".$srcid, tra("Decline"),
         tra("Click decline if %1 is not a friend",
         $srcuser->name),
         "btn-sm btn-warning"
@@ -245,7 +245,7 @@ function handle_cancel_confirm($user) {
             $destuser->name
         ) ."<p>\n"
     ;
-    show_button("mm_friend.php?action=cancel&userid=$destid", tra("Yes"), tra("Cancel friendship"));
+    show_button("friend.php?action=cancel&userid=$destid", tra("Yes"), tra("Cancel friendship"));
     show_button(USER_HOME, tra("No"), tra("Stay friends"));
     echo "</ul>";
     page_tail();

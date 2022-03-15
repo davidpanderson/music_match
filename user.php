@@ -18,12 +18,12 @@
 
 // show info on another user
 
-require_once("../inc/mm_util.inc");
+require_once("../inc/util.inc");
 require_once("../inc/mm.inc");
 require_once("../inc/cp_profile.inc");
 require_once("../inc/tech.inc");
 require_once("../inc/mm_db.inc");
-require_once("../inc/mm_user.inc");
+require_once("../inc/user.inc");
 
 function show_ensembles($user) {
     $es = Ensemble::enum("user_id=$user->id");

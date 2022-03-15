@@ -21,9 +21,9 @@
 // main page shows settings and edit links
 // various forms and handlers for changing things
 
-require_once("../inc/mm_util.inc");
-require_once("../inc/mm_user_util.inc");
-require_once("../inc/mm_account.inc");
+require_once("../inc/util.inc");
+require_once("../inc/user_util.inc");
+require_once("../inc/account.inc");
 require_once("../inc/mm.inc");
 require_once("../inc/notification.inc");
 

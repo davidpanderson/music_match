@@ -629,7 +629,7 @@ function em_status_string($status) {
 
 function home_button() {
     echo "<p>";
-    mm_show_button("mm_home.php", "Return to home page");
+    mm_show_button("home.php", "Return to home page");
 }
 
 function join_button() {

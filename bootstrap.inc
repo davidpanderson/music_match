@@ -84,13 +84,13 @@ function navbar_right($user) {
                 ', url_base(), USER_HOME, $user->name
             );
             $url_tokens = url_tokens($user->authenticator);
-            echo sprintf('<li><a href="%smm_logout.php?%s">Log out</a></li>',
+            echo sprintf('<li><a href="%slogout.php?%s">Log out</a></li>',
                 url_base(), $url_tokens
             );
         } else {
             echo sprintf('
                 <li><a href="%sreg.php">%s</a></li>
-                <li><a href="%smm_login_form.php">%s</a></li>
+                <li><a href="%slogin_form.php">%s</a></li>
                 ', url_base(),
                 tra("Join"),
                 url_base(),

@@ -48,7 +48,6 @@ function form($user) {
         <a href=https://github.com/davidpanderson/music_match/> the Music Match Github repository</a>.
     ";
 
-    home_button();
     page_tail();
 }
 
@@ -70,7 +69,6 @@ function action() {
     echo "
         Thanks for your feedback.
     ";
-    home_button();
     page_tail();
 }
 

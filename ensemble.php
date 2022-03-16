@@ -18,7 +18,7 @@
 
 // ensemble page
 
-require_once("../inc_util.inc");
+require_once("../inc/util.inc");
 require_once("../inc/mm.inc");
 require_once("../inc/ensemble.inc");
 require_once("../inc/mm_db.inc");
@@ -99,7 +99,6 @@ function show_ensemble($ens_id, $user) {
     }
 
     end_table();
-    home_button();
     page_tail();
 }
 

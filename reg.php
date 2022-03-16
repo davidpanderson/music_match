@@ -43,6 +43,8 @@
 //      update user record, mark as verified
 //      show Intro page
 
+$show_home_link = false;
+
 require_once("../inc/util.inc");
 require_once("../inc/user_util.inc");
 require_once("../inc/boinc_db.inc");

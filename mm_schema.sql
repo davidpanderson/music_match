@@ -49,10 +49,12 @@ create table search (
     id              integer     not null auto_increment,
     create_time     double      not null,
     user_id         integer     not null,
-    params          text        not null,
-        # search params in JSON
-    results         text        not null,
-        # results (list of user IDs) in JSON
+    desc            text        not null,
+        # role, search params, and results in JSON
+    retry_time      double      not null default 0,
+        # when we last retried the search
+    nnew            integer     not null default 0,
+        # number of new results found on retry
     index(user_id),
     primary key (id)
 ) engine = InnoDB;

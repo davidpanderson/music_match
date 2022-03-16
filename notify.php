@@ -16,28 +16,51 @@
 // along with Music Match.  If not, see <http://www.gnu.org/licenses/>.
 // --------------------------------------------------------------------
 
-// send notification emails
+// script to send notification emails
 
 require_once("../inc/mm.inc");
+require_once("../inc/notification.inc");
 require_once("../inc/forum_db.inc");
 
 // send notifications since max(last email, 1 week ago)
 //
-function send_email($user) {
+function send_notify_email($user) {
     $now = time();
     $cutoff = max($user->expavg_time, $now-7*86400);
     $ns = BoincNotify::enum("userid=$user->id and create_time>$cutoff order by create_time desc");
-    if (!$ns) return;
-    $x = "";
-    foreach ($ns as $n) {
-        $x .= notification_email($n);
+    if (!$ns) {
+        return false;
     }
-    send_email($user);
+    $x = [];
+    foreach ($ns as $n) {
+        $x[] = notification_string($n, false);
+    }
+    if ($x) {
+        $subject = "Music Match notifications";
+        $body = sprintf(
+'%s
+
+For details, or to change email settings, visit Music Match:
+https://isaac.ssl.berkeley.edu/mm/home.php
+',
+            implode($x, "\n\n")
+        );
+        $body_html = sprintf(
+'%s
+<p><p>
+For details, or to change email settings, <a href=%s>visit Music Match</a>.
+',
+            implode($x, "<p><p>"),
+            'https://isaac.ssl.berkeley.edu/mm/home.php'
+        );
+        send_email($user, $subject, $body, $body_html);
+    }
+    return true;
 }
 
 // scan through users, see which are due for an email
 //
-function send_emails() {
+function send_notify_emails() {
     $now = time();
     $day = $now - 86400 - 3600;
     $week = $now - 7*86400 - 3600;
@@ -49,9 +72,12 @@ function send_emails() {
         )
     );
     foreach ($users as $user) {
-        send_email($user);
-        $user->update("expavg_time = $now");
+        if (send_notify_email($user)) {
+            $user->update("expavg_time = $now");
+        }
     }
 }
+
+send_notify_emails();
 
 ?>

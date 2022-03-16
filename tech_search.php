@@ -38,7 +38,6 @@ function tech_search_form() {
     );
     form_submit("Search", 'name=submit value=on');
     form_end();
-    home_button();
     page_tail();
 }
 
@@ -105,7 +104,6 @@ function tech_search_action($req_user) {
     }
     if (!$profiles) {
         echo "No results found.  Try expanding your criteria.";
-        home_button();
         page_tail();
         return;
     }
@@ -116,7 +114,6 @@ function tech_search_action($req_user) {
         tech_summary_row($profile->user, $profile);
     }
     end_table();
-    home_button();
     page_tail();
 }
 

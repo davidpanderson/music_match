@@ -24,6 +24,8 @@ require_once("../inc/tech.inc");
 require_once("../inc/ensemble.inc");
 require_once("../inc/notification.inc");
 
+$show_home_link = false;
+
 // user home page
 
 function left() {
@@ -135,6 +137,16 @@ function right() {
     global $user;
     echo "<h3>Community</h3>";
     start_table();
+    $tot = total_posts($user);
+    if ($tot) {
+        row2("Message boards",
+            sprintf('<a href=%s>%d posts</a>',
+                "forum_user_posts.php?userid=$user->id",
+                $tot
+            )
+        );
+    }
+
     row2("Private messages",
         sprintf(
             '<a href=%s>Inbox</a><br><small>%d messages, %d unread</small>',

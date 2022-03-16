@@ -70,6 +70,7 @@ data about you will be removed.
 ";
 
 text_end();
+$show_home_link = false;
 page_tail();
 
 ?>

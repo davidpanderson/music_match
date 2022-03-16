@@ -41,7 +41,6 @@ function join_form($ens, $ens_info) {
     form_input_textarea("Message", 'message');
     form_submit("Request membership", 'name=submit value=on');
     form_end();
-    home_button();
     page_tail();
 }
 
@@ -60,7 +59,6 @@ function join_action($ens, $ens_info, $user) {
     );
     page_head("Request submitted");
     echo "Your request to join $ens->name has been submitted.<p>";
-    home_button();
     page_tail();
 }
 
@@ -81,7 +79,6 @@ function review_form($ens, $ens_info) {
         );
     }
     end_table();
-    home_button();
     page_tail();
 }
 
@@ -110,7 +107,6 @@ function decide_form($ens, $ens_info, $user_id) {
     form_radio_buttons('', 'accept', [[1, 'Accept'], [0, 'Decline']], 1);
     form_submit('OK', 'name=confim value=on');
     form_end();
-    home_button();
     page_tail();
 }
 
@@ -139,7 +135,6 @@ function decide_action($ens, $ens_info, $user_id) {
         $user->name,
         $ens->name
     );
-    home_button();
     page_tail();
 }
 

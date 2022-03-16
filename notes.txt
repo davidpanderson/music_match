@@ -397,4 +397,5 @@ add/change recipients page
     "add user by name" field
     "add my friends" button
     "add ensemble members" button for each ensemble
+    Update button
     "return to message" button

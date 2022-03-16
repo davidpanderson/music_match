@@ -95,7 +95,7 @@ function cp_profile_summary_table($user, $profile, $role) {
     $u = get_logged_in_user();
     if ($u->id != $user->id && $user->country) {
         row2('Country',
-            country_distance($user, user_distance($u, $user), '; ')
+            country_distance($user, user_distance($u, $user), '  ')
         );
     }
 }

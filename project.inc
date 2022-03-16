@@ -9,6 +9,7 @@
 // https://boinc.berkeley.edu/trac/wiki/TranslateProject for details
 
 require_once("../inc/util.inc");
+require_once("../inc/mm.inc");
 
 //-------------- Project name and owner
 
@@ -109,10 +110,10 @@ function make_php_mailer() {
 // If you include any links, prepend URL with $prefix
 // if you need to open divs here close them in project_footer()
 //
+
+$show_home_link = true;
+
 function project_banner($title, $prefix, $is_main) {
-//    if ($is_main) {
-//        echo '<img class="img-responsive" style="width:100%" src="img/water.jpg">';
-//    }
     mm_navbar(secure_url_base(), get_logged_in_user(false), false);
     if ($title) {
         echo "<h2>$title</h2>\n";
@@ -120,6 +121,11 @@ function project_banner($title, $prefix, $is_main) {
 }
 
 function project_footer($show_return, $show_date, $prefix) {
+    global $show_home_link, $g_logged_in_user;
+    if ($g_logged_in_user && $show_home_link) {
+        echo "<p><p>";
+        mm_show_button("home.php", "Return to home page");
+    }
     return;
     // If you include any links, prepend URL with $prefix
     //

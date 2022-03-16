@@ -138,7 +138,6 @@ function ensemble_form($ens, $ens_info) {
             <p>
         ";
     }
-    home_button();
     page_tail();
 }
 
@@ -185,7 +184,6 @@ function confirm_form($ens, $ens_info) {
         "Delete ensemble",
         BUTTON_DANGER
     );
-    home_button();
     page_tail();
 }
 
@@ -195,7 +193,6 @@ function do_delete_ensemble($ens, $ens_info) {
     delete_mm_profile($ens->id, ENSEMBLE);
     $ens->delete();
     echo sprintf("The ensemble '%s' has been deleted.", $ens_info->name);
-    home_button();
     page_tail();
 }
 

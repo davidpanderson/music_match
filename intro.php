@@ -170,9 +170,7 @@ EOT;
 text_end();
 
 $user = get_logged_in_user(true);
-if ($user) {
-    home_button();
-} else {
+if (!$user) {
     join_button();
 }
 

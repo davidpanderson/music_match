@@ -21,9 +21,6 @@
 require_once("../inc/util.inc");
 require_once("../inc/mm.inc");
 
-define('TECH_AREA_ADD', 'Add area');
-define('PROGRAM_ADD', 'Add program');
-
 function tech_form($profile) {
     page_head("Technician profile");
     form_start("tech_profile_edit.php", "POST");
@@ -55,7 +52,6 @@ function tech_form($profile) {
         <a href=tech_profile_edit.php?&action=delete>Delete profile</a>
         <p>
     ";
-    home_button();
     page_tail();
 }
 
@@ -81,7 +77,6 @@ function confirm_form() {
         BUTTON_DANGER
     );
     echo "<p>";
-    home_button();
     page_tail();
 }
 
@@ -89,7 +84,6 @@ function do_delete_profile($user) {
     page_head("Profile deleted");
     delete_mm_profile($user->id, TECHNICIAN);
     echo 'Your Technician profile has been deleted.';
-    home_button();
     page_tail();
 }
 $user = get_logged_in_user();
@@ -97,13 +91,13 @@ if (post_str('submit', true)) {
     $profile = read_profile($user->id, TECHNICIAN);
     $profile = tech_action($user->id, $profile);
     write_profile($user->id, $profile, TECHNICIAN);
-    Header("Location: tech_profile_edit.php");
+    Header("Location: home.php");
 } else {
     $action = get_str('action', true);
     if ($action == 'delete') {
         confirm_form();
     } else if ($action == 'confirm') {
-        do_delete_profile($user, $role);
+        do_delete_profile($user, TECHNICIAN);
     } else {
         $profile = read_profile($user->id, TECHNICIAN);
         tech_form($profile);

@@ -44,7 +44,6 @@ function ens_search_form() {
     );
     form_submit("Search", 'name=submit value=on');
     form_end();
-    home_button();
     page_tail();
 }
 
@@ -146,7 +145,6 @@ function ens_search_action($req_user) {
     }
     if (!$ensembles) {
         echo "No results found.  Try expanding your criteria.";
-        home_button();
         page_tail();
         return;
     }
@@ -171,7 +169,6 @@ function ens_search_action($req_user) {
         ens_profile_summary_row($e);
     }
     end_table();
-    home_button();
     page_tail();
 }
 

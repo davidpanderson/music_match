@@ -21,6 +21,7 @@
 require_once("../inc/util.inc");
 require_once("../inc/mm.inc");
 require_once("../inc/cp_profile.inc");
+require_once("../inc/search.inc");
 
 function cp_search_form($profile, $role) {
     page_head(sprintf("Search for %s", $role==COMPOSER?"composers":"performers"));
@@ -51,7 +52,6 @@ function cp_search_form($profile, $role) {
     );
     form_submit("Search", 'name=submit value=on');
     form_end();
-    home_button();
     page_tail();
 }
 
@@ -165,7 +165,6 @@ function cp_search_action($role, $req_user) {
 
     if (!$profiles) {
         echo "No results found.  Try expanding your criteria.";
-        home_button();
         page_tail();
         return;
     }
@@ -208,8 +207,9 @@ function cp_search_action($role, $req_user) {
         }
     }
     end_table();
-    home_button();
     page_tail();
+
+    //record_search($req_user, $role, $form_args, $profiles);
 }
 
 $user = get_logged_in_user(true);

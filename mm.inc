@@ -128,13 +128,14 @@ define('TECH_AREA_LIST', array(
 ));
 
 define('PROGRAM_LIST', array(
-    'logic_pro' => 'Logic Pro',
     'ableton' => 'Ableton Live',
-    'garage_band' => 'Garage Band',
-    'sibelius' => 'Sibelius',
+    'ardour' => 'Ardour',
     'finale' => 'Finale',
+    'garage_band' => 'Garage Band',
+    'logic_pro' => 'Logic Pro',
     'musescore' => 'MuseScore',
     'pro_tools' => 'Pro Tools',
+    'sibelius' => 'Sibelius',
 ));
 
 // ---------- Functions for generating and parsing forms (search, edit)
@@ -147,7 +148,8 @@ define('INFLUENCE_ADD', 'Add influence');
 define('LINK_ADD_URL', 'Add link: URL');
 define('LINK_ADD_DESC', 'Description');
 define('ENSEMBLE_TYPE_ADD', 'Other ensemble type');
-
+define('TECH_AREA_ADD', 'Other area');
+define('PROGRAM_ADD', 'Other program');
 
 // ----- checkbox stuff
 
@@ -546,7 +548,7 @@ function links_to_string($links, $sep=',') {
 //
 function country_distance($user, $dist, $sep=' ') {
     if ($dist >= 0) {
-        return sprintf("%s%s<small>%d miles</small>", $user->country, $sep, (int)$dist);
+        return sprintf("%s%s<small>(%d miles from you)</small>", $user->country, $sep, (int)$dist);
     } else {
         return $user->country;
     }
@@ -628,7 +630,6 @@ function em_status_string($status) {
 }
 
 function home_button() {
-    echo "<p>";
     mm_show_button("home.php", "Return to home page");
 }
 

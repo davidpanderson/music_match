@@ -136,7 +136,6 @@ function cp_form($user, $profile, $role) {
     echo "<p>
         <a href=cp_profile_edit.php?role=$role&action=delete>Delete profile</a>
     ";
-    home_button();
     page_tail();
 }
 
@@ -209,7 +208,6 @@ function confirm_form($role) {
         "Delete profile",
         BUTTON_DANGER
     );
-    home_button();
     page_tail();
 }
 
@@ -217,7 +215,6 @@ function do_delete_profile($user, $role) {
     page_head("Profile deleted");
     delete_mm_profile($user->id, $role);
     echo sprintf('Your %s profile has been deleted.', role_name($role));
-    home_button();
     page_tail();
 }
 

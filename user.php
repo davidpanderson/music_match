@@ -101,7 +101,6 @@ function right() {
 function show_user($user) {
     page_head($user->name);
     grid(null, 'left', 'right', 6);
-    home_button();
     page_tail();
 }
 

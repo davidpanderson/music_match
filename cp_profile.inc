@@ -16,7 +16,7 @@
 // along with Music Match.  If not, see <http://www.gnu.org/licenses/>.
 // --------------------------------------------------------------------
 
-// display composer/performer profiles
+// Functions for composer/performer profiles
 // These are sufficiently similar that we use the same functions
 // with a "role" argument.
 

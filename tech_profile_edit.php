@@ -91,6 +91,7 @@ if (post_str('submit', true)) {
     $profile = read_profile($user->id, TECHNICIAN);
     $profile = tech_action($user->id, $profile);
     write_profile($user->id, $profile, TECHNICIAN);
+    profile_change_notify($user, TECHNICIAN);
     Header("Location: home.php");
 } else {
     $action = get_str('action', true);

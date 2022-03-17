@@ -34,27 +34,36 @@ define('EM_REMOVED',    3);
 // 1-4 are defined in forum_db.inc
 // friend req, friend accept, pm, subscribed post
 
+// NOTIFY_FRIEND_REQ
+//  opaque is ID of other user
+// NOTIFY_FRIEND_ACCEPT
+//  opaque is ID of other user
+// NOTIFY_PM
+//  opaque is message ID
+// NOTIFY_SUBSCRIBED_POST
+//  opaque is thread ID
+
 define('NOTIFY_SEARCH',         5);
-    # a previous search has new result
-    # opaque is search record; id2 is ID of user or ensemble
+    // a previous search has new result
+    // opaque and id2 are zero
 define('NOTIFY_ENS_DEL',        6);
-    # an ensemble you're in was deleted
-    # opaque is ens ID
+    // an ensemble you're in was deleted
+    // opaque is ens ID
 define('NOTIFY_PROFILE',        7);
-    # a friend changed a profile
-    # opaque is user ID; id2 is role
+    // a friend changed a profile
+    // opaque is user ID; id2 is role
 define('NOTIFY_ENS_JOIN_REQ',   8);
-    # someone asked to join an ensemble you founded
-    # opaque is ens ID, id2 is user ID
+    // someone asked to join an ensemble you founded
+    // opaque is ens ID, id2 is user ID
 define('NOTIFY_ENS_JOIN_REPLY', 9);
-    # your ensemble join request was accepted or declined
-    # opaque is ens ID; id2 is 1 if accepted
+    // your ensemble join request was accepted or declined
+    // opaque is ens ID; id2 is 1 if accepted
 define('NOTIFY_ENS_REMOVE',     10);
-    # you were removed from an ensemble
-    # opaque is ens ID
+    // you were removed from an ensemble
+    // opaque is ens ID
 define('NOTIFY_ENS_QUIT',       11);
-    # someone quit an ensemble you founded
-    # opaque is ens ID; id2 is user ID
+    // someone quit an ensemble you founded
+    // opaque is ens ID; id2 is user ID
 
 // values for "role"; each has an associated JSON structure
 //
@@ -636,6 +645,23 @@ function home_button() {
 function join_button() {
     echo "<p>";
     mm_show_button("reg.php", "JOIN", BUTTON_BIG);
+}
+
+// The user has modified their given profile.
+// Notify their friends.
+//
+function profile_change_notify($user, $role) {
+    $friends = BoincFriend::enum("user_src = $user->id");
+    $now = time();
+    foreach ($friends as $friend) {
+        $user2 = BoincUser::lookup_id($friend->user_dest);
+        if (!$user2) continue;
+        BoincNotify::replace(
+            sprintf("userid=%d, create_time=%d, type=%d, opaque=%d, id2=%d",
+                $user2->id, $now, NOTIFY_PROFILE, $user->id, $role
+            )
+        );
+    }
 }
 
 ?>

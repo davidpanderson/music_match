@@ -71,55 +71,6 @@ function get_form_args($role) {
     return $x;
 }
 
-// compare profile with form args
-// Return object w/ number of matches of each type
-// (inst, style, level)
-//
-function match_args($role, $profile, $args) {
-    $x = new StdClass;
-    $x->inst = 0;
-    $x->style = 0;
-    $x->level = 0;
-    foreach ($profile->inst as $i) {
-        if (in_array($i, $args->inst)) {
-            $x->inst++;
-        }
-    }
-    foreach ($profile->style as $i) {
-        if (in_array($i, $args->style)) {
-            $x->style++;
-        }
-    }
-    foreach ($profile->level as $i) {
-        if (in_array($i, $args->level)) {
-            $x->level++;
-        }
-    }
-    if ($role == COMPOSER) {
-        $x->ens_type = 0;
-        foreach ($profile->ens_type as $i) {
-            if (in_array($i, $args->ens_type)) {
-                $x->ens_type++;
-            }
-        }
-    }
-    return $x;
-}
-
-// each match is a triple (inst, style, level).
-// compute the "value" of the match (for ranking search results)
-//
-function match_value($role, $match) {
-    $x = 0;
-    if ($match->inst) $x += 100 + $match->inst;
-    if ($match->style) $x += 100 + $match->style;
-    if ($match->level) $x += 100 + $match->level;
-    if ($role == COMPOSER) {
-        if ($match->ens_type) $x += 100 + $match->ens_type;
-    }
-    return $x;
-}
-
 function cp_search_action($role, $req_user) {
     global $audio_head_extra;
 
@@ -128,48 +79,14 @@ function cp_search_action($role, $req_user) {
         null, false, "",
         $audio_head_extra
     );
+
     $form_args = get_form_args($role);
-
-    [$close_country, $close_zip] = handle_close($form_args, $req_user);
-
-    $profiles_in = get_profiles($role);
-    $profiles = array();
-    foreach ($profiles_in as $user_id=>$profile) {
-        if ($req_user->id == $user_id) {
-            // don't show user their own profile
-            continue;
-        }
-        $profile->match = match_args($role, $profile, $form_args);
-        $profile->value = match_value($role, $profile->match);
-        if ($profile->value == 0) {
-            // skip if no criteria matched
-            continue;
-        }
-        $user = BoincUser::lookup_id($user_id);
-        if ($close_country && $close_country != $user->country) {
-            continue;
-        }
-        if ($close_zip) {
-            $other_zip = str_to_zip($user->postal_code);
-            if (!$other_zip) continue;
-            $dist = zip_dist($close_zip, $other_zip);
-            if ($dist > 60) continue;
-            $profile->value -= $dist;
-            $profile->dist = $dist;
-        } else {
-            $profile->dist = -1;
-        }
-        $profile->user = $user;
-        $profiles[$user->id] = $profile;
-    }
-
+    $profiles = cp_search($role, $form_args, $req_user);
     if (!$profiles) {
         echo "No results found.  Try expanding your criteria.";
         page_tail();
         return;
     }
-
-    uasort($profiles, 'compare_value');
 
     start_table("table-striped");
     $enable_tag = '<br><a id="enable" onclick="remove()" href=#>Enable mouse-over audio</a>';

@@ -227,6 +227,7 @@ if (post_str('submit', true)) {
     $profile = action($user->id, $profile, $role);
     write_profile($user->id, $profile, $role);
     //Header("Location: cp_profile_edit.php?role=$role");
+    profile_change_notify($user, $role);
     Header("Location: home.php");
 } else {
     $role = get_int('role');

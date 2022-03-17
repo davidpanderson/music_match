@@ -399,3 +399,43 @@ add/change recipients page
     "add ensemble members" button for each ensemble
     Update button
     "return to message" button
+--------------
+search results
+
+create a notification for a search if there are
+new results since the last notification
+Want a single "new search results" notification,
+roughly once/week.
+Link to "My searches" page
+
+search table:
+    create time
+    user ID
+    role/params
+    params hash
+    last viewed results
+    last viewed time
+    last rerun time
+    last rerun #new results (relative to last viewed)
+    unique(user ID, params hash)
+
+When view search results
+    create search record, or update existing
+    rerun time = last viewed time = now
+
+periodic rerun
+    for each search for which last rerun time is old (week?)
+        rerun search
+        record time, results, #new results
+        if new results
+            create/update notification
+
+"My searches" page
+    list last viewed, search params, #new results
+    delete notification
+    View link
+    delete button
+
+View search page
+    arg: search ID
+    show results with new results at top

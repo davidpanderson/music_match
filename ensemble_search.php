@@ -18,8 +18,8 @@
 
 require_once("../inc/util.inc");
 require_once("../inc/mm.inc");
-require_once("../inc/mm_db.inc");
 require_once("../inc/ensemble.inc");
+require_once("../inc/search.inc");
 
 function ens_search_form() {
     page_head("Ensemble search");
@@ -60,95 +60,16 @@ function get_form_args() {
     return $x;
 }
 
-function match_args($profile, $args) {
-    $x = new StdClass;
-    $x->type = 0;
-    $x->inst = 0;
-    $x->style = 0;
-    $x->level = 0;
-    if (in_array($profile->type, $args->type)) {
-        $x->type++;
-    }
-    foreach ($profile->inst as $i) {
-        if (in_array($i, $args->inst)) {
-            $x->inst++;
-        }
-    }
-    foreach ($profile->style as $i) {
-        if (in_array($i, $args->style)) {
-            $x->style++;
-        }
-    }
-    foreach ($profile->level as $i) {
-        if (in_array($i, $args->level)) {
-            $x->level++;
-        }
-    }
-    return $x;
-}
-
-function match_value($match) {
-    $x = 0;
-    if ($match->type) $x += 100 + $match->type;
-    if ($match->inst) $x += 100 + $match->inst;
-    if ($match->style) $x += 100 + $match->style;
-    if ($match->level) $x += 100 + $match->level;
-    return $x;
-}
-
-function check_bool($arg, $value) {
-    switch ($arg) {
-    case 'yes': return $value;
-    case 'no': return !$value;
-    }
-    return true;
-}
-
 function ens_search_action($req_user) {
     global $audio_head_extra;
     page_head("Ensemble search results", null, false, "", $audio_head_extra);
     $form_args = get_form_args();
-    [$close_country, $close_zip] = handle_close($form_args, $req_user);
-    $ensembles_in = Ensemble::enum("");
-    $ensembles = array();
-    foreach ($ensembles_in as $e) {
-        $profile = read_profile($e->id, ENSEMBLE);
-        if (!check_bool($form_args->seeking_members, $profile->seeking_members)) {
-            continue;
-        }
-        if (!check_bool($form_args->perf_reg, $profile->perf_reg)) {
-            continue;
-        }
-        if (!check_bool($form_args->perf_paid, $profile->perf_paid)) {
-            continue;
-        }
-        $e->profile = $profile;
-        $e->match = match_args($e->profile, $form_args);
-        $e->value = match_value($e->match);
-        if ($e->value == 0) continue;
-        $user = BoincUser::lookup_id($e->user_id);
-        if ($close_country && $close_country != $user->country) {
-            continue;
-        }
-        if ($close_zip) {
-            $other_zip = str_to_zip($user->postal_code);
-            if (!$other_zip) continue;
-            $dist = zip_dist($close_zip, $other_zip);
-            if ($dist > 60) continue;
-            $e->value -= $dist;
-            $e->dist = $dist;
-        } else {
-            $e->dist = -1;
-        }
-        $e->user = $user;
-        $ensembles[] = $e;
-    }
+    $ensembles = ens_search($form_args, $req_user);
     if (!$ensembles) {
         echo "No results found.  Try expanding your criteria.";
         page_tail();
         return;
     }
-    uasort($ensembles, 'compare_value');
     start_table('table-striped');
     $enable_tag = '<br><a id="enable" onclick="remove()" href=#>Enable mouse-over audio</a>';
     $name_header = sprintf(

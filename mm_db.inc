@@ -67,4 +67,21 @@ class EnsembleMember {
     }
 }
 
+class Search {
+    static function insert($clause) {
+        $db = BoincDb::get();
+        $ret = $db->insert('search', $clause);
+        if (!$ret) return 0;
+        return $db->insert_id();
+    }
+    static function lookup_id($id) {
+        $db = BoincDb::get();
+        return $db->lookup_id($id, 'search', 'Search');
+    }
+    static function enum($where_clause=null) {
+        $db = BoincDb::get();
+        return $db->enum('search', 'Search', $where_clause);
+    }
+}
+
 ?>

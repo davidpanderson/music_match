@@ -20,6 +20,7 @@
 
 require_once("../inc/util.inc");
 require_once("../inc/mm.inc");
+require_once("../inc/search.inc");
 require_once("../inc/tech.inc");
 
 function tech_search_form() {
@@ -49,65 +50,15 @@ function get_form_args() {
     return $x;
 }
 
-function match_args($profile, $args) {
-    $x = new StdClass;
-    $x->tech_area = 0;
-    $x->program = 0;
-    foreach ($profile->tech_area as $i) {
-        if (in_array($i, $args->tech_area)) {
-            $x->tech_area++;
-        }
-    }
-    foreach ($profile->program as $i) {
-        if (in_array($i, $args->program)) {
-            $x->program++;
-        }
-    }
-    return $x;
-}
-
-function match_value($match) {
-    $x = 0;
-    if ($match->tech_area) $x += 100 + $match->tech_area;
-    if ($match->program) $x += 100 + $match->program;
-    return $x;
-}
-
 function tech_search_action($req_user) {
     page_head("Technician search results");
     $form_args = get_form_args();
-    [$close_country, $close_zip] = handle_close($form_args, $req_user);
-
-    $profiles_in = get_profiles(TECHNICIAN);
-    $profiles = array();
-    foreach ($profiles_in as $user_id=>$profile) {
-        if ($req_user->id == $user_id) continue;
-        $profile->match = match_args($profile, $form_args);
-        $profile->value = match_value($profile->match);
-        if ($profile->value == 0) continue;
-        $user = BoincUser::lookup_id($user_id);
-        if ($close_country && $close_country != $user->country) {
-            continue;
-        }
-        if ($close_zip) {
-            $other_zip = str_to_zip($user->postal_code);
-            if (!$other_zip) continue;
-            $dist = zip_dist($close_zip, $other_zip);
-            if ($dist > 60) continue;
-            $profile->value -= $dist;
-            $profile->dist = $dist;
-        } else {
-            $profile->dist = -1;
-        }
-        $profile->user = $user;
-        $profiles[$user->id] = $profile;
-    }
+    $profiles = tech_search($form_args, $req_user);
     if (!$profiles) {
         echo "No results found.  Try expanding your criteria.";
         page_tail();
         return;
     }
-    uasort($profiles, 'compare_value');
     start_table("table-striped");
     tech_summary_header();
     foreach ($profiles as $user_id=>$profile) {

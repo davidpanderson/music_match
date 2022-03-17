@@ -24,23 +24,18 @@ create table ensemble_member (
     unique(ensemble_id, user_id)
 ) engine = InnoDB;
 
-create table notification (
-    id              integer     not null auto_increment,
-    create_time     double      not null,
-    user_id         integer     not null,
-    sent_by_email   double      not null default 0,
-    last_view       double      not null default 0,
-    type            tinyint     not null,
-    id1             integer     not null default 0,
-    id2             integer     not null default 0,
-    index(user_id),
-    primary key (id)
-) engine = InnoDB;
+# notify:
+# id
+# userid
+# create_time
+# type
+# opaque
 
 alter table notify
     add column sent_by_email double not null default 0,
     add column last_view double not null default 0,
-    add column id2 integer not null default 0
+    add column id2 integer not null default 0,
+    add unique notify_un (userid, type, opaque, id2)
 ;
 
 # a search and its results
@@ -49,12 +44,15 @@ create table search (
     id              integer     not null auto_increment,
     create_time     double      not null,
     user_id         integer     not null,
-    desc            text        not null,
-        # role, search params, and results in JSON
-    retry_time      double      not null default 0,
-        # when we last retried the search
-    nnew            integer     not null default 0,
-        # number of new results found on retry
-    index(user_id),
+    params          text        not null,
+        # role, search args in JSON
+    params_hash     char(64)    not null,
+    view_results    text        not null,
+    view_time       double      not null,
+    rerun_time      double      not null default 0,
+        # when we last reran the search
+    rerun_nnew      integer     not null default 0,
+        # number of new results found on rerun, relative to view_results
+    unique(user_id, params_hash),
     primary key (id)
 ) engine = InnoDB;

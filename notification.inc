@@ -78,6 +78,17 @@ function notification_string($n, $web) {
             return subscribed_post_email_line($n);
         }
     case NOTIFY_PROFILE:
+        $user = BoincUser::lookup_id($n->opaque);
+        if (!$user) return null;
+        if ($web) {
+            return sprintf("<a href=user.php?user_id=%d>%s</a> has changed their %s profile.",
+                $user->id, $user->name, role_name($n->id2)
+            );
+        } else {
+            return sprintf("%s has changed their %s profile.",
+                $user->name, role_name($n->id2)
+            );
+        }
     case NOTIFY_ENS_JOIN_REQ:
         $ens = Ensemble::lookup_id($n->opaque);
         if (!$ens) return null;
@@ -122,7 +133,7 @@ function notification_string($n, $web) {
 }
 
 function show_notifications($user) {
-    $ns = BoincNotify::enum("userid = $user->id");
+    $ns = BoincNotify::enum("userid = $user->id order by id desc");
     if (!$ns) {
         row2('No recent notifications', '');
         return;

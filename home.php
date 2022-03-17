@@ -38,7 +38,7 @@ function left() {
 
 function show_profiles() {
     global $user;
-    echo "<h3>Your profiles</h3>
+    echo "<h3>My profiles</h3>
         <h3>Composer</h3>
     ";
     if (profile_exists($user->id, COMPOSER)) {
@@ -101,7 +101,7 @@ function show_profiles() {
 
 function show_ens() {
     global $user;
-    echo "<h3>Your ensembles</h3>";
+    echo "<h3>My ensembles</h3>";
     start_table();
     show_ensembles($user);
     end_table();
@@ -111,7 +111,7 @@ function show_ens() {
 }
 
 function show_search() {
-    echo "<h3>Find musicians</h3>";
+    echo "<h3>Find people</h3>";
     show_button(
         sprintf("cp_search.php?role=%d", COMPOSER),
         "Composers", null, "btn-primary"

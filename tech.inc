@@ -33,7 +33,8 @@ function tech_summary_header() {
     row_heading_array(array("Name", "Areas", "Programs", "Country"));
 }
 
-function tech_summary_row($user, $profile) {
+function tech_summary_row($profile) {
+    $user = $profile->user;
     row_array(array(
         "<a href=user.php?user_id=$user->id>$user->name</a>",
         lists_to_string(

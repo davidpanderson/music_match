@@ -54,7 +54,11 @@ function notification_string($n, $web) {
             return sprintf('You received a message from %s.', $u->name);
         }
     case NOTIFY_SEARCH:
-        return "New search result.";
+        if ($web) {
+            return "One of your <a href=search_list.php>previous searches</a> has a new result.";
+        } else {
+            return "One of your previous searches has a new result.";
+        }
     case NOTIFY_ENS_DEL:
         $ens = Ensemble::lookup_id($n->opaque);
         if (!$ens) return null;

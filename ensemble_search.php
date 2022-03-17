@@ -71,26 +71,13 @@ function ens_search_action($req_user) {
         return;
     }
     start_table('table-striped');
-    $enable_tag = '<br><a id="enable" onclick="remove()" href=#>Enable mouse-over audio</a>';
-    $name_header = sprintf(
-        'Name<br><small>click for details<br>mouse over to hear audio sample%s</small>',
-        $enable_tag
-    );
-
-    ens_profile_summary_header($name_header);
+    ens_profile_summary_header();
     foreach ($ensembles as $e) {
-        $profile = $e->profile;
-        if ($profile->signature_filename) {
-            echo sprintf('<audio id=a%d><source src="%s/%d.mp3"></source></audio>',
-                $e->id,
-                role_dir(ENSEMBLE),
-                $e->id
-            );
-        }
         ens_profile_summary_row($e);
     }
     end_table();
     page_tail();
+    record_search($req_user, ENSEMBLE, $form_args, $ensembles);
 }
 
 $action = post_str("submit", true);

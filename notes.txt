@@ -432,7 +432,7 @@ periodic rerun
 
 "My searches" page
     list last viewed, search params, #new results
-    delete notification
+    delete "new search results" notification, if any
     View link
     delete button
 

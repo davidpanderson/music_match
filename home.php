@@ -131,6 +131,10 @@ function show_search() {
         "ensemble_search.php",
         "Ensembles", null, "btn-primary"
     );
+    echo "
+        <p><p>
+        <a href=search_list.php>Previous searches</a>
+    ";
 }
 
 function right() {

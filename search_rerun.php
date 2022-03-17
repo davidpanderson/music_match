@@ -19,6 +19,8 @@
 // ops script to rerun searches, record the results, and notify if new results
 
 require_once("../inc/search.inc");
+require_once("../inc/boinc_db.inc");
+require_once("../inc/forum_db.inc");
 
 function get_nnew($new, $old) {
     $n = 0;
@@ -31,34 +33,44 @@ function get_nnew($new, $old) {
 }
 
 function main() {
-    $now = time();
-    $t = $now - 7*86400;
+    $t = time() - 7*86400;
     $searches = Search::enum("rerun_time < $t");
     foreach ($searches as $search) {
+        $user = BoincUser::lookup_id($search->user_id);
         $params = json_decode($search->params);
-        switch ($params->role) {
+        $role = $params->role;
+        $args = $params->args;
+        switch ($role) {
         case COMPOSER:
         case PERFORMER:
-            $results = cp_rerun($params);
+            $results = cp_search($role, $args, $user);
             break;
         case TECHNICIAN:
-            $results = tech_rerun($params);
+            $results = tech_search($args, $user);
             break;
         case ENSEMBLE:
-            $results = ens_rerun($params);
+            $results = ens_search($args, $user);
             break;
         default:
             die("bad role");
         }
         $old_results = json_decode($search->view_results);
-        $nnew = get_nnew($results, $old_results);
-        if ($nnew) {
-            $search->update(
-                sprintf("rerun_time=%d, rerun_nnew=%d", $now, $nnew)
-            );
-            BoincNotify::replace(
-                sprintf(
+        $ids = [];
+        foreach ($results as $id=>$x) {
+            $ids[] = $id;
         }
+        $nnew = get_nnew($ids, $old_results);
+        $search->update(
+            sprintf("rerun_time=%d, rerun_nnew=%d", time(), $nnew)
+        );
+        if ($nnew) {
+            BoincNotify::replace(
+                sprintf("userid=%d, create_time=%d, type=%d, opaque=0, id2=0",
+                    $user->id, time(), NOTIFY_SEARCH
+                )
+            );
+        }
+        echo "re-ran search $search->id; got $nnew new results\n";
     }
 }
 

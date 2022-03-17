@@ -117,25 +117,18 @@ function cp_name_link($user, $profile) {
     );
 }
 
-// show a 2-column table row summarizing a composer or performer profile
-//
-function show_profile_2col($user, $profile, $role) {
-    $x1 = cp_name_link($user, $profile);
-    $x2 = profile_summary($user, $profile, $role);
-    if (DEBUG) {
-        $x2 .= sprintf('<br>match: %d (%d, %d, %d)',
-            $profile->value,
-            $profile->match->inst,
-            $profile->match->style,
-            $profile->match->level
-        );
-    }
-    row2($x1, $x2);
-}
-
 // show profile as an N-column table row
 //
-function cp_profile_summary_row($user, $profile, $role) {
+function cp_profile_summary_row($profile, $role) {
+    $user = $profile->user;
+    if ($profile->signature_filename) {
+        echo sprintf('<audio id=a%d><source src="%s/%d.mp3"></source></audio>',
+            $user->id,
+            role_dir($role),
+            $user->id
+        );
+    }
+
     $x = array();
     $x[] = cp_name_link($user, $profile);
     $x[] = lists_to_string(
@@ -166,7 +159,12 @@ function cp_profile_summary_row($user, $profile, $role) {
 
 // table header for the above
 //
-function cp_profile_summary_header($name_header, $role) {
+function cp_profile_summary_header($role) {
+    $enable_tag = '<br><a id="enable" onclick="remove()" href=#>Enable mouse-over audio</a>';
+    $name_header = sprintf(
+        'Name<br><small>click for details<br>mouse over to hear audio sample%s</small>',
+        $enable_tag
+    );
     $x= [$name_header, "Instruments"];
     if ($role == COMPOSER) {
         $x[] = "Ensemble types";

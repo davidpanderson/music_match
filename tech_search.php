@@ -62,10 +62,11 @@ function tech_search_action($req_user) {
     start_table("table-striped");
     tech_summary_header();
     foreach ($profiles as $user_id=>$profile) {
-        tech_summary_row($profile->user, $profile);
+        tech_summary_row($profile);
     }
     end_table();
     page_tail();
+    record_search($req_user, TECHNICIAN, $form_args, $profiles);
 }
 
 $user = get_logged_in_user();

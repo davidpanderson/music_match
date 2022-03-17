@@ -232,7 +232,7 @@ function ens_search($form_args, $req_user) {
             $e->dist = -1;
         }
         $e->user = $user;
-        $ensembles[] = $e;
+        $ensembles[$e->id] = $e;
     }
     uasort($ensembles, 'compare_value');
     return $ensembles;
@@ -247,15 +247,15 @@ function record_search($user, $role, $args, $profiles) {
     $params->role = $role;
     $params->args = $args;
     $params_json = json_encode($params, JSON_PRETTY_PRINT);
-    $params_md5 = md5($params_json);
+    $params_hash = md5($params_json);
     $results = [];
     foreach ($profiles as $id=>$p) {
         $results[] = $id;
     }
     $results_json = json_encode($results);
     $search = Search::lookup(
-        sprintf("user_id=%d and params_md5='%s'",
-            $user->id, $params_md5
+        sprintf("user_id=%d and params_hash='%s'",
+            $user->id, $params_hash
         )
     );
     if ($search) {
@@ -267,7 +267,7 @@ function record_search($user, $role, $args, $profiles) {
     } else {
         Search::insert(
             sprintf("(create_time, user_id, params, params_hash, view_results, view_time) values (%d, %d, '%s', '%s', '%s', %d)",
-                time(), $user->id, $params_json, $params_md5, $results_json, time()
+                time(), $user->id, $params_json, $params_hash, $results_json, time()
             )
         );
     }

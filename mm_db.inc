@@ -78,9 +78,17 @@ class Search {
         $db = BoincDb::get();
         return $db->lookup_id($id, 'search', 'Search');
     }
+    static function lookup($clause) {
+        $db = BoincDb::get();
+        return $db->lookup('search', 'Search', $clause);
+    }
     static function enum($where_clause=null) {
         $db = BoincDb::get();
         return $db->enum('search', 'Search', $where_clause);
+    }
+    function update($clause) {
+        $db = BoincDb::get();
+        return $db->update($this, 'search', $clause);
     }
 }
 

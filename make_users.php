@@ -143,15 +143,8 @@ function rnd_ens($id) {
     return $x;
 }
 
-function random_name() {
-    $first = array("John", "Bob", "Mary", "Alice", "Lucy", "Fred");
-    $last = array("Smith", "Jones", "Adams", "Green", "Brown", "Williams");
-    shuffle($first);
-    shuffle($last);
-    return sprintf("%s %s", $first[0], $last[0]);
-}
-
 function make_users($n) {
+    $names = file("names.txt");
     for ($i=0; $i<$n; $i++) {
         $pc = "";
         switch (random_int(1,10)) {
@@ -167,7 +160,7 @@ function make_users($n) {
         }
         $user = make_user(
             "fake_user_$i@foo.com",
-            random_name(),
+            $names[$i],
             "",
             $c,
             $pc

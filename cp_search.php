@@ -89,44 +89,14 @@ function cp_search_action($role, $req_user) {
     }
 
     start_table("table-striped");
-    $enable_tag = '<br><a id="enable" onclick="remove()" href=#>Enable mouse-over audio</a>';
-
-    // whether to show data in N columns
-    //
-    $ncol = true;
-
-    if ($ncol) {
-        $name_header = sprintf(
-            'Name<br><small>click for details<br>mouse over to hear audio sample%s</small>',
-            $enable_tag
-        );
-        cp_profile_summary_header($name_header, $role);
-    } else {
-        echo sprintf('<tr><th %s>%s<br><small>click for details<br>mouse over to hear audio sample%s</small></th><th %s>Summary</th></tr>',
-            NAME_ATTRS,
-            $role==COMPOSER?"Composer":"Performer",
-            $enable_tag,
-            VALUE_ATTRS
-        );
-    }
+    cp_profile_summary_header($role);
     foreach ($profiles as $user_id=>$profile) {
-        if ($profile->signature_filename) {
-            echo sprintf('<audio id=a%d><source src="%s/%d.mp3"></source></audio>',
-                $user_id,
-                role_dir($role),
-                $user_id
-            );
-        }
-        if ($ncol) {
-            cp_profile_summary_row($profile->user, $profile, $role);
-        } else {
-            show_profile_2col($profile->user, $profile, $role);
-        }
+        cp_profile_summary_row($profile, $role);
     }
     end_table();
     page_tail();
 
-    //record_search($req_user, $role, $form_args, $profiles);
+    record_search($req_user, $role, $form_args, $profiles);
 }
 
 $user = get_logged_in_user(true);

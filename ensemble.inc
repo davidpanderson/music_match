@@ -49,7 +49,12 @@ function show_ensembles($user) {
     }
 }
 
-function ens_profile_summary_header($name_header) {
+function ens_profile_summary_header() {
+    $enable_tag = '<br><a id="enable" onclick="remove()" href=#>Enable mouse-over audio</a>';
+    $name_header = sprintf(
+        'Name<br><small>click for details<br>mouse over to hear audio sample%s</small>',
+        $enable_tag
+    );
     row_heading_array(array(
         $name_header, "Type", "Instruments", "Style", "Level", "Founder", "Country"
     ));
@@ -70,8 +75,16 @@ function ens_name_link($ens, $profile) {
         $profile->signature_filename?"&nbsp;&nbsp;<img height=24px src=note.png>":""
     );
 }
+
 function ens_profile_summary_row($e) {
     $p = $e->profile;
+    if ($p->signature_filename) {
+        echo sprintf('<audio id=a%d><source src="%s/%d.mp3"></source></audio>',
+            $e->id,
+            role_dir(ENSEMBLE),
+            $e->id
+        );
+    }
     $user = $e->user;
     row_array(array(
         ens_name_link($e, $p),

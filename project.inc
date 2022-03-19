@@ -237,7 +237,8 @@ function mm_navbar(
 
     navbar_menu(tra("Community"), array(
         array(tra("Message boards"), $url_prefix."forum_index.php"),
-        array("User search", "user_search.php")
+        array("User name lookup", "name_lookup.php"),
+        array("Ensemble name lookup", "name_lookup.php?ensemble=1")
     ));
     if ($user) {
         navbar_menu(tra("Account"), array(

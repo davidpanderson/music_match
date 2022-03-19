@@ -18,6 +18,20 @@
 
 // make some random simulated users
 
+// before running this, delete in the DB
+//
+// user with id>1
+// ensemble
+// ensemble_member
+// private_messages
+// forum_preferences with userid>1
+// notify
+// friend
+// search
+//
+// and delete from project
+// ensemble/*, composer/*, performer/*, technician/*
+
 require_once("../inc/util.inc");
 require_once("../inc/user_util.inc");
 require_once("../inc/zip.inc");
@@ -195,7 +209,8 @@ function make_ensemble($name, $users) {
         )
     );
     if (!$ens_id) die("insert failed");
-    $ens = Ensemble::lookup($ens_id);
+    echo "made ensemble $name; ID $ens_id\n";
+    $ens = Ensemble::lookup_id($ens_id);
     $ens->update("name='ensemble $ens_id'");
     write_profile($ens_id, rnd_ens($ens_id), ENSEMBLE);
 

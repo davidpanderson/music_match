@@ -38,7 +38,6 @@ function join_form($ens, $ens_info) {
     ";
     form_start("ensemble_join.php", "POST");
     form_input_hidden('ens_id', $ens->id);
-    form_input_textarea("Message", 'message');
     form_submit("Request membership", 'name=submit value=on');
     form_end();
     page_tail();
@@ -51,14 +50,16 @@ function join_action($ens, $ens_info, $user) {
             time(), $ens->id, $user->id, EM_PENDING
         )
     );
-    BoincNotify::insert(
+    BoincNotify::replace(
         sprintf(
-            "(create_time, userid, type, opaque, id2) values (%d, %d, %d, %d, %d)",
+            "create_time=%d, userid=%d, type=%d, opaque=%d, id2=%d",
             time(), $ens->user_id, NOTIFY_ENS_JOIN_REQ, $ens->id, $user->id
         )
     );
     page_head("Request submitted");
-    echo "Your request to join $ens->name has been submitted.<p>";
+    echo "Your request to join $ens->name has been submitted.<p>
+        If you like, <a href=pm.php?action=new&userid=$ens->user_id>send the founder a message</a>.
+    ";
     page_tail();
 }
 
@@ -103,7 +104,6 @@ function decide_form($ens, $ens_info, $user_id) {
     form_input_hidden('user_id', $user_id);
     form_input_hidden('ens_id', $ens->id);
     form_input_hidden('action', 'confirm');
-    form_input_text("Message to $user->name", 'message');
     form_radio_buttons('', 'accept', [[1, 'Accept'], [0, 'Decline']], 1);
     form_submit('OK', 'name=confim value=on');
     form_end();
@@ -119,9 +119,12 @@ function decide_action($ens, $ens_info, $user_id) {
             $ens->id, $user_id
         )
     );
-    BoincNotify::insert(
+
+    // notify the requester
+    //
+    BoincNotify::replace(
         sprintf(
-            "(create_time, userid, type, opaque, id2) values (%d, %d, %d, %d, %d)",
+            "create_time=%d, userid=%d, type=%d, opaque=%d, id2=%d",
             time(), $user_id, NOTIFY_ENS_JOIN_REPLY, $ens->id, $accept
         )
     );
@@ -135,7 +138,114 @@ function decide_action($ens, $ens_info, $user_id) {
         $user->name,
         $ens->name
     );
+    echo "
+        If you like, <a href=pm.php?action=new&userid=$user_id>send $user->name a message</a>.
+    ";
     page_tail();
+
+    // remove the notification to founder, if any
+    //
+    $user = get_logged_in_user();
+    BoincNotify::delete_aux(
+        sprintf("userid=%d and type=%d and opaque=%d and id2=%d",
+            $user->id, NOTIFY_ENS_JOIN_REQ, $ens->id, $user_id
+        )
+    );
+}
+
+function resign($ens, $user) {
+    $em = EnsembleMember::lookup(
+        sprintf("ensemble_id=%d and user_id=%d and status=%d",
+            $ens->id, $user->id, EM_APPROVED
+        )
+    );
+    if (!$em) {
+        error_page("You're not a member of $ens->name");
+    }
+    page_head("Confirm resignation from $ens->name");
+    echo "Do you really want to resign from $ens->name?<p>";
+    mm_show_button(
+        "ensemble_join.php?action=resign_confirmed&ens_id=$ens->id",
+        "Resign"
+    );
+    page_tail();
+}
+
+function resign_confirmed($ens, $user) {
+    $em = EnsembleMember::lookup(
+        sprintf("ensemble_id=%d and user_id=%d and status=%d",
+            $ens->id, $user->id, EM_APPROVED
+        )
+    );
+    if (!$em) {
+        error_page("You're not a member of $ens->name");
+    }
+    $em->delete_aux("user_id=$user->id and ensemble_id=$ens->id");
+    page_head("Resigned from $ens->name");
+    echo "You have resigned from $ens->name.
+        <p><p>
+        If you like,
+        <a href=pm.php?action=new&userid=$ens->user_id>send the founder a message</a>.
+    ";
+    page_tail();
+
+    // notify the founder
+    //
+    BoincNotify::replace(
+        sprintf("userid=%d, create_time=%d, type=%d, opaque=%d, id2=%d",
+            $ens->user_id, time(), NOTIFY_ENS_QUIT, $ens->id, $user->id
+        )
+    );
+}
+
+function remove_list($ens) {
+    page_head("Remove members from $ens->name");
+    $ems = EnsembleMember::enum(
+        sprintf("ensemble_id=%d and status=%d", $ens->id, EM_APPROVED)
+    );
+    start_table();
+    foreach ($ems as $em) {
+        $user = BoincUser::lookup_id($em->user_id);
+        row2(
+            "<a href=user.php?user_id=$user->id>$user->name</a>",
+            mm_button_text(
+                "ensemble_join.php?action=remove&ens_id=$ens->id&user_id=$user->id",
+                "Remove", BUTTON_SMALL
+            )
+        );
+    }
+    end_table();
+    page_tail();
+}
+
+function remove($ens, $rem_user_id) {
+    $user = BoincUser::lookup_id($rem_user_id);
+    if (!$user) error_page("no such user");
+    page_head("Confirm remove member");
+    echo "Are you sure you want to remove $user->name from $ens->name?<p>";
+    mm_show_button("ensemble_join.php?action=remove_confirmed&ens_id=$ens->id&user_id=$user->id",
+        "Remove member"
+    );
+    page_tail();
+}
+
+function remove_confirmed($ens, $rem_user_id) {
+    EnsembleMember::delete_aux("ensemble_id=$ens->id and user_id=$rem_user_id");
+    $user = BoincUser::lookup_id($rem_user_id);
+    page_head("Member removed");
+    echo "$user->name has been removed from $ens->name.";
+    echo "
+        If you like, <a href=pm.php?action=new&userid=$user->id>send $user->name a message</a>.
+    ";
+    page_tail();
+
+    // notify the removed user
+    //
+    BoincNotify::replace(
+        sprintf("userid=%d, create_time=%d, type=%d, opaque=%d, id2=0",
+            $rem_user_id, time(), NOTIFY_ENS_REMOVE, $ens->id
+        )
+    );
 }
 
 $user = get_logged_in_user();
@@ -166,6 +276,21 @@ if (post_str('submit', true)) {
         if ($ens->user_id != $user->id) error_page("not founder");
         $user_id = get_int('user_id');
         decide_action($ens, $ens_info, $user_id);
+    } else if ($action == 'resign') {
+        resign($ens, $user);
+    } else if ($action == 'resign_confirmed') {
+        resign_confirmed($ens, $user);
+    } else if ($action == 'remove_list') {
+        if ($ens->user_id != $user->id) error_page("not founder");
+        remove_list($ens);
+    } else if ($action == 'remove') {
+        if ($ens->user_id != $user->id) error_page("not founder");
+        $rem_user_id = get_int("user_id");
+        remove($ens, $rem_user_id);
+    } else if ($action == 'remove_confirmed') {
+        if ($ens->user_id != $user->id) error_page("not founder");
+        $rem_user_id = get_int("user_id");
+        remove_confirmed($ens, $rem_user_id);
     } else {
         if (!$ens_info->seeking_members) error_page("Not seeking members");
         join_form($ens, $ens_info);

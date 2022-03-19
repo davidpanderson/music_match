@@ -165,7 +165,15 @@ recent notifications.
 You can have these delivered immediately,
 or as daily or weekly digests,
 or you can unsubscribe.
+<hr>
 <p>
+Music Match is a non-profit project
+based at the University of California, Berkeley.
+<p>
+The data collected by Music Match will not be
+sold, distributed, or used for other purposes.
+You can delete your account, in which case all
+data about you will be removed.
 EOT;
 text_end();
 

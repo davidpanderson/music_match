@@ -81,10 +81,24 @@ function show_ensemble($ens_id, $user) {
     if ($ens->user_id == $user->id) {
         // founder
         $x = $profile->seeking_members?"Seeking new members":"Not seeking new members";
+        $ems = EnsembleMember::enum(
+            sprintf("ensemble_id=%d and status=%d", $ens->id, EM_PENDING)
+        );
+        if ($ems) {
+            $x .= "<br>There are outstanding membership requests.
+                <a href=ensemble_join.php?action=review&ens_id=$ens->id>Review</a>.
+            ";
+        }
     } else {
         $em = EnsembleMember::lookup("user_id=$user->id and ensemble_id=$ens_id");
         if ($em) {
-            $x = em_status_string($em->status);
+            if ($em->status == EM_APPROVED) {
+                $x = "You are a member.
+                    <br><a href=ensemble_join.php?action=resign&ens_id=$ens->id>Resign</a>
+                ";
+            } else {
+                $x = em_status_string($em->status);
+            }
         } else {
             if ($profile->seeking_members) {
                 $x = "<a href=ensemble_join.php?ens_id=$ens_id>Request membership</a>";
@@ -96,6 +110,8 @@ function show_ensemble($ens_id, $user) {
     row2("Membership", $x);
     if ($user->id == $ens->user_id) {
         row2('', mm_button_text("ensemble_edit.php?ens_id=$ens_id", "Edit ensemble"));
+        row2('', mm_button_text("ensemble_join.php?ens_id=$ens_id&action=remove_list", "Remove members", BUTTON_SMALL));
+
     }
 
     end_table();

@@ -19,8 +19,6 @@ create table ensemble_member (
         # 1 approved (user is member)
         # 2 declined
         # 3 removed
-    req_msg         varchar(255)    not null default '',
-    reply_msg       varchar(255)    not null default '',
     unique(ensemble_id, user_id)
 ) engine = InnoDB;
 

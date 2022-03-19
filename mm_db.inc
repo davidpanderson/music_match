@@ -65,6 +65,10 @@ class EnsembleMember {
         $db = BoincDb::get();
         return $db->update_aux('ensemble_member', $clause);
     }
+    static function delete_aux($clause) {
+        $db = BoincDb::get();
+        return $db->delete_aux('ensemble_member', $clause);
+    }
 }
 
 class Search {

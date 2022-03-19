@@ -132,6 +132,10 @@ function tech_search($form_args, $req_user) {
         $profile->value = tech_match_value($profile->match);
         if ($profile->value == 0) continue;
         $user = BoincUser::lookup_id($user_id);
+        if (!$user) {
+            echo "No user ID $user_id\n";
+            continue;
+        }
         if ($close_country && $close_country != $user->country) {
             continue;
         }

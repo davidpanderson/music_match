@@ -72,6 +72,8 @@ define('PERFORMER', 1);
 define('TECHNICIAN', 2);
 define('ENSEMBLE', 3);
 
+// removing or changing keys will invalidate existing profiles
+
 define('STYLE_LIST', array(
     'baroque' => 'Baroque',
     'classical' => 'Classical',

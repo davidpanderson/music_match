@@ -124,7 +124,10 @@ function notification_string($n, $web) {
     case NOTIFY_ENS_REMOVE:
         $ens = Ensemble::lookup_id($n->opaque);
         if (!$ens) return null;
-        return sprintf('You were removed from %s.', $ens->name);
+        return sprintf(
+            'You were removed from <a href=ensemble.php?ens_id=%d>%s</a>.',
+            $ens->id, $ens->name
+        );
     case NOTIFY_ENS_QUIT:
         $ens = Ensemble::lookup_id($n->opaque);
         if (!$ens) return null;
@@ -145,7 +148,7 @@ function show_notifications($user) {
     foreach ($ns as $n) {
         $s = notification_string($n, true);
         if (!$s) continue;
-        row2(date_str($n->create_time), $s);
+        row2(time_str($n->create_time), $s);
         $n->update(sprintf('last_view=%d', time()));
     }
 }

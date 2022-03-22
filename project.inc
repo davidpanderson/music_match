@@ -54,7 +54,7 @@ define("POST_REPORT_EMAILS", "davea@berkeley.edu");
 //-------------- CSS styling
 
 // add your own stylesheets (included after bootstrap)
-//define("STYLESHEET", "custom_dark.css");
+define("STYLESHEET", "custom_dark.css");
 //define("STYLESHEET2", "bbb.css");
 
 //-------------- enable/disable web features
@@ -73,7 +73,7 @@ define("TERMSOFUSE_FILE", "../../terms_of_use.txt");
 
 //-------------- Project-specific preferences
 
-define("DARK_MODE", true);
+define("DARK_MODE", false);
 
 //-------------- PHPMailer
 

@@ -28,6 +28,7 @@
 require_once("../inc/util.inc");
 require_once("../inc/mm.inc");
 require_once("../inc/mm_db.inc");
+require_once("../inc/notification.inc");
 
 function join_form($ens, $ens_info) {
     page_head("Request membership in $ens->name");
@@ -44,6 +45,9 @@ function join_form($ens, $ens_info) {
 }
 
 function join_action($ens, $ens_info, $user) {
+    EnsembleMember::delete_aux(
+        sprintf("ensemble_id=%d and user_id=%d", $ens->id, $user->id)
+    );
     EnsembleMember::insert(
         sprintf(
             "(create_time, ensemble_id, user_id, status) values (%d, %d, %d, %d)",
@@ -56,6 +60,7 @@ function join_action($ens, $ens_info, $user) {
             time(), $ens->user_id, NOTIFY_ENS_JOIN_REQ, $ens->id, $user->id
         )
     );
+    email_if_immediate(BoincUser::lookup_id($ens->user_id));
     page_head("Request submitted");
     echo "Your request to join $ens->name has been submitted.<p>
         If you like, <a href=pm.php?action=new&userid=$ens->user_id>send the founder a message</a>.
@@ -124,14 +129,15 @@ function decide_action($ens, $ens_info, $user_id) {
     //
     BoincNotify::replace(
         sprintf(
-            "create_time=%d, userid=%d, type=%d, opaque=%d, id2=%d",
+            "create_time=%d, userid=%d, type=%d, opaque=%d, id2=%d, sent_by_email=0",
             time(), $user_id, NOTIFY_ENS_JOIN_REPLY, $ens->id, $accept
         )
     );
+    $user = BoincUser::lookup_id($user_id);
+    email_if_immediate($user);
     page_head(
         sprintf('Membership request %s', $accept?'accepted':'declined')
     );
-    $user = BoincUser::lookup_id($user_id);
     echo sprintf(
         'You %s the request by %s for membership in %s.<p>',
         $accept?"accepted":"declined",
@@ -192,10 +198,12 @@ function resign_confirmed($ens, $user) {
     // notify the founder
     //
     BoincNotify::replace(
-        sprintf("userid=%d, create_time=%d, type=%d, opaque=%d, id2=%d",
+        sprintf(
+            "userid=%d, create_time=%d, type=%d, opaque=%d, id2=%d, sent_by_email=0",
             $ens->user_id, time(), NOTIFY_ENS_QUIT, $ens->id, $user->id
         )
     );
+    email_if_immediate(BoincUser::lookup_id($ens->user_id));
 }
 
 function remove_list($ens) {
@@ -242,10 +250,12 @@ function remove_confirmed($ens, $rem_user_id) {
     // notify the removed user
     //
     BoincNotify::replace(
-        sprintf("userid=%d, create_time=%d, type=%d, opaque=%d, id2=0",
+        sprintf(
+            "userid=%d, create_time=%d, type=%d, opaque=%d, id2=0, sent_by_email=0",
             $rem_user_id, time(), NOTIFY_ENS_REMOVE, $ens->id
         )
     );
+    email_if_immediate($user);
 }
 
 $user = get_logged_in_user();

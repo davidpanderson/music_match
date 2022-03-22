@@ -262,7 +262,7 @@ function do_send($logged_in_user) {
         pm_send_msg($logged_in_user, $user, $subject, $content, true);
     }
 
-    Header("Location: pm.php?action=inbox&sent=1");
+    Header("Location: pm.php?action=sent");
 }
 
 function do_block($logged_in_user) {
@@ -357,6 +357,10 @@ if ($action == "inbox") {
     do_confirmedblock($logged_in_user);
 } elseif ($action == "delete_selected") {
     do_delete_selected($logged_in_user);
+} elseif ($action == "sent") {
+    page_head("Private messages");
+    echo "Your message has been sent.";
+    page_tail();
 } else {
     error_page(tra("Unknown action"));
 }

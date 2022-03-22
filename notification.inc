@@ -17,6 +17,7 @@
 // --------------------------------------------------------------------
 
 require_once("../inc/mm.inc");
+require_once("../inc/mm_db.inc");
 require_once("../inc/forum_db.inc");
 require_once("../inc/user.inc");
 
@@ -139,6 +140,8 @@ function notification_string($n, $web) {
     }
 }
 
+// show notifications (on home page)
+//
 function show_notifications($user) {
     $ns = BoincNotify::enum("userid = $user->id order by id desc");
     if (!$ns) {
@@ -150,6 +153,53 @@ function show_notifications($user) {
         if (!$s) continue;
         row2(time_str($n->create_time), $s);
         $n->update(sprintf('last_view=%d', time()));
+    }
+}
+
+// send notifications not previously emailed
+// return true if anything was sent
+// 
+//
+function send_notify_email($user) {
+    $now = time();
+    $ns = BoincNotify::enum("userid=$user->id and sent_by_email=0 order by create_time desc");
+    if (!$ns) {
+        return false;
+    }
+    $x = [];
+    foreach ($ns as $n) {
+        $x[] = notification_string($n, false);
+        $n->update("sent_by_email=$now");
+    }
+    if ($x) {
+        $subject = "Music Match notifications";
+        $body = sprintf(
+'%s
+
+For details, or to change email settings, visit Music Match:
+https://isaac.ssl.berkeley.edu/mm/home.php
+',
+            implode($x, "\n\n")
+        );
+        $body_html = sprintf(
+'%s
+<p><p>
+For details, or to change email settings, <a href=%s>visit Music Match</a>.
+',
+            implode($x, "<p><p>"),
+            'https://isaac.ssl.berkeley.edu/mm/home.php'
+        );
+        send_email($user, $subject, $body, $body_html);
+    }
+    return true;
+}
+
+// user has a new notification.
+// If their email setting is "immediate", send them an email
+//
+function email_if_immediate($user) {
+    if ($user && $user->send_email == NOTIFY_IMMEDIATE) {
+        send_notify_email($user);
     }
 }
 

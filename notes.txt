@@ -439,3 +439,33 @@ periodic rerun
 View search page
     arg: search ID
     show results with new results at top
+----------------
+Alpha testers
+
+Ellie
+Maryse
+Chelsea
+Monica
+Rich Kraft
+Mosa Tsai
+Kyle Schmoltz
+
+- create an account
+- create one or more profiles (composer, performer, technician)
+- create an ensemble
+- do searches for composers, performers, technicians, and ensembles
+- find me (David Anderson);
+    send me a message and make a friend request
+- find my string quartet (Haste Street Players)
+    and ask to become a member
+
+Beta
+American Composers Orchestra
+https://americancomposers.org/composers/
+
+American Composers Forum
+https://composersforum.org/
+
+American Composers Alliance
+https://composers.com/
+shows the catalog of 350 obscure composers

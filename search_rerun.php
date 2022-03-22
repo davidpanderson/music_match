@@ -1,3 +1,4 @@
+#! /usr/bin/env php
 <?php
 // This file is part of Music Match.
 // Copyright (C) 2022 David P. Anderson
@@ -65,7 +66,7 @@ function main() {
         );
         if ($nnew) {
             BoincNotify::replace(
-                sprintf("userid=%d, create_time=%d, type=%d, opaque=0, id2=0",
+                sprintf("userid=%d, create_time=%d, type=%d, opaque=0, id2=0, sent_by_email=0",
                     $user->id, time(), NOTIFY_SEARCH
                 )
             );
@@ -74,5 +75,8 @@ function main() {
     }
 }
 
+
+echo date(DATE_RFC822), ": Starting\n";
 main();
+echo date(DATE_RFC822), ": Finished\n";
 ?>

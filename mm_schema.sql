@@ -1,3 +1,11 @@
+# Music Match database
+# Based on a BOINC database
+#
+# user table fields:
+# send_email: notification email frequency (see notification.inc)
+# expavg_time: when last email was sent
+# seti_id: verification code during registration
+
 # an ensemble (performing group)
 # Info is kept in ensemble/ID.json
 #
@@ -22,7 +30,7 @@ create table ensemble_member (
     unique(ensemble_id, user_id)
 ) engine = InnoDB;
 
-# notify:
+# BOINC notify table:
 # id
 # userid
 # create_time

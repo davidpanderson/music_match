@@ -1,3 +1,4 @@
+#! /usr/bin/env php
 <?php
 // This file is part of Music Match.
 // Copyright (C) 2022 David P. Anderson

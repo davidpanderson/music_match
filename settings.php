@@ -218,9 +218,9 @@ if ($action) {
             page_tail();
             break;
         case 'notification':
-            page_head("Change notification setting");
+            page_head("Notification emails");
             form_start("settings.php", "POST");
-            form_radio_buttons('How often should we email you new notifications?',
+            form_radio_buttons('When should Music Match email you new notifications?',
                 'period',
                 radio_list(NOTIFY_LIST),
                 $user->send_email

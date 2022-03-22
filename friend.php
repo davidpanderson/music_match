@@ -16,11 +16,11 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with BOINC.  If not, see <http://www.gnu.org/licenses/>.
 
-// stuff related to "buddy lists"
+// stuff related to friends
 
 require_once("../inc/forum_db.inc");
 require_once("../inc/forum.inc");
-//require_once("../inc/profile.inc");
+require_once("../inc/notification.inc");
 
 check_get_args(array("target_userid", "userid", "action"));
 
@@ -106,12 +106,11 @@ function handle_add_confirm($user) {
     }
     $now = time();
     $type = NOTIFY_FRIEND_REQ;
-    BoincNotify::replace("userid=$destid, create_time=$now, type=$type, opaque=$user->id");
+    BoincNotify::replace(
+        "userid=$destid, create_time=$now, type=$type, opaque=$user->id, sent_by_email=0"
+    );
+    email_if_immediate($destuser);
 
-    BoincForumPrefs::lookup($destuser);
-    if ($destuser->prefs->pm_notification == 1) {
-        send_friend_request_email($user, $destuser, $msg);
-    }
     page_head(tra("Friend request sent"));
     echo tra("We have notified %1 of your request.","<b>".$destuser->name."</b>");
     page_tail();
@@ -182,11 +181,10 @@ function handle_accept($user) {
         error_page(tra("Database error"));
     }
     $type = NOTIFY_FRIEND_ACCEPT;
-    BoincNotify::replace("userid=$srcid, create_time=$now, type=$type, opaque=$user->id");
-    BoincForumPrefs::lookup($srcuser);
-    if ($srcuser->prefs->pm_notification == 1) {
-        send_friend_accept_email($user, $srcuser, $msg);
-    }
+    BoincNotify::replace(
+        "userid=$srcid, create_time=$now, type=$type, opaque=$user->id, sent_by_email=0"
+    );
+    send_if_immediate($srcuser);
 
     $notify = BoincNotify::lookup($user->id, NOTIFY_FRIEND_REQ, $srcid);
     if ($notify) {
@@ -227,8 +225,6 @@ function handle_accepted($user) {
     $notify = BoincNotify::lookup($user->id, NOTIFY_FRIEND_ACCEPT, $destid);
     if ($notify) {
         $notify->delete();
-    } else {
-        echo tra("Notification not found");
     }
     page_head(tra("Friend confirmed"));
     echo tra("You are now friends with %1.",$destuser->name);

@@ -659,10 +659,11 @@ function profile_change_notify($user, $role) {
         $user2 = BoincUser::lookup_id($friend->user_dest);
         if (!$user2) continue;
         BoincNotify::replace(
-            sprintf("userid=%d, create_time=%d, type=%d, opaque=%d, id2=%d",
+            sprintf("userid=%d, create_time=%d, type=%d, opaque=%d, id2=%d, sent_by_email=0",
                 $user2->id, $now, NOTIFY_PROFILE, $user->id, $role
             )
         );
+        notify_if_immediate($user2);
     }
 }
 

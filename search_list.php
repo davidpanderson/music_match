@@ -21,136 +21,127 @@
 require_once("../inc/util.inc");
 require_once("../inc/mm_db.inc");
 
-function show_search_list_header() {
-    row_heading_array([
-        "Search criteria", "Number of matches", "Last viewed"
-    ]);
-}
-
 function args_to_str($args, $role) {
     $s = '';
     switch ($role) {
     case COMPOSER:
     case PERFORMER:
-        $s .= "Instruments: ";
         if ($args->inst) {
+            $s .= "Instruments: ";
             $x = [];
             foreach ($args->inst as $i) {
                 $x[] = $role==COMPOSER?INST_LIST_COARSE[$i]:INST_LIST_FINE[$i];
             }
             $s .= implode(', ', $x);
-        } else {
-            $s .= 'any';
+            $s .= '<br>';
         }
         if ($role == COMPOSER) {
-            $s .= '<br>Ensemble types: ';
             if ($args->ens_type) {
+                $s .= '<br>Ensemble types: ';
                 $x = [];
                 foreach ($args->ens_type as $i) {
                     $x[] = ENSEMBLE_TYPE_LIST[$i];
                 }
                 $s .= implode(', ', $x);
-            } else {
-                $s .= 'any';
+                $s .= '<br>';
             }
         }
-        $s .= '<br>Style: ';
         if ($args->style) {
+            $s .= 'Style: ';
             $x = [];
             foreach ($args->style as $i) {
                 $x[] = STYLE_LIST[$i];
             }
             $s .= implode(', ', $x);
-        } else {
-            $s .= 'any';
+            $s .= '<br>';
         }
-        $s .= '<br>Level: ';
         if ($args->level) {
+            $s .= 'Level: ';
             $x = [];
             foreach ($args->level as $i) {
                 $x[] = LEVEL_LIST[$i];
             }
             $s .= implode(', ', $x);
-        } else {
-            $s .= 'any';
+            $s .= '<br>';
         }
-        $s .= '<br>Nearby: ';
         if ($args->close) {
+            $s .= 'Nearby: ';
             $s .= 'yes';
-        } else {
-            $s .= 'either';
+            $s .= '<br>';
         }
         break;
     case TECHNICIAN:
-        $s = 'Areas: ';
         if ($args->tech_area) {
+            $s = 'Areas: ';
             $x = [];
             foreach ($args->tech_area as $i) {
                 $x[] = TECH_AREA_LIST[$i];
             }
             $s .= implode(', ', $x);
-        } else {
-            $s .= 'any';
+            $s .= '<br>';
         }
-        $s .= '<br>Software: ';
         if ($args->program) {
+            $s .= '>Software: ';
             $x = [];
             foreach ($args->program as $i) {
                 $x[] = PROGRAM_LIST[$i];
             }
             $s .= implode(', ', $x);
-        } else {
-            $s .= 'any';
+            $s .= '<br>';
         }
-        $s .= '<br>Nearby: ';
         if ($args->close) {
+            $s .= 'Nearby: ';
             $s .= 'yes';
-        } else {
-            $s .= 'either';
+            $s .= '<br>';
         }
         break;
     case ENSEMBLE:
-        $s = 'Ensemble type: ';
         if ($args->type) {
+            $s = 'Ensemble type: ';
             $x = [];
             foreach ($args->type as $i) {
                 $x[] = ENSEMBLE_TYPE_LIST[$i];
             }
             $s .= implode(', ', $x);
-        } else {
-            $s .= 'any';
+            $s .= '<br>';
         }
-        $s .= '<br>Instruments: ';
         if ($args->inst) {
+            $s .= 'Instruments: ';
             $x = [];
             foreach ($args->inst as $i) {
                 $x[] = INST_LIST_FINE[$i];
             }
             $s .= implode(', ', $x);
-        } else {
-            $s .= 'any';
+            $s .= '<br>';
         }
-        $s .= '<br>Level: ';
         if ($args->level) {
+            $s .= 'Level: ';
             $x = [];
             foreach ($args->level as $i) {
                 $x[] = LEVEL_LIST[$i];
             }
             $s .= implode(', ', $x);
-        } else {
-            $s .= 'any';
+            $s .= '<br>';
         }
-        $s .= '<br>Seeking members: ';
-        $s .= $args->seeking_members?$args->seeking_members:'either';
-        $s .= '<br>Perform regularly: ';
-        $s .= $args->perf_reg?$args->perf_reg:'either';
-        $s .= '<br>Paid to perform: ';
-        $s .= $args->perf_paid?$args->perf_paid:'either';
-        $s .= '<br>Nearby: ';
+        if ($args->seeking_members != 'either') {
+            $s .= 'Seeking members: ';
+            $s .= $args->seeking_members;
+            $s .= '<br>';
+        }
+        if ($args->perf_reg != 'either') {
+            $s .= 'Perform regularly: ';
+            $s .= $args->perf_reg;
+            $s .= '<br>';
+        }
+        if ($args->perf_paid != 'either') {
+            $s .= 'Paid to perform: ';
+            $s .= $args->perf_paid;
+            $s .= '<br>';
+        }
         if ($args->close) {
+            $s .= 'Nearby: ';
             $s .= 'yes';
-        } else {
-            $s .= 'either';
+            $s .= '<br>';
         }
         break;
     }
@@ -175,6 +166,7 @@ function show_search_list_item($s, $role) {
         $m,
         date_str($s->view_time)
     ]);
+    row1('&nbsp;', 99, 'bg-dark');
 }
 
 function show_searches($searches, $role) {
@@ -184,13 +176,22 @@ function show_searches($searches, $role) {
         $s2[] = $s;
     }
     if (!$s2) return;
-    echo sprintf("<h2>%s searches</h2>", role_name($role));
-    start_table('table-striped');
-    show_search_list_header($role);
+    row1(
+        sprintf("%s searches", role_name($role)),
+        99, "bg-primary"
+    );
     foreach ($s2 as $s) {
         show_search_list_item($s, $role);
     }
-    end_table();
+}
+
+function show_search_list_header() {
+    row_heading_array([
+        "Search criteria", "Number of matches", "Last viewed"
+    ],
+    null,
+    "bg-primary"
+    );
 }
 
 function main() {
@@ -201,10 +202,14 @@ function main() {
         foreach($searches as $s) {
             $s->params = json_decode($s->params);
         }
+        start_table('table');
+        show_search_list_header();
+        row1("", 99, "bg-secondary");
         show_searches($searches, COMPOSER);
         show_searches($searches, PERFORMER);
         show_searches($searches, TECHNICIAN);
         show_searches($searches, ENSEMBLE);
+        end_table();
     } else {
         echo "No searches so far.";
     }

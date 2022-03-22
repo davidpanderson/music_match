@@ -19,7 +19,7 @@
 require_once("../inc/util.inc");
 require_once("../inc/mm.inc");
 
-page_head("<h1>About Music Match</h1>");
+page_head("About Music Match");
 text_start();
 echo <<<EOT
 <p>
@@ -50,12 +50,11 @@ and to promote the composition and performance of new music.
 <p>
 <h2>Accounts</h2>
 <p>
-To use Music Match, you make an "account"
+To use Music Match, you create an "account"
 with a user name, email address, and password.
 You can optionally provide your country and postal code
-(e.g. ZIP code in the U.S.).
-This makes it possible to search for musicians
-who live nearby.
+(e.g. ZIP code).
+This lets you search for musicians who live nearby.
 
 <h2>Profiles</h2>
 <p>
@@ -69,10 +68,8 @@ For example, your composer profile includes
 <li> Links to examples of your compositions or recordings on
 other web sites, like IMSLP, SoundCloud, or YouTube.
 <li> An "audio signature" -
-an MP3 file that gives - in the first 5 or 10 seconds -
-a rough idea of what your compositions sound like.
-This makes it easier for people browsing through
-search results.
+a short MP3 file that gives an idea of what your compositions sound like.
+This helps people browse search results.
 </ul>
 <p>
 Performer profiles are similar.
@@ -92,7 +89,7 @@ you can tell Music Match about the ensemble.
 This has two purposes:
 <ul>
 <li> If you mark your ensemble as "looking for new members",
-local performers can discover it and ask to join it.
+local performers can discover it and ask to join.
 
 <li> Composers who write for that type of ensemble
 can discover your ensemble,
@@ -102,7 +99,7 @@ communicate with you, and possibly compose music for your group.
 <p>
 Each Music Match ensemble has an associated "founder".
 If members of the (real-life) ensemble have Music Match accounts,
-the founder can link them with the ensemble on Music Match.
+they can be linked to the ensemble on Music Match.
 
 <h2>Search</h2>
 <p>
@@ -114,7 +111,7 @@ that you're looking for.
 You can limit your search to nearby musicians.
 <p>
 The result of a search is a list of people.
-For each person, you see a summary of their profile
+For each person, you see a summary of their profiles
 (composer, performer, or technician).
 If you asked for nearby people, you see how far away they are.
 If they included an "audio signature" in their profile,
@@ -128,7 +125,7 @@ say a composer whose works you might want to perform -
 you can browse their links.
 Then you can communicate with them using "private message" -
 perhaps to ask them a question about one of their works,
-or to commission a new piece from them.
+or to commission a new piece.
 <p>
 Music Match also has a message-board system,
 with various top-level topics, for public discussions.
@@ -140,19 +137,18 @@ in which case you'll be notified of new posts in that thread.
 <p>
 If you connect with someone interesting on Music Match, you can become
 "friends" with them - one of you makes a friend request, the other accepts it.
-When you view someone's profile,
-you see your friends too;
-this is a good was to discover people.
-And you'll be notified of your friends' activities.
+You'll be notified of your friends' activities.
+When you view someone's profile, you see your friends too;
+this is a good way to discover people.
 
 <h2>Notifications</h2>
 <p>
 Music Match notifies you about various things that happen while you're away:
 <ul>
-<li> You received a private message.
-<li> There's a a new post on a thread you're subscribed to.
-<li> You received a friend request.
 <li> A search you previously made has new results.
+<li> You received a private message.
+<li> There's a new post in a thread you subscribed to.
+<li> You received a friend request.
 <li> Your friend request was accepted.
 <li> A friend of yours posted a message or modified their profile.
 <li> Your request to join an ensemble was accepted or declined.

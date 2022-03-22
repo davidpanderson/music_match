@@ -37,7 +37,7 @@ function show_item($item, $role) {
         tech_summary_row($item);
         break;
     case ENSEMBLE:
-        ensemble_profile_summary_row($item);
+        ens_profile_summary_row($item);
         break;
     }
 }

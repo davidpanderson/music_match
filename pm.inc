@@ -18,7 +18,7 @@
 
 require_once("../inc/boinc_db.inc");
 require_once("../inc/sanitize_html.inc");
-require_once("../inc/bbcode_html.inc");
+require_once("../inc/notification.inc");
 
 function pm_header() {
     echo "<div>\n";
@@ -258,7 +258,13 @@ function pm_send_msg($from_user, $to_user, $subject, $content, $send_email) {
 
     // create notification in any case
     //
-    BoincNotify::insert("(userid, create_time, type, opaque) values ($to_user->id, ".time().", ".NOTIFY_PM.", $mid)");
+    BoincNotify::replace(
+        sprintf(
+            "userid=%d, create_time=%d, type=%d, opaque=%d, sent_by_email=0",
+            $to_user->id, time(), NOTIFY_PM, $mid
+        )
+    );
+    email_if_immediate($to_user);
 }
 
 function pm_count($userid, $duration) {

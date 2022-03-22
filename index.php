@@ -32,7 +32,7 @@ find each other, communicate, and collaborate.
 <ul>
 <li> Find composers who write music for your instrument,
 in your style and level.
-Try their compositions, or get them to write new ones for you.
+Check out their compositions, or get them to write new ones for you.
 <li> Find local musicians to play and perform music with.
 
 </ul>
@@ -67,6 +67,13 @@ The data collected by Music Match will not be
 sold, distributed, or used for other purposes.
 You can delete your account, in which case all
 data about you will be removed.
+<hr>
+<font color=#dd44>Music Match is in under development.
+The database is populated with artificial users and ensembles.
+You're welcome to create an account, test things,
+and <a href=contact.php>give feedback</a>,
+but your account will disappear at some point.
+</font>
 ";
 
 text_end();

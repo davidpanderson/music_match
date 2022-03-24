@@ -70,6 +70,7 @@ function tech_search_action($req_user) {
 }
 
 $user = get_logged_in_user();
+update_visit_time($user);
 $action = post_str("submit", true);
 if ($action) {
     tech_search_action($user);

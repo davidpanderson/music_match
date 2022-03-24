@@ -568,7 +568,8 @@ function country_distance($user, $dist, $sep=' ') {
 // button styles
 //
 define('BUTTON_BIG',
-    ['btn', '#00bc8c', 'black', '<font size=+2><b>', '</b></font>']
+    //['btn', '#00bc8c', 'black', '<font size=+2><b>', '</b></font>']
+    ['btn', '#375a7f', 'white', '<font size=+2><b>', '</b></font>']
 );
 define('BUTTON_NORMAL',
     ['btn', ' #375a7f', 'white', '<font size=+0>', '</font>']
@@ -593,10 +594,12 @@ function mm_show_button($url, $label, $style=BUTTON_NORMAL) {
 
 // ------------ utilities -------------
 
+// if user hasn't validated their email addr, ask them to do so
+//
 function mm_get_logged_in_user() {
     $user = get_logged_in_user();
     if ($user && !$user->email_validated) {
-        Header("Location: reg.php?action=verify");
+        Header("Location: signup.php?action=verify");
     }
     return $user;
 }
@@ -646,7 +649,7 @@ function home_button() {
 
 function join_button() {
     echo "<p>";
-    mm_show_button("reg.php", "JOIN", BUTTON_BIG);
+    mm_show_button("signup.php", "JOIN", BUTTON_BIG);
 }
 
 // The user has modified their given profile.
@@ -663,8 +666,33 @@ function profile_change_notify($user, $role) {
                 $user2->id, $now, NOTIFY_PROFILE, $user->id, $role
             )
         );
-        notify_if_immediate($user2);
+        email_if_immediate($user2);
     }
 }
 
+// we use user.seti_total_cpu to store last visit time
+//
+function update_visit_time($user) {
+    $now = time();
+    if ($user->seti_total_cpu < $now - 600) {
+        $user->update("seti_total_cpu=$now");
+    }
+}
+
+function get_visit_time($user) {
+    return $user->seti_total_cpu;
+}
+
+function interval_to_str($x) {
+    $d = 86400;
+    $w = 7*86400;
+    $m = 31*86400;
+    $y = 365*86400;
+    if ($x < $d) return "Today";
+    if ($x < 2*$d) return "Yesterday";
+    if ($x < 2*$w) return sprintf("%d days ago", intdiv($x, $d));
+    if ($x < 2*$m) return sprintf("%d weeks ago", intdiv($x, $w));
+    if ($x < 2*$y) return sprintf("%d months ago", intdiv($x, $m));
+    return sprintf("%s years ago", intdiv($x, $y));
+}
 ?>

@@ -69,6 +69,7 @@ function show_settings($user) {
 }
 
 $user = get_logged_in_user();
+update_visit_time($user);
 
 $action = post_str('action', true);
 if ($action) {

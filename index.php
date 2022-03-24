@@ -45,12 +45,13 @@ your compositions.
 </ul>
 <p>
 <a href=intro.php>Learn more about Music Match.</a>
-<p>
+<br><br>
 <center>
 ";
 
 $user = get_logged_in_user(true);
 if ($user) {
+    update_visit_time($user);
     home_button();
 } else {
     join_button();
@@ -60,7 +61,7 @@ echo "
 </center>
 <hr>
 <p>
-Music Match is a non-profit project
+Music Match is a non-profit open-source project
 based at the University of California, Berkeley.
 <p>
 The data collected by Music Match will not be
@@ -68,11 +69,12 @@ sold, distributed, or used for other purposes.
 You can delete your account, in which case all
 data about you will be removed.
 <hr>
-<font color=#dd44>Music Match is in under development.
+<font color=#eebb44>Music Match is being developed and tested.
 The database is populated with artificial users and ensembles.
 You're welcome to create an account, test things,
 and <a href=contact.php>give feedback</a>,
-but your account will disappear at some point.
+but at some point we'll reset the database
+and your account will disappear.
 </font>
 ";
 

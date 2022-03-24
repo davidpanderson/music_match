@@ -128,7 +128,7 @@ function link_count($x) {
     return $n;
 }
 
-// show a banner with search form on left and PM info on right
+// show a banner with search form on left
 //
 function show_forum_header($user) {
     echo '<form action="forum_search_action.php" method="POST">
@@ -145,14 +145,14 @@ function show_forum_header($user) {
         <input type="hidden" name="search_forum" value="-1">
         <input type="hidden" name="search_sort" value="'.CREATE_TIME_NEW.'">
         <input type="text" class="" name="search_keywords">
-        <input class="btn btn-primary btn-sm" title="'.tra("Search for words in forum messages").'" type="submit" value="'.tra("Search forums").'"><br>
+        <input class="btn btn-primary btn-sm" title="'.tra("Search for words in forum messages").'" type="submit" value="'.tra("Search message boards").'"><br>
         <small><a href="forum_search.php">'.tra("Advanced search").'</a></small>
         </td>
     ';
 
     if ($user) {
         echo "<td align=\"right\">\n";
-        echo "<p>".tra("Private messages").": ", pm_notification($user);
+        //echo "<p>".tra("Private messages").": ", pm_notification($user);
         echo "</td>\n";
     }
     echo "</tr>
@@ -171,7 +171,8 @@ function show_forum_title($category, $forum, $thread, $link_thread=false) {
         $is_helpdesk = false;
     }
 
-    $where = $is_helpdesk?tra("Questions and Answers"):tra("Message boards");
+    //$where = $is_helpdesk?tra("Questions and Answers"):tra("Message boards");
+    $where ='';
     $top_url = $is_helpdesk?"forum_help_desk.php":"forum_index.php";
 
     if (!$forum && !$thread) {
@@ -179,12 +180,11 @@ function show_forum_title($category, $forum, $thread, $link_thread=false) {
 
     } else if ($forum && !$thread) {
         echo "<span class=title>";
-        echo "<a href=\"$top_url\">$where</a> : ";
+        //echo "<a href=\"$top_url\">$where</a> : ";
         echo $forum->title;
         echo "</span>";
     } else if ($forum && $thread) {
         echo "<span class=title>
-            <a href=\"$top_url\">$where</a> : 
             <a href=\"forum_forum.php?id=".$forum->id."\">", $forum->title, "</a> : 
         ";
         if ($link_thread) {
@@ -842,6 +842,7 @@ function post_rules() {
 }
 
 function post_warning($forum=null) {
+    return '';
     $x = "<br><br>
         <table><tr><td align=left>
     ";

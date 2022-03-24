@@ -57,16 +57,12 @@ function show_ensemble($ens_id, $user) {
         "<a href=user.php?user_id=$founder->id>$founder->name</a>"
     );
 
-    $x = ens_members_string($ens->id);
-    if ($x) {
-        row2("Other members", $x);
+    $other_members = ens_members_string($ens->id);
+    if ($other_members) {
+        row2("Other members", $other_members);
     }
 
     row2("Description", $profile->description);
-    $x = sprintf("Performs regularly: %s<br>Typically paid to perform: %s",
-        $profile->perf_reg?"yes":"no",
-        $profile->perf_paid?"yes":"no"
-    );
 
     if ($profile->signature_filename) {
         row2('Audio signature',
@@ -76,6 +72,10 @@ function show_ensemble($ens_id, $user) {
         );
     }
 
+    $x = sprintf("Performs regularly: %s<br>Typically paid to perform: %s",
+        $profile->perf_reg?"yes":"no",
+        $profile->perf_paid?"yes":"no"
+    );
     row2("Performance", "$x");
 
     if ($ens->user_id == $user->id) {
@@ -101,7 +101,11 @@ function show_ensemble($ens_id, $user) {
             }
         } else {
             if ($profile->seeking_members) {
-                $x = "<a href=ensemble_join.php?ens_id=$ens_id>Request membership</a>";
+                $x = mm_button_text(
+                    "ensemble_join.php?ens_id=$ens_id",
+                    "Request membership",
+                    BUTTON_SMALL
+                );
             } else {
                 $x = "Not seeking new members";
             }
@@ -110,8 +114,9 @@ function show_ensemble($ens_id, $user) {
     row2("Membership", $x);
     if ($user->id == $ens->user_id) {
         row2('', mm_button_text("ensemble_edit.php?ens_id=$ens_id", "Edit ensemble"));
-        row2('', mm_button_text("ensemble_join.php?ens_id=$ens_id&action=remove_list", "Remove members", BUTTON_SMALL));
-
+        if ($other_members) {
+            row2('', mm_button_text("ensemble_join.php?ens_id=$ens_id&action=remove_list", "Remove members", BUTTON_SMALL));
+        }
     }
 
     end_table();
@@ -119,6 +124,7 @@ function show_ensemble($ens_id, $user) {
 }
 
 $user = get_logged_in_user();
+update_visit_time($user);
 $id = get_int('ens_id');
 show_ensemble($id, $user);
 

@@ -25,12 +25,14 @@ require_once("../inc/akismet.inc");
 check_get_args(array("replyto", "deleted", "userid", "action", "sent", "id", "tnow", "ttok", "teamid"));
 
 function show_block_link($userid) {
+    return '';
     echo " <a href=\"pm.php?action=block&amp;id=$userid\">";
     show_image(REPORT_POST_IMAGE, tra("Block messages from this user"), tra("Block user"), REPORT_POST_IMAGE_HEIGHT);
     echo "</a>";
 }
 
 $logged_in_user = get_logged_in_user();
+update_visit_time($user);
 BoincForumPrefs::lookup($logged_in_user);
 
 function make_script() {
@@ -77,7 +79,7 @@ function do_inbox($logged_in_user) {
         start_table('table-striped');
         row_heading_array(
             array(tra("Subject"), tra("Sender and date"), tra("Message")),
-            array('style="width: 12em;"', 'style="width: 10em;"', "")
+            array('style="width: 12em;"', 'style="width: 12em;"', "")
         );
         foreach($msgs as $msg) {
             $sender = BoincUser::lookup_id($msg->senderid);
@@ -93,11 +95,19 @@ function do_inbox($logged_in_user) {
             echo "<td valign=top> $checkbox $msg->subject </td>\n";
             echo "<td valign=top>".user_links($sender, BADGE_HEIGHT_SMALL);
             show_block_link($msg->senderid);
-            echo "<br>".time_str($msg->date)."</td>\n";
+            echo "<br><small>".time_str($msg->date)."</small></td>\n";
             echo "<td valign=top>".output_transform($msg->content, $options)."<p>";
             $tokens = url_tokens($logged_in_user->authenticator);
-            show_button("pm.php?action=new&amp;replyto=$msg->id", tra("Reply"), tra("Reply to this message"));
-            show_button("pm.php?action=delete&amp;id=$msg->id&amp;$tokens", tra("Delete"), tra("Delete this message"));
+            show_button_small(
+                "pm.php?action=new&amp;replyto=$msg->id",
+                tra("Reply"),
+                tra("Reply to this message")
+            );
+            show_button_small(
+                "pm.php?action=delete&amp;id=$msg->id&amp;$tokens",
+                tra("Delete"),
+                tra("Delete this message")
+            );
             echo "</ul></td></tr>\n";
         }
         echo "
@@ -167,46 +177,6 @@ function do_delete($logged_in_user) {
     header("Location: pm.php");
 }
 
-function do_send_team($logged_in_user) {
-    check_tokens($logged_in_user->authenticator);
-    $subject = post_str("subject", true);
-    $content = post_str("content", true);
-    $teamid = post_int("teamid");
-    if (post_str("preview", true) == tra("Preview")) {
-        pm_team_form($logged_in_user, $teamid);
-        return;
-    }
-
-    // make sure user is authorized, i.e. is a team admin
-    //
-    $team = BoincTeam::lookup_id($teamid);
-    if (!$team) {
-        error_page("no such team");
-    }
-    if (!is_team_admin($logged_in_user, $team)) {
-        error_page("no team admin");
-    }
-
-    if (($subject == null) || ($content == null)) {
-        pm_team_form(
-            $logged_in_user, $teamid,
-            tra("You need to fill all fields to send a private message")
-        );
-        return;
-    }
-
-    $subject = "Message from team ".$team->name.": ".$subject;
-        // don't use tra() here because we don't know language of recipient
-        // Also, we use it in pm_count() to exclude team messages from limit check
-    $users = BoincUser::enum("teamid=$teamid");
-    foreach ($users as $user) {
-        pm_send_msg($logged_in_user, $user, $subject, $content, true);
-    }
-    page_head(tra("Message sent"));
-    echo tra("Your message was sent to %1 team members.", count($users));
-    page_tail();
-}
-
 function do_send($logged_in_user) {
     global $replyto, $userid;
     check_banished($logged_in_user);
@@ -227,14 +197,14 @@ function do_send($logged_in_user) {
     $content = post_str("content", true);
 
     if (post_str("preview", true) == tra("Preview")) {
-        pm_form($replyto, $userid);
+        pm_form($replyto, $to_ids);
     }
     if (!$to_ids  || ($subject == null) || ($content == null)) {
-        pm_form($replyto, $userid, tra("You need to fill all fields to send a private message"));
+        pm_form($replyto, $to_ids, tra("You need to fill all fields to send a private message"));
         return;
     }
     if (!akismet_check($logged_in_user, $content)) {
-        pm_form($replyto, $userid, tra("Your message was flagged as spam
+        pm_form($replyto, $to_ids, tra("Your message was flagged as spam
             by the Akismet anti-spam system.
             Please modify your text and try again.")
         );
@@ -249,7 +219,7 @@ function do_send($logged_in_user) {
         }
         BoincForumPrefs::lookup($user);
         if (is_ignoring($user, $logged_in_user)) {
-            pm_form($replyto, $userid, tra("User %1 (ID: %2) is not accepting private messages from you.", $user->name, $user->id));
+            pm_form($replyto, $to_ids, tra("User %1 (ID: %2) is not accepting private messages from you.", $user->name, $user->id));
             return;
         }
         $userlist[] = $user;
@@ -318,10 +288,6 @@ function do_delete_selected($logged_in_user) {
 
 $replyto = get_int("replyto", true);
 $userid = get_int("userid", true);
-$teamid = get_int("teamid", true);
-if (!$teamid) {
-    $teamid = post_int("teamid", true);
-}
 
 $action = sanitize_tags(get_str("action", true));
 if (!$action) {
@@ -337,20 +303,11 @@ if ($action == "inbox") {
 } elseif ($action == "read") {
     do_read($logged_in_user);
 } elseif ($action == "new") {
-    if (!$teamid) $teamid = post_int("teamid", true);
-    if ($teamid) {
-        pm_team_form($logged_in_user, $teamid);
-    } else {
-        do_new($logged_in_user);
-    }
+    do_new($logged_in_user);
 } elseif ($action == "delete") {
     do_delete($logged_in_user);
 } elseif ($action == "send") {
-    if ($teamid) {
-        do_send_team($logged_in_user);
-    } else {
-        do_send($logged_in_user);
-    }
+    do_send($logged_in_user);
 } elseif ($action == "block") {
     do_block($logged_in_user);
 } elseif ($action == "confirmedblock") {

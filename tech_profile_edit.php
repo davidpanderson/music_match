@@ -21,7 +21,8 @@
 require_once("../inc/util.inc");
 require_once("../inc/mm.inc");
 
-function tech_form($profile) {
+function tech_form($user) {
+    $profile = read_profile($user->id, TECHNICIAN);
     page_head("Technician profile");
     form_start("tech_profile_edit.php", "POST");
     form_checkboxes(
@@ -46,12 +47,17 @@ function tech_form($profile) {
         '', 'program_custom_new', PROGRAM_ADD, 'text',
         text_input_default(PROGRAM_ADD).'class="sm" size="20"'
     );
-    form_submit("Update", 'name=submit value=on');
+    $have_profile = profile_exists($user->id, TECHNICIAN);
+    form_submit($have_profile?"Update profile":"Create profile", 'name=submit value=on');
     form_end();
-    echo "<p>
-        <a href=tech_profile_edit.php?&action=delete>Delete profile</a>
-        <p>
-    ";
+    if ($have_profile) {
+        echo "<p>";
+        mm_show_button(
+            "tech_profile_edit.php?&action=delete",
+            "Delete profile",
+            BUTTON_SMALL
+        );
+    }
     page_tail();
 }
 
@@ -87,6 +93,7 @@ function do_delete_profile($user) {
     page_tail();
 }
 $user = get_logged_in_user();
+update_visit_time($user);
 if (post_str('submit', true)) {
     $profile = read_profile($user->id, TECHNICIAN);
     $profile = tech_action($user->id, $profile);
@@ -100,8 +107,7 @@ if (post_str('submit', true)) {
     } else if ($action == 'confirm') {
         do_delete_profile($user, TECHNICIAN);
     } else {
-        $profile = read_profile($user->id, TECHNICIAN);
-        tech_form($profile);
+        tech_form($user);
     }
 }
 ?>

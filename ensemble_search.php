@@ -82,6 +82,7 @@ function ens_search_action($req_user) {
 
 $action = post_str("submit", true);
 $user = get_logged_in_user();
+update_visit_time($user);
 if ($action) {
     ens_search_action($user);
 } else {

@@ -181,12 +181,14 @@ function top() {
 }
 
 function home_page($user) {
-    page_head("");
+    page_head("Home");
+    echo "<hr>";
     grid('top', 'left', 'right', 6);
     page_tail();
 }
 
 $user = mm_get_logged_in_user();
+update_visit_time($user);
 BoincForumPrefs::lookup($user);
 
 home_page($user);

@@ -57,7 +57,7 @@ if (!parse_bool($config, "disable_account_creation")
     && !parse_bool($config, "no_web_account_creation")
 ) {
     echo tra("or %1 create an account %2.",
-        "<a href=\"reg.php?next_url=$next_url\">",
+        "<a href=\"signup.php?next_url=$next_url\">",
         "</a>"
     );
 }

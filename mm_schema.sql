@@ -5,6 +5,7 @@
 # send_email: notification email frequency (see notification.inc)
 # expavg_time: when last email was sent
 # seti_id: verification code during registration
+# seti_total_cpu: last visit time
 
 # an ensemble (performing group)
 # Info is kept in ensemble/ID.json

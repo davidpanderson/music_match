@@ -51,6 +51,8 @@ function cp_profile_summary($user, $profile, $role) {
     return $x;
 }
 
+// show a profile as a list of name/value rows
+//
 function cp_profile_summary_table($user, $profile, $role) {
     row2('Instruments',
         lists_to_string(
@@ -90,12 +92,6 @@ function cp_profile_summary_table($user, $profile, $role) {
     if ($profile->link) {
         row2('Links',
             links_to_string($profile->link)
-        );
-    }
-    $u = get_logged_in_user();
-    if ($u->id != $user->id && $user->country) {
-        row2('Country',
-            country_distance($user, user_distance($u, $user), '  ')
         );
     }
 }

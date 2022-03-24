@@ -95,6 +95,17 @@ function right() {
     $clo = get_community_links_object($user);
     start_table();
     community_links($clo, get_logged_in_user(true));
+    $u = get_logged_in_user();
+    if ($u->id != $user->id && $user->country) {
+        row2('Country',
+            country_distance($user, user_distance($u, $user), '  ')
+        );
+    }
+    row2("Member since", date_str($user->create_time));
+    $v = get_visit_time($user);
+    if ($v) {
+        row2("Last seen", interval_to_str(time() - $v));
+    }
     end_table();
 }
 
@@ -103,6 +114,9 @@ function show_user($user) {
     grid(null, 'left', 'right', 6);
     page_tail();
 }
+
+$user = get_logged_in_user();
+update_visit_time($user);
 
 $user_id = get_int("user_id");
 $user = BoincUser::lookup_id($user_id);

@@ -39,13 +39,16 @@ find performers to play, perform, and record your compositions.
 Or find other composers to
 get (and give) help with score editing and rendering software.
 </ul>
+<p>
+Music Match is designed to serve musicians of all levels,
+both amateur and professional.
 
 <p>
 Music Match doesn't store scores or sound files;
 sites like IMSLP, SoundCloud, and YouTube do that just fine.
-Rather, Music Match is like LinkedIn for classical music.
-Its goal is connect people,
-and to promote the composition and performance of new music.
+Rather, Music Match is like LinkedIn or Match.com for classical music.
+Its goal is to catalyze the composition and performance of new music
+by connecting people.
 
 <p>
 <h2>Accounts</h2>
@@ -53,8 +56,8 @@ and to promote the composition and performance of new music.
 To use Music Match, you create an "account"
 with a user name, email address, and password.
 You can optionally provide your country and postal code
-(e.g. ZIP code).
-This lets you search for musicians who live nearby.
+(e.g. ZIP code) -
+this lets you search for musicians located near you.
 
 <h2>Profiles</h2>
 <p>
@@ -108,7 +111,7 @@ Music Match lets you search for people
 or ensembles.
 You can specify the attributes - instruments, styles, difficulty levels -
 that you're looking for.
-You can limit your search to nearby musicians.
+You can limit your search to nearby people.
 <p>
 The result of a search is a list of people.
 For each person, you see a summary of their profiles
@@ -116,7 +119,7 @@ For each person, you see a summary of their profiles
 If you asked for nearby people, you see how far away they are.
 If they included an "audio signature" in their profile,
 you can play it by mousing over their name.
-This lets you browse results quickly.
+This lets you browse search results quickly.
 
 <h2>Communicate</h2>
 <p>
@@ -165,11 +168,19 @@ or you can unsubscribe.
 <p>
 Music Match is a non-profit project
 based at the University of California, Berkeley.
+The source code is
+<a href=https://github.com/davidpanderson/music_match/>on Github</a>.
 <p>
 The data collected by Music Match will not be
 sold, distributed, or used for other purposes.
 You can delete your account, in which case all
 data about you will be removed.
+<hr>
+A <a href=https://docs.google.com/document/d/1WNvM1ALKSd74GRmRE9cOXQsWlRvvWL7c/edit?usp=sharing&ouid=104033427951329566684&rtpof=true&sd=true>design document</a>.
+<p>
+An
+<a href=https://docs.google.com/document/d/1VePJZlnIn6rK91ymJ0Xo8uFGD3ZCRj66/edit?usp=sharing&ouid=104033427951329566684&rtpof=true&sd=true>earlier design document</a>
+targeted at Groupmuse.
 EOT;
 text_end();
 

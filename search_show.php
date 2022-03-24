@@ -108,6 +108,7 @@ function show_search($search, $user) {
 }
 
 $user = get_logged_in_user();
+update_visit_time($user);
 $search = Search::lookup_id(get_int('search_id'));
 if (!$search) error_page('search not found');
 if ($search->user_id != $user->id) error_page('not your search');

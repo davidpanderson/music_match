@@ -49,57 +49,6 @@ function pm_rules() {
     return $x;
 }
 
-function pm_team_form($user, $teamid, $error=null) {
-    global $bbcode_html, $bbcode_js;
-    $team = BoincTeam::lookup_id($teamid);
-    if (!$team) {
-        error_page("no such team");
-    }
-    if (!is_team_admin($user, $team)) {
-        error_page("not admin");
-    }
-
-    page_head(tra("Send message to team"),'','','', $bbcode_js);
-
-    $subject = post_str("subject", true);
-    $content = post_str("content", true);
-    if (post_str("preview", true) == tra("Preview")) {
-        panel(tra('Preview'),
-            function() use($content) {
-                echo output_transform($content, null);
-            }
-        );
-    }
-    if ($error) {
-        echo "<p class=\"text-danger\">".$error."</p>\n";
-    }
-    
-    echo "<form action=\"pm.php\" method=\"post\" name=\"post\" onsubmit=\"return checkForm(this)\">\n";
-    echo "<input type=\"hidden\" name=\"action\" value=\"send\">\n";
-    echo "<input type=\"hidden\" name=\"teamid\" value=\"$teamid\">\n";
-    echo form_tokens($user->authenticator);
-    start_table();
-    row2(
-        tra("Subject"),
-        "<input type=\"text\" class=\"form-control\" name=\"subject\" value=\"$subject\">",
-        null, '20%'
-    );
-    row2_init(tra("Message")."<small>".bbcode_info()."</small>", "", '20%');
-    start_table();
-    echo $bbcode_html;
-    echo "<tr><td>\n";
-    echo "<textarea name=\"content\" class=\"form-control\" rows=\"18\">$content</textarea>";
-    echo "</td></tr>\n";
-    end_table();
-    echo "<tr><td></td><td>
-        <input class=\"btn btn-primary\" type=\"submit\" name=\"preview\" value=\"".tra("Preview")."\">
-        <input class=\"btn btn-success\" type=\"submit\" value=\"".tra("Send message")."\">
-        </td></tr>\n
-    ";
-    end_table();
-    page_tail();
-}
-
 // either:
 // $replyto: message being replied to.
 // $userids: list of user IDs
@@ -142,6 +91,8 @@ function pm_form($replyto, $to_ids, $error = null) {
             $subject = "re: ".$subject;
         }
     } elseif ($to_ids) {
+        $subject = post_str("subject", true);
+        $content = post_str("content", true);
     } else {
         $x = sanitize_tags(post_str("to_ids", true));
         $y = explode(',', $x);
@@ -179,6 +130,7 @@ function pm_form($replyto, $to_ids, $error = null) {
             "<input type=\"text\" class=\"form-control\" name=\"subject\" value=\"$subject\">",
         null, '20%'
     );
+    form_focus("post", "subject");
     row2_init(
         tra("Message")."<small>".bbcode_info().pm_rules()."</small>",
         "",

@@ -16,182 +16,15 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with BOINC.  If not, see <http://www.gnu.org/licenses/>.
 
-require_once("../inc/credit.inc");
 require_once("../inc/email.inc");
 require_once("../inc/util.inc");
 require_once("../inc/forum.inc");
 require_once("../inc/friend.inc");
 require_once("../inc/forum_db.inc");
 require_once("../inc/notify.inc");
-require_once("../inc/ldap.inc");
-
-if (!defined('REMOTE_PROJECTS_TTL')) {
-    define('REMOTE_PROJECTS_TTL', 86400);
-}
-
-// add an element "projects" to user consisting of array of projects
-// they've participated in
-//
-function get_other_projects($user) {
-    $cpid = md5($user->cross_project_id . $user->email_addr);
-    $url = "http://boinc.netsoft-online.com/get_user.php?cpid=".$cpid;
-
-    // Check the cache for that URL
-    //
-    $cacheddata = get_cached_data(REMOTE_PROJECTS_TTL, $url);
-    if ($cacheddata) {
-        $remote = unserialize($cacheddata);
-    } else {
-        // Fetch the XML, use curl if fopen() is disallowed
-        //
-        if (ini_get('allow_url_fopen')) {
-            $timeout = 3;
-            $old_timeout = ini_set('default_socket_timeout', $timeout);
-            $xml_object = null;
-            $f = @file_get_contents($url);
-            if ($f) {
-                $xml_object = @simplexml_load_string($f);
-            }
-            ini_set('default_socket_timeout', $old_timeout);
-            if (!$xml_object) {
-                return $user;
-            }
-        } else {
-            $ch = curl_init($url);
-            curl_setopt($ch, CURLOPT_HEADER, false);
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-            curl_setopt($ch, CURLOPT_MAXREDIRS, 3);
-            curl_setopt($ch, CURLOPT_TIMEOUT, 3);
-            $rawxml = @curl_exec($ch);
-            $xml_object = null;
-            if ($rawxml) {
-                $xml_object = @simplexml_load_string($rawxml);
-            }
-            curl_close($ch);
-            if (!$xml_object) {
-                return $user;
-            }
-        }
-
-        // auto-cast the project list to an array of stdClass projects
-        //
-        $remote = @json_decode(json_encode((array)$xml_object))->project;
-        if (!$remote) {
-            $user->projects = null;
-            return $user;
-        }
-        if (count($remote) == 1) {
-            $remote = array($remote);
-        }
-
-        // Cache the results
-        set_cached_data(REMOTE_PROJECTS_TTL, serialize($remote), $url);
-    }
-
-    $user->projects = $remote;
-    return $user;
-}
-
-function show_project($project) {
-    if ($project->url == "http://www.worldcommunitygrid.org/") {
-        $x = $project->name;
-    } else {
-        $x = "<a href=\"$project->url"."show_user.php?userid=$project->id\">$project->name</a>";
-    }
-    echo "<tr>
-        <td>$x</td>
-        <td align=\"right\">".number_format($project->total_credit, 0)."</td>
-        <td align=\"right\">".number_format($project->expavg_credit, 0)."</td>
-        <td align=\"right\">".date_str($project->create_time)."</td>
-        </tr>
-    ";
-}
-
-function cmp($a, $b) {
-    if ($a->expavg_credit == $b->expavg_credit) return 0;
-    return ($a->expavg_credit < $b->expavg_credit) ? 1 : -1;
-}
-
-function show_other_projects($user, $personal) {
-    if (!isset($user->projects)) return;
-    if (count($user->projects) < 2) return;
-
-    usort($user->projects, "cmp");
-    if ($personal) {
-        echo "<h3>".tra("Projects in which you are participating")."</h3>";
-    } else {
-        echo "<h3>".tra("Projects in which %1 is participating", $user->name)."</h3>";
-    }
-    start_table('table-striped');
-    row_heading_array(
-        array(
-            tra("Project")."<br/><small>".tra("Click for user page")."</small>",
-            tra("Total credit"),
-            tra("Average credit"),
-            tra("Since")
-        ),
-        array("", ALIGN_RIGHT, ALIGN_RIGHT, ALIGN_RIGHT)
-    );
-    foreach ($user->projects as $project) {
-        show_project($project);
-    }
-    end_table();
-}
 
 function total_posts($user) {
     return BoincPost::count("user=$user->id");
-}
-
-function show_credit($user) {
-    row2(tra("Total credit"), format_credit_large($user->total_credit));
-    row2(tra("Recent average credit"), format_credit($user->expavg_credit));
-    if (function_exists("project_user_credit")) {
-        project_user_credit($user);
-    }
-}
-
-require_once("../inc/stats_sites.inc");
-// show dynamic user info (private)
-//
-function show_user_stats_private($user) {
-    global $cpid_stats_sites;
-
-    if (NO_COMPUTING && NO_STATS && NO_HOSTS) {
-        return;
-    }
-    row1(tra("Computing"));
-
-    if (!NO_STATS) {
-        show_credit($user);
-    }
-
-    if (!NO_HOSTS) {
-        row2(tra("Computers on this account"), "<a href=\"hosts_user.php\">".tra("View")."</a>");
-    }
-    if (!NO_COMPUTING) {
-        row2(tra("Tasks"), "<a href=\"results.php?userid=$user->id\">".tra("View")."</a>");
-    }
-
-    if (!NO_STATS) {
-        $cpid = md5($user->cross_project_id . $user->email_addr);
-        $x = "";
-        shuffle($cpid_stats_sites);
-        foreach ($cpid_stats_sites as $site) {
-            $name = $site[0];
-            $y = sprintf($site[1], $cpid);
-            $x .= "<a href=\"$y\">$name</a><br/>\n";
-        }
-        $x .= "<br/><small>".tra("Cross-project ID").": $cpid</small>\n";
-        row2(tra("Cross-project statistics"), $x);
-        $x = sprintf('<a href="%s">%s</a>', cert_filename(), tra("Account"));
-        if ($user->teamid) {
-            $x .= ' &middot; <a href="cert_team.php">'.tra("Team").'</a>';
-        }
-        $x .= ' &middot; <a href="cert_all.php">'.tra("Cross-project").'</a>';
-        row2(tra("Certificate"), $x);
-        row2(tra("Stats on your cell phone"), url_base()."userw.php?id=$user->id");
-    }
 }
 
 function notify_description($notify) {
@@ -296,45 +129,14 @@ function show_user_info_private($user) {
     }
 }
 
-function show_preference_links() {
-    row1("<a name=\"prefs\"></a>".tra("Preferences"));
-    if (!NO_GLOBAL_PREFS) {
-        row2(
-            tra("When and how BOINC uses your computer"),
-            "<a href=\"prefs.php?subset=global\">".tra("Computing preferences")."</a>"
-        );
-    }
-    row2(tra("Message boards and private messages"),
-        "<a href=\"edit_forum_preferences_form.php\">".tra("Community preferences")."</a>"
-    );
-    if (!NO_COMPUTING) {
-        row2(tra("Preferences for this project"),
-            "<a href=\"prefs.php?subset=project\">".tra("%1 preferences", PROJECT)."</a>"
-        );
-    }
-}
-
 function friend_links($user) {
     if (is_banished($user)) {
         return "";
     }
-    $x = "<table height=\"100\" width=\"150\" border=\"0\" cellpadding=\"4\"><tr><td class=\"friend\">";
-    if ($user->has_profile) {
-        $profile = BoincProfile::lookup_fields("has_picture", "userid=$user->id");
-        if ($profile && $profile->has_picture) {
-            $img_url = profile_thumb_url($user->id);
-        } else {
-            $img_url = url_base()."img/head_20.png";
-        }
-        $title = tra("View the profile of %1", $user->name);
-        $alt = tra("Profile");
-        $x .= ' <a href="'.url_base().'view_profile.php?userid='.$user->id.'"><img title="'.$title.'" src="'.$img_url.'" alt="'.$alt.'"></a><br>';
-    }
-    $x .= " <a href=\"".url_base()."user.php?user_id=".$user->id."\">".$user->name."</a>";
+    $x = " <a href=\"".url_base()."user.php?user_id=".$user->id."\">".$user->name."</a>";
     if (function_exists("project_user_links")) {
         $x .= project_user_links($user);
     }
-    $x .= "</td></tr></table>\n";
     return $x;
 }
 
@@ -517,16 +319,32 @@ function community_links($clo, $logged_in_user){
         }
     }
     if ($logged_in_user && $logged_in_user->id != $user->id) {
-        row2(tra("Contact"), "<a href=\"pm.php?action=new&userid=".$user->id."\">".tra("Send private message")."</a>");
+        row2("Contact",
+            mm_button_text(
+                "pm.php?action=new&userid=$user->id",
+                "Send private message",
+                BUTTON_SMALL
+            )
+        );
         $friend = BoincFriend::lookup($logged_in_user->id, $user->id);
         if ($friend && $friend->reciprocated) {
-            row2(tra("This person is a friend"),
-                "<a href=\"friend.php?action=cancel_confirm&userid=$user->id\">".tra("Cancel friendship")."</a>"
+            row2("This person is a friend",
+                mm_button_text(
+                    "friend.php?action=cancel_confirm&userid=$user->id",
+                    "Cancel friendship",
+                    BUTTON_SMALL
+                )
             );
         } else if ($friend) {
             row2(tra("Friends"),  "<a href=\"friend.php?action=add&userid=$user->id\">".tra("Request pending")."</a>");
         } else {
-            row2(tra("Friends"),  "<a href=\"friend.php?action=add&userid=$user->id\">".tra("Send friend request")."</a>");
+            row2(tra("Friends"),
+                mm_button_text(
+                    "friend.php?action=add&userid=$user->id",
+                    "Send friend request",
+                    BUTTON_SMALL
+                )
+            );
         }
     }
 
@@ -535,7 +353,7 @@ function community_links($clo, $logged_in_user){
         foreach($friends as $friend) {
             $x .= friend_links($friend);
         }
-        row2(tra("Friends")." (".sizeof($friends).")", $x);
+        row2("Friends", $x);
     }
 }
 

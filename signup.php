@@ -52,8 +52,9 @@ require_once("../inc/account.inc");
 
 function form1() {
     page_head("Create account");
-    form_start("reg.php", "POST");
+    form_start("signup.php", "POST", "name=f");
     form_input_text("User name", 'name');
+    form_focus("f", "name");
     form_input_text("Email address", 'email_addr');
     form_submit("OK", 'name=action value=form1');
     form_end();
@@ -114,7 +115,7 @@ function form2($user) {
         We emailed a verification code to $user->email_addr.
         Please enter it here:
     ";
-    form_start("reg.php", "POST");
+    form_start("signup.php", "POST");
     form_input_text("Verification code", 'code');
     form_submit('OK', 'name=action value=form2');
     form_end();
@@ -138,7 +139,7 @@ function handler2() {
 
 function form3($code) {
     page_head("Account setup");
-    form_start("reg.php", "POST");
+    form_start("signup.php", "POST");
     form_input_text("Password", "passwd", "", "password", 'id="passwd"', passwd_visible_checkbox("passwd"));
     form_select('Country', 'country', country_select_options());
     form_input_text('Postal code', 'postal_code');

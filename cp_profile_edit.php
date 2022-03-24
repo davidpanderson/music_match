@@ -130,12 +130,18 @@ function cp_form($user, $profile, $role) {
         form_general($title, "$in_url &nbsp;&nbsp;&nbsp; $in_desc");
     }
 
-    form_submit("Update", 'name=submit value=on');
+    $have_profile = profile_exists($user->id, $role);
+    form_submit($have_profile?"Update profile":"Create profile", 'name=submit value=on');
     form_end();
 
-    echo "<p>
-        <a href=cp_profile_edit.php?role=$role&action=delete>Delete profile</a>
-    ";
+    if ($have_profile) {
+        echo "<p>";
+        mm_show_button(
+            "cp_profile_edit.php?role=$role&action=delete",
+            "Delete profile",
+            BUTTON_SMALL
+        );
+    }
     page_tail();
 }
 
@@ -198,7 +204,7 @@ function action($user_id, $profile, $role) {
     return $profile2;
 }
 
-function confirm_form($role) {
+function delete_confirm_form($role) {
     page_head('Confirm delete profile');
     echo sprintf('<p>Are you sure you want to delete your %s profile?',
         role_name($role)
@@ -219,21 +225,20 @@ function do_delete_profile($user, $role) {
 }
 
 $user = get_logged_in_user();
-//$user = BOINCUser::lookup_id(1);
+update_visit_time($user);
 
 if (post_str('submit', true)) {
     $role = post_int('role');
     $profile = read_profile($user->id, $role);
     $profile = action($user->id, $profile, $role);
     write_profile($user->id, $profile, $role);
-    //Header("Location: cp_profile_edit.php?role=$role");
     profile_change_notify($user, $role);
     Header("Location: home.php");
 } else {
     $role = get_int('role');
     $action = get_str('action', true);
     if ($action == 'delete') {
-        confirm_form($role);
+        delete_confirm_form($role);
     } else if ($action == 'confirm') {
         do_delete_profile($user, $role);
     } else {

@@ -133,7 +133,16 @@ function notification_string($n, $web) {
         $ens = Ensemble::lookup_id($n->opaque);
         if (!$ens) return null;
         $u = BoincUser::lookup_id($n->id2);
-        return sprintf('%s resigned from %s.', $u->name, $ens->name);
+        if ($web) {
+            return sprintf('<a href=%s>%s</a> resigned from <a href=%s>%s</a>.',
+                "user.php?user_id=$u->id",
+                $u->name,
+                "ensemble.php?ens_id=$ens->id",
+                $ens->name
+            );
+        } else {
+            return sprintf('%s resigned from %s.', $u->name, $ens->name);
+        }
         break;
     default:
         return "unknown type $n->type";

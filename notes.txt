@@ -446,18 +446,17 @@ Ellie
 Maryse
 Chelsea
 Monica
+Lily
+Brian Tang
 Rich Kraft
-Mosa Tsai
-Kyle Schmoltz
+Molly McCann
+Mosa Tsay
+Kyle Schmolze
+Gareth Loy
+Robert Au
+Weinberg
 
-- create an account
-- create one or more profiles (composer, performer, technician)
-- create an ensemble
-- do searches for composers, performers, technicians, and ensembles
-- find me (David Anderson);
-    send me a message and make a friend request
-- find my string quartet (Haste Street Players)
-    and ask to become a member
+see alpha_email.txt
 
 Beta
 American Composers Orchestra
@@ -469,3 +468,10 @@ https://composersforum.org/
 American Composers Alliance
 https://composers.com/
 shows the catalog of 350 obscure composers
+--------------------
+Forums
+News
+Performers wanted
+Composers wanted
+Technology
+The Lobby

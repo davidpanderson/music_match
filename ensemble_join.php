@@ -211,6 +211,9 @@ function remove_list($ens) {
     $ems = EnsembleMember::enum(
         sprintf("ensemble_id=%d and status=%d", $ens->id, EM_APPROVED)
     );
+    if (!$ems) {
+        echo "<br>$ens->name currently has no members.";
+    }
     start_table();
     foreach ($ems as $em) {
         $user = BoincUser::lookup_id($em->user_id);
@@ -259,6 +262,7 @@ function remove_confirmed($ens, $rem_user_id) {
 }
 
 $user = get_logged_in_user();
+update_visit_time($user);
 
 if (post_str('submit', true)) {
     $ens_id = post_int('ens_id');

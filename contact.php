@@ -37,6 +37,8 @@ function form($user) {
     form_start("contact.php", "POST");
     if ($user) {
         form_input_hidden("user_id", $user->id);
+    } else {
+        form_input_text('Your email address', 'email_addr');
     }
     form_input_textarea("Message to Music Match", 'message');
     form_submit("Send", "name=submit value=on");
@@ -59,6 +61,9 @@ function action() {
     $user_id = post_int('user_id', true);
     if ($user_id) {
         $message = "(message from user $user_id)\n".$message;
+    } else {
+        $e = post_str('email_addr');
+        $message = "(message from $e)\n".$message;
     }
     $user = new StdClass;
     $user->email_addr = SYS_ADMIN_EMAIL;
@@ -75,7 +80,7 @@ function action() {
 if (post_str('submit', true)) {
     action();
 } else {
-    $user = get_logged_in_user(true);
+    $user = get_logged_in_user(false);
     form($user);
 }
 

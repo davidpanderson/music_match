@@ -100,6 +100,7 @@ function cp_search_action($role, $req_user) {
 }
 
 $user = get_logged_in_user(true);
+update_visit_time($user);
 
 $action = post_str("submit", true);
 if ($action) {

@@ -197,6 +197,7 @@ function do_delete_ensemble($ens, $ens_info) {
 }
 
 $user = get_logged_in_user();
+update_visit_time($user);
 if (post_str('submit', true)) {
     $ens_id = post_int('ens_id', true);
     $name = strip_tags(post_str('name'));

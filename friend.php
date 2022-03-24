@@ -261,6 +261,7 @@ function handle_cancel($user) {
 // (icon) N friend request(s)
 
 $user = get_logged_in_user();
+update_visit_time($user);
 
 $action = get_str('action', true);
 if (!$action) $action = post_str('action');

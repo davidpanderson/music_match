@@ -189,7 +189,10 @@ function action($user_id, $profile, $role) {
     $link_url = post_str('link_url');
     if ($link_url != LINK_ADD_URL) {
         if (!filter_var($link_url, FILTER_VALIDATE_URL)) {
-            error_page("$link_url is not a valid URL");
+            $link_url = 'https://'.$link_url;
+            if (!filter_var($link_url, FILTER_VALIDATE_URL)) {
+                error_page("$link_url is not a valid URL");
+            }
         }
         $link_desc = strip_tags(post_str('link_desc'));
         if (!$link_desc || $link_desc == LINK_ADD_DESC) {

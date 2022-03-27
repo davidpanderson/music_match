@@ -41,7 +41,7 @@ function check_pending($user, $destuser) {
             $t = date_str($friend->create_time);
             echo tra("You requested friendship with %1 on %2.", $destuser->name,$t) . "
                 <p>" .
-                tra("This request is still pending confirmation.");
+                tra("This request is pending.");
             page_tail();
             exit();
         }
@@ -184,7 +184,7 @@ function handle_accept($user) {
     BoincNotify::replace(
         "userid=$srcid, create_time=$now, type=$type, opaque=$user->id, sent_by_email=0"
     );
-    send_if_immediate($srcuser);
+    email_if_immediate($srcuser);
 
     $notify = BoincNotify::lookup($user->id, NOTIFY_FRIEND_REQ, $srcid);
     if ($notify) {

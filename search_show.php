@@ -23,6 +23,7 @@ require_once("../inc/mm.inc");
 require_once("../inc/cp_profile.inc");
 require_once("../inc/tech.inc");
 require_once("../inc/ensemble.inc");
+require_once("../inc/teacher.inc");
 require_once("../inc/search.inc");
 
 // $item is either a profile or an ensemble
@@ -38,6 +39,9 @@ function show_item($item, $role) {
         break;
     case ENSEMBLE:
         ens_profile_summary_row($item);
+        break;
+    case TEACHER:
+        teacher_profile_summary_row($item);
         break;
     }
 }
@@ -58,6 +62,9 @@ function show_search($search, $user) {
     case ENSEMBLE:
         $results = ens_search($args, $user);
         break;
+    case TEACHER:
+        $results = teacher_search($args, $user);
+        break;
     }
     page_head(sprintf("%s search results", role_name($role)));
     if (!$results) {
@@ -76,6 +83,9 @@ function show_search($search, $user) {
         break;
     case ENSEMBLE:
         ens_profile_summary_header();
+        break;
+    case TEACHER:
+        teacher_profile_summary_header();
         break;
     }
 
@@ -105,6 +115,17 @@ function show_search($search, $user) {
     }
     end_table();
     page_tail();
+
+    // update search record
+    //
+    $cur_results = [];
+    foreach ($results as $id=>$profile) {
+        $cur_results[] = $id;
+    }
+    $search->update(sprintf(
+        "view_results='%s', view_time=%d, rerun_time=0, rerun_nnew=0",
+        json_encode($cur_results), time()
+    ));
 }
 
 $user = get_logged_in_user();

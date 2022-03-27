@@ -242,6 +242,78 @@ function ens_search($form_args, $req_user) {
     return $ensembles;
 }
 
+// -------------- teacher ------------------
+
+function teacher_match_args($profile, $args) {
+    $x = new StdClass;
+    $x->topic = 0;
+    $x->style = 0;
+    $x->level = 0;
+    foreach ($profile->topic as $i) {
+        if (in_array($i, $args->topic)) {
+            $x->topic++;
+        }
+    }
+    foreach ($profile->style as $i) {
+        if (in_array($i, $args->style)) {
+            $x->style++;
+        }
+    }
+    foreach ($profile->level as $i) {
+        if (in_array($i, $args->level)) {
+            $x->level++;
+        }
+    }
+    return $x;
+}
+
+function teacher_match_value($match) {
+    $x = 0;
+    if ($match->topic) $x += 100 + $match->topic;
+    if ($match->style) $x += 100 + $match->style;
+    if ($match->level) $x += 100 + $match->level;
+    return $x;
+}
+
+// return array of id => profile.
+// The user record has been attached to each profile
+//
+function teacher_search($form_args, $req_user) {
+    [$close_country, $close_zip] = handle_close($form_args, $req_user);
+    $profiles_in = get_profiles(TEACHER);
+    $profiles = array();
+    foreach ($profiles_in as $user_id=>$profile) {
+        if ($req_user->id == $user_id) {
+            // don't show user their own profile
+            continue;
+        }
+        $profile->match = teacher_match_args($profile, $form_args);
+        $profile->value = teacher_match_value($profile->match);
+        if ($profile->value == 0) {
+            // skip if no criteria matched
+            continue;
+        }
+        $user = BoincUser::lookup_id($user_id);
+        if ($close_country && $close_country != $user->country) {
+            continue;
+        }
+        if ($close_zip) {
+            $other_zip = str_to_zip($user->postal_code);
+            if (!$other_zip) continue;
+            $dist = zip_dist($close_zip, $other_zip);
+            if ($dist > 60) continue;
+            $profile->value -= $dist;
+            $profile->dist = $dist;
+        } else {
+            $profile->dist = -1;
+        }
+        $profile->user = $user;
+        $profiles[$user->id] = $profile;
+    }
+    uasort($profiles, 'compare_value');
+    return $profiles;
+}
+
 // -------------- utilities ------------------
 
 // record a search in the DB, or update existing record

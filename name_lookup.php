@@ -134,7 +134,7 @@ function ensemble_search_action() {
     page_tail();
 }
 
-get_logged_in_user();
+$user = get_logged_in_user();
 update_visit_time($user);
 
 $submit = post_str('submit', true);

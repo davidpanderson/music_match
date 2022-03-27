@@ -349,11 +349,11 @@ function community_links($clo, $logged_in_user){
     }
 
     if ($friends) {
-        $x = "";
+        $x = [];
         foreach($friends as $friend) {
-            $x .= friend_links($friend);
+            $x[] = friend_links($friend);
         }
-        row2("Friends", $x);
+        row2("Friends", implode($x, '<br>'));
     }
 }
 

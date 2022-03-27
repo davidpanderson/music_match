@@ -38,6 +38,8 @@ define("SYS_ADMIN_EMAIL", "davea@berkeley.edu");
 define("POST_REPORT_EMAILS", "davea@berkeley.edu");
     // Email addresses separated by pipe ( | ) that will receive user reports
     // of offensive forum posts.
+define("EMAIL_FROM", "davea@berkeley.edu");
+define("EMAIL_FROM_NAME", "Music Match");
 
 //-------------- Delete Account
 //define("DELETE_DELAY", 2);

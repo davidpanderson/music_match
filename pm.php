@@ -32,7 +32,7 @@ function show_block_link($userid) {
 }
 
 $logged_in_user = get_logged_in_user();
-update_visit_time($user);
+update_visit_time($logged_in_user);
 BoincForumPrefs::lookup($logged_in_user);
 
 function make_script() {

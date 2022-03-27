@@ -21,6 +21,8 @@
 require_once("../inc/util.inc");
 require_once("../inc/mm_db.inc");
 
+// convert search args to a list of lines
+//
 function args_to_str($args, $role) {
     $s = '';
     switch ($role) {
@@ -81,7 +83,7 @@ function args_to_str($args, $role) {
             $s .= '<br>';
         }
         if ($args->program) {
-            $s .= '>Software: ';
+            $s .= 'Software: ';
             $x = [];
             foreach ($args->program as $i) {
                 $x[] = PROGRAM_LIST[$i];
@@ -144,18 +146,62 @@ function args_to_str($args, $role) {
             $s .= '<br>';
         }
         break;
+    case TEACHER:
+        if ($args->topic) {
+            $s .= 'Topic: ';
+            $x = [];
+            foreach ($args->topic as $i) {
+                $x[] = TOPIC_LIST[$i];
+            }
+            $s .= implode(', ', $x);
+            $s .= '<br>';
+        }
+        if ($args->style) {
+            $s .= 'Style: ';
+            $x = [];
+            foreach ($args->style as $i) {
+                $x[] = STYLE_LIST[$i];
+            }
+            $s .= implode(', ', $x);
+            $s .= '<br>';
+        }
+        if ($args->level) {
+            $s .= 'Level: ';
+            $x = [];
+            foreach ($args->level as $i) {
+                $x[] = LEVEL_LIST[$i];
+            }
+            $s .= implode(', ', $x);
+            $s .= '<br>';
+        }
+        if (isset($args->where)) {
+            $s .= 'Where: ';
+            $x = [];
+            foreach ($args->where as $i) {
+                $x[] = WHERE_LIST[$i];
+            }
+            $s .= implode(', ', $x);
+            $s .= '<br>';
+        }
+        if ($args->close) {
+            $s .= 'Nearby: ';
+            $s .= 'yes';
+            $s .= '<br>';
+        }
+        break;
     }
     return $s;
 
 }
 
 function show_search_list_item($s, $role) {
-    //print_r($s->params);
     $nresults = count(json_decode($s->view_results));
     $m = "$nresults";
     if ($s->rerun_nnew) {
         $m .= sprintf(
-            "<br><font color=orange>This search has %d new matches</font>", $s->rerun_nnew
+            "<br><font color=orange>This search has %d new %s</font>",
+            $s->rerun_nnew,
+            $s->rerun_nnew==1?"match":"matches"
         );
     }
     $m .= "<br>";
@@ -164,7 +210,10 @@ function show_search_list_item($s, $role) {
     row_array([
         args_to_str($s->params->args, $role),
         $m,
-        date_str($s->view_time)
+        date_str($s->view_time),
+        mm_button_text("search_list.php?search_id=$s->id&action=delete",
+            "Delete", BUTTON_SMALL
+        )
     ]);
     row1('&nbsp;', 99, 'bg-dark');
 }
@@ -187,15 +236,14 @@ function show_searches($searches, $role) {
 
 function show_search_list_header() {
     row_heading_array([
-        "Search criteria", "Number of matches", "Last viewed"
+        "Search criteria", "Number of matches", "Last viewed", 'Delete search'
     ],
     null,
     "bg-primary"
     );
 }
 
-function main() {
-    $user = get_logged_in_user();
+function main($user) {
     page_head("My searches");
     $searches = Search::enum("user_id = $user->id order by rerun_nnew desc");
     if ($searches) {
@@ -209,6 +257,7 @@ function main() {
         show_searches($searches, PERFORMER);
         show_searches($searches, TECHNICIAN);
         show_searches($searches, ENSEMBLE);
+        show_searches($searches, TEACHER);
         end_table();
     } else {
         echo "No searches so far.";
@@ -216,5 +265,17 @@ function main() {
     page_tail();
 }
 
-main();
+$user = get_logged_in_user();
+if (get_str('action', true) == 'delete') {
+    $search_id = get_int('search_id');
+    $search = Search::lookup_id($search_id);
+    if (!$search || $search->user_id != $user->id) {
+        error_page("No such search");
+    }
+    $search->delete();
+    page_head("Search deleted");
+    page_tail();
+} else {
+    main($user);
+}
 ?>

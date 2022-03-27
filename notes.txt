@@ -468,6 +468,15 @@ https://composersforum.org/
 American Composers Alliance
 https://composers.com/
 shows the catalog of 350 obscure composers
+
+PR:
+Conservatories
+Groupmuse
+Facebook
+Reddit
+Twitter
+UCB mus dept
+opera companies
 --------------------
 Forums
 News
@@ -475,3 +484,12 @@ Performers wanted
 Composers wanted
 Technology
 The Lobby
+===================
+Teacher
+
+profile:
+You teach: instruments (coarse), theory, composition
+Styles you teach: styles
+Levels you teach: levels
+Where: my place, your place, online
+Introduction

@@ -71,6 +71,7 @@ define('COMPOSER', 0);
 define('PERFORMER', 1);
 define('TECHNICIAN', 2);
 define('ENSEMBLE', 3);
+define('TEACHER', 4);
 
 // removing or changing keys will invalidate existing profiles
 
@@ -114,7 +115,7 @@ define('INST_LIST_FINE', array(
     'vocal_soprano' => 'Vocal (Soprano)',
     'vocal_alto' => 'Vocal (Alto)',
     'vocal_tenor' => 'Vocal (Tenor)',
-    'vocal_bass' => 'Vocal (Bass)',
+    'vocal_bass' => 'Vocal (Bass/Baritone)',
 ));
 
 define('LEVEL_LIST', array(
@@ -149,6 +150,19 @@ define('PROGRAM_LIST', array(
     'sibelius' => 'Sibelius',
 ));
 
+define ('TOPIC_LIST', array_merge(INST_LIST_COARSE, [
+    'theory' => 'Theory and harmony',
+    'composition' => 'Composition'
+]));
+
+define ('WHERE_LIST', [
+    'teacher' => "Teacher's place",
+    'student' => "Student's place",
+    'school' => 'School',
+    'online' => 'Online'
+]);
+
+
 // ---------- Functions for generating and parsing forms (search, edit)
 
 // text for custom fields
@@ -161,6 +175,7 @@ define('LINK_ADD_DESC', 'Description');
 define('ENSEMBLE_TYPE_ADD', 'Other ensemble type');
 define('TECH_AREA_ADD', 'Other area');
 define('PROGRAM_ADD', 'Other program');
+define('TOPIC_ADD', 'Other topic');
 
 // ----- checkbox stuff
 
@@ -387,6 +402,7 @@ function role_dir($role) {
     case PERFORMER: return "performer";
     case TECHNICIAN: return "technician";
     case ENSEMBLE: return "ensemble";
+    case TEACHER: return "teacher";
     default: die("bad role");
     }
 }
@@ -397,6 +413,7 @@ function role_name($role) {
     case PERFORMER: return "Performer";
     case TECHNICIAN: return "Technician";
     case ENSEMBLE: return "Ensemble";
+    case TEACHER: return "Teacher";
     default: die("bad role");
     }
 }
@@ -458,6 +475,16 @@ function read_profile($id, $role) {
         if (!array_key_exists('seeking_members', $p)) $p->seeking_members = 0;
         if (!array_key_exists('perf_reg', $p)) $p->perf_reg = 0;
         if (!array_key_exists('perf_paid', $p)) $p->perf_paid = 0;
+        break;
+    case TEACHER:
+        if (!array_key_exists('topic', $p)) $p->topic = array();
+        if (!array_key_exists('topic_custom', $p)) $p->topic_custom = array();
+        if (!array_key_exists('style', $p)) $p->style = array();
+        if (!array_key_exists('style_custom', $p)) $p->style_custom = array();
+        if (!array_key_exists('level', $p)) $p->level = array();
+        if (!array_key_exists('link', $p)) $p->link = array();
+        if (!array_key_exists('where', $p)) $p->where = array();
+        break;
     }
     return $p;
 }

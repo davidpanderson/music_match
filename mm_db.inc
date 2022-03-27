@@ -94,6 +94,10 @@ class Search {
         $db = BoincDb::get();
         return $db->update($this, 'search', $clause);
     }
+    function delete() {
+        $db = BoincDb::get();
+        return $db->delete($this, 'search');
+    }
 }
 
 ?>

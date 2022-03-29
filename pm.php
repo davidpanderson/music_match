@@ -199,8 +199,8 @@ function do_send($logged_in_user) {
     if (post_str("preview", true) == tra("Preview")) {
         pm_form($replyto, $to_ids);
     }
-    if (!$to_ids  || ($subject == null) || ($content == null)) {
-        pm_form($replyto, $to_ids, tra("You need to fill all fields to send a private message"));
+    if (!$to_ids  || ($subject == null) && ($content == null)) {
+        pm_form($replyto, $to_ids, tra("Please supply a subject and/or message"));
         return;
     }
     if (!akismet_check($logged_in_user, $content)) {

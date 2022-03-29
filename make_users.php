@@ -242,5 +242,4 @@ function make_ensembles($n) {
 //make_users(100);
 make_ensembles(20);
 
-
 ?>

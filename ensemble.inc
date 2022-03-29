@@ -50,50 +50,46 @@ function show_ensembles($user) {
 }
 
 function ens_profile_summary_header() {
-    $enable_tag = '<br><a id="enable" onclick="remove()" href=#>Enable mouse-over audio</a>';
-    $name_header = sprintf(
-        'Name<br><small>click for details<br>mouse over to hear audio sample%s</small>',
-        $enable_tag
-    );
+    enable_audio();
     row_heading_array(array(
-        $name_header, "Type", "Instruments", "Style", "Level", "Founder", "Country"
+        'Name<br><small>click for details',
+        "<nobr>Music sample</nobr>&nbsp;&nbsp;&nbsp;<br><small>Click <img height=18px src=note.png> to play",
+        "Type", "Instruments", "Style", "Level", "Founder", "Country"
     ));
 }
 
 // name, with link and audio mouseover
 //
-function ens_name_link($ens, $profile) {
-    $audio = "";
+function ens_listen_link($ens, $profile) {
+    $x = '';
     if ($profile->signature_filename) {
-        $audio = sprintf(' onmouseenter="play_sound(\'a%d\');" onmouseleave="stop_sound(\'a%d\');" ',
+        $audio = sprintf(' onclick="play_sound(\'a%d\');" onmouseleave="stop_sound(\'a%d\');" ',
             $ens->id, $ens->id
         );
+        $x .= sprintf('&nbsp;<a %s href=#><img height=24px src=note.png></a>', $audio);
     }
-    return sprintf('<a %s href=ensemble.php?ens_id=%d>%s%s</a>',
-        $audio,
-        $ens->id, $ens->name,
-        $profile->signature_filename?"&nbsp;&nbsp;<img height=24px src=note.png>":""
-    );
+    return $x;
 }
 
-function ens_profile_summary_row($e) {
-    $p = $e->profile;
+function ens_profile_summary_row($ens) {
+    $p = $ens->profile;
     if ($p->signature_filename) {
         echo sprintf('<audio id=a%d><source src="%s/%d.mp3"></source></audio>',
-            $e->id,
+            $ens->id,
             role_dir(ENSEMBLE),
-            $e->id
+            $ens->id
         );
     }
-    $user = $e->user;
+    $user = $ens->user;
     row_array(array(
-        ens_name_link($e, $p),
+        $ens->name,
+        ens_listen_link($ens, $p),
         ENSEMBLE_TYPE_LIST[$p->type],
         lists_to_string(INST_LIST_FINE, $p->inst, $p->inst_custom, "<br>"),
         lists_to_string(STYLE_LIST, $p->style, $p->style_custom, "<br>"),
         lists_to_string(LEVEL_LIST, $p->level, null, "<br>"),
         "<a href=user.php?user_id=$user->id>$user->name</a>",
-        country_distance($user, $e->dist, "<br>")
+        country_distance($user, $ens->dist, "<br>")
     ));
 }
 

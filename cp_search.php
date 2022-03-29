@@ -36,7 +36,7 @@ function cp_search_form($profile, $role) {
     if ($role == COMPOSER) {
         form_checkboxes(
             "who write for",
-            items_list(ENSEMBLE_TYPE_LIST, array(), "ens_type")
+            items_list(COMPOSE_FOR_LIST, array(), "ens_type")
         );
     }
     form_checkboxes(
@@ -61,7 +61,7 @@ function get_form_args($role) {
     $x = new StdClass;
     if ($role==COMPOSER) {
         $x->inst = parse_list(INST_LIST_COARSE, "inst");
-        $x->ens_type = parse_list(ENSEMBLE_TYPE_LIST, "ens_type");
+        $x->ens_type = parse_list(COMPOSE_FOR_LIST, "ens_type");
     } else {
         $x->inst = parse_list(INST_LIST_FINE, "inst");
     }
@@ -72,12 +72,8 @@ function get_form_args($role) {
 }
 
 function cp_search_action($role, $req_user) {
-    global $audio_head_extra;
-
     page_head(
-        sprintf("%s search results", $role==COMPOSER?"Composer":"Performer"),
-        null, false, "",
-        $audio_head_extra
+        sprintf("%s search results", $role==COMPOSER?"Composer":"Performer")
     );
 
     $form_args = get_form_args($role);

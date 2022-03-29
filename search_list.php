@@ -42,7 +42,7 @@ function args_to_str($args, $role) {
                 $s .= '<br>Ensemble types: ';
                 $x = [];
                 foreach ($args->ens_type as $i) {
-                    $x[] = ENSEMBLE_TYPE_LIST[$i];
+                    $x[] = COMPOSE_FOR_LIST[$i];
                 }
                 $s .= implode(', ', $x);
                 $s .= '<br>';

@@ -63,7 +63,7 @@ function cp_profile_summary_table($user, $profile, $role) {
     if ($role == COMPOSER) {
         row2('Ensemble types',
             lists_to_string(
-                ENSEMBLE_TYPE_LIST,
+                COMPOSE_FOR_LIST,
                 $profile->ens_type, $profile->ens_type_custom
             )
         );
@@ -99,18 +99,16 @@ function cp_profile_summary_table($user, $profile, $role) {
 
 // name, with link and audio mouseover
 //
-function cp_name_link($user, $profile) {
-    $audio = "";
+function cp_listen_link($user, $profile) {
+    $x = '';
     if ($profile->signature_filename) {
-        $audio = sprintf(' onmouseenter="play_sound(\'a%d\');" onmouseleave="stop_sound(\'a%d\');" ',
+        $audio = sprintf(
+            ' onclick="play_sound(\'a%d\');" onmouseleave="stop_sound(\'a%d\');" ',
             $user->id, $user->id
         );
+        $x .= sprintf('&nbsp;<a %s href=#><img height=24px src=note.png></a>', $audio);
     }
-    return sprintf('<a %s href=user.php?user_id=%d>%s%s</a>',
-        $audio,
-        $user->id, $user->name,
-        $profile->signature_filename?"&nbsp;&nbsp;<img height=24px src=note.png>":""
-    );
+    return $x;
 }
 
 // show profile as an N-column table row
@@ -126,14 +124,15 @@ function cp_profile_summary_row($profile, $role) {
     }
 
     $x = array();
-    $x[] = cp_name_link($user, $profile);
+    $x[] = sprintf('<a href=user.php?user_id=%d>%s</a>', $user->id, $user->name);
+    $x[] = cp_listen_link($user, $profile);
     $x[] = lists_to_string(
         $role==COMPOSER?INST_LIST_COARSE:INST_LIST_FINE,
         $profile->inst, $profile->inst_custom, "<br>"
     );
     if ($role==COMPOSER) {
         $x[] = lists_to_string(
-            ENSEMBLE_TYPE_LIST,
+            COMPOSE_FOR_LIST,
             $profile->ens_type, $profile->ens_type_custom, "<br>"
         );
     }
@@ -156,12 +155,12 @@ function cp_profile_summary_row($profile, $role) {
 // table header for the above
 //
 function cp_profile_summary_header($role) {
-    $enable_tag = '<br><a id="enable" onclick="remove()" href=#>Enable mouse-over audio</a>';
-    $name_header = sprintf(
-        'Name<br><small>click for details<br>mouse over to hear audio sample%s</small>',
-        $enable_tag
-    );
-    $x= [$name_header, "Instruments"];
+    enable_audio();
+    $x= [
+        'Name<br><small>click for details</small>',
+        "<nobr>Music sample</nobr>&nbsp;&nbsp;&nbsp;<br><small>Click <img height=18px src=note.png> to play",
+        "Instruments"
+    ];
     if ($role == COMPOSER) {
         $x[] = "Ensemble types";
     }

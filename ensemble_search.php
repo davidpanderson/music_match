@@ -61,8 +61,7 @@ function get_form_args() {
 }
 
 function ens_search_action($req_user) {
-    global $audio_head_extra;
-    page_head("Ensemble search results", null, false, "", $audio_head_extra);
+    page_head("Ensemble search results");
     $form_args = get_form_args();
     $ensembles = ens_search($form_args, $req_user);
     if (!$ensembles) {

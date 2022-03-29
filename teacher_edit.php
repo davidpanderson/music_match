@@ -25,7 +25,11 @@ require_once("../inc/mm.inc");
 
 function teacher_form($user, $profile) {
     page_head("Teacher profile");
-    form_start("teacher_edit.php", "POST");
+    form_start(
+        "teacher_edit.php",
+        "POST",
+        'name="fname" onsubmit="return validate_link()"'
+    );
     form_checkboxes(
         "Things you teach",
         array_merge(
@@ -73,6 +77,8 @@ function teacher_form($user, $profile) {
         text_input_default(LINK_ADD_DESC), LINK_ADD_DESC
     );
     $title = 'Links<br><small>... to web pages about your teaching.</small>';
+    validate_link_script('fname', 'link_url', 'link_desc');
+
     if ($profile->link) {
         form_checkboxes($title, items_link($profile->link, "link"));
         form_general('', "$in_url &nbsp;&nbsp;&nbsp; $in_desc");

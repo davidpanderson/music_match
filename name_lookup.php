@@ -41,7 +41,7 @@ function show_ensemble($e) {
 
 function user_search_form() {
     page_head(tra("User name lookup"));
-    form_start("name_lookup.php", "post");
+    form_start("name_lookup.php", "post", "name=f");
     form_input_text("User name contains", 'search_string');
     form_general(
         "Country",
@@ -56,7 +56,7 @@ function user_search_form() {
 
 function ensemble_search_form() {
     page_head(tra("Ensemble name lookup"));
-    form_start("name_lookup.php", "post");
+    form_start("name_lookup.php", "post", "name=f");
     form_input_hidden('ensemble', 1);
     form_input_text("Ensemble name contains", 'search_string');
     form_submit('Search', 'name=submit value=on');

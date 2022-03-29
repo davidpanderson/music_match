@@ -25,7 +25,11 @@ require_once("../inc/mm.inc");
 
 function cp_form($user, $profile, $role) {
     page_head($role==COMPOSER?"Composer profile":"Performer profile");
-    form_start("cp_profile_edit.php", "POST", 'ENCTYPE="multipart/form-data"');
+    form_start(
+        "cp_profile_edit.php",
+        "POST",
+        'ENCTYPE="multipart/form-data" name="fname" onsubmit="return validate_link()"'
+    );
     form_input_hidden("role", $role);
     form_checkboxes(
         $role==COMPOSER?"Instruments you write for":"Instruments you play",
@@ -43,10 +47,10 @@ function cp_form($user, $profile, $role) {
 
     if ($role==COMPOSER) {
         form_checkboxes(
-            "Ensemble types you write for",
+            "Groups you write for",
             array_merge(
                 items_list(
-                    ENSEMBLE_TYPE_LIST,
+                    COMPOSE_FOR_LIST,
                     $profile->ens_type, "ens_type"
                 ),
                 items_custom($profile->ens_type_custom, "ens_type_custom")
@@ -123,6 +127,8 @@ function cp_form($user, $profile, $role) {
         text_input_default(LINK_ADD_DESC), LINK_ADD_DESC
     );
     $title = 'Links<br><small>... to web pages with examples of your work.</small>';
+    validate_link_script('fname', 'link_url', 'link_desc');
+
     if ($profile->link) {
         form_checkboxes($title, items_link($profile->link, "link"));
         form_general('', "$in_url &nbsp;&nbsp;&nbsp; $in_desc");
@@ -158,7 +164,7 @@ function action($user_id, $profile, $role) {
 
     if ($role==COMPOSER) {
         $profile2->ens_type = parse_list(
-            ENSEMBLE_TYPE_LIST, "ens_type"
+            COMPOSE_FOR_LIST, "ens_type"
         );
         $profile2->ens_type_custom = parse_custom(
             $profile->ens_type_custom, "ens_type_custom", ENSEMBLE_TYPE_ADD
@@ -189,10 +195,7 @@ function action($user_id, $profile, $role) {
     $link_url = post_str('link_url');
     if ($link_url != LINK_ADD_URL) {
         if (!filter_var($link_url, FILTER_VALIDATE_URL)) {
-            $link_url = 'https://'.$link_url;
-            if (!filter_var($link_url, FILTER_VALIDATE_URL)) {
-                error_page("$link_url is not a valid URL");
-            }
+            error_page("$link_url is not a valid URL");
         }
         $link_desc = strip_tags(post_str('link_desc'));
         if (!$link_desc || $link_desc == LINK_ADD_DESC) {

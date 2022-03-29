@@ -103,6 +103,7 @@ define('INST_LIST_FINE', array(
     'french_horn' => 'French horn',
     'guitar' => 'Guitar',
     'harp' => 'Harp',
+    'harpsichord' => 'Harpsichord',
     'oboe' => 'Oboe',
     'organ' => 'Organ',
     'percussion' => 'Percussion',
@@ -131,6 +132,8 @@ define('ENSEMBLE_TYPE_LIST', array(
     'chamber' => 'Chamber group',
     'duo' => 'Duo',
 ));
+
+define('COMPOSE_FOR_LIST', array_merge(ENSEMBLE_TYPE_LIST, ['soloist'=>'Soloist']));
 
 define('TECH_AREA_LIST', array(
     'score_edit' => 'Score editing',
@@ -360,6 +363,36 @@ function handle_audio_signature_upload($profile, $profile2, $role, $id) {
     return $profile2;
 }
 
+// Validate a link (URL/desc pair) in a form
+// Add name=x onsubmit="return validate_link()" in the form element
+//
+function validate_link_script($form_name, $url_name, $desc_name) {
+    echo sprintf('
+        <script>
+            function validate_link() {
+              let url = document.forms["%s"]["%s"].value;
+              let desc = document.forms["%s"]["%s"].value;
+              if (url && url!= "%s") {
+                if (!url.startsWith("http")) {
+                  alert("Link URL must start with http:// or https://");
+                  return false;
+                }
+                if (!desc || desc==="%s") {
+                  alert("Link description must be non-blank");
+                  return false;
+                }
+              }
+              return true;
+            }
+        </script>
+        ',
+        $form_name, $url_name,
+        $form_name, $desc_name,
+        LINK_ADD_URL,
+        LINK_ADD_DESC
+    );
+}
+
 // ---------- reading and writing profiles
 
 // example composer profile
@@ -520,7 +553,8 @@ function get_profiles($role) {
 
 // Javascript for mouse-over audio
 //
-$audio_head_extra = <<<EOT
+function enable_audio() {
+echo '
 <script language="javascript" type="text/javascript">
 function play_sound(id) {
     var audio = document.getElementById(id);
@@ -532,12 +566,9 @@ function stop_sound(id) {
     var audio = document.getElementById(id);
     audio.pause();
 }
-function remove() {
-    var e = document.getElementById("enable");
-    e.innerHTML = "";
-}
 </script>
-EOT;
+';
+}
 
 // show a list of items (instruments, styles etc.) as a string
 //

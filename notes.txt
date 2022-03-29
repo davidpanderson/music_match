@@ -493,3 +493,27 @@ Styles you teach: styles
 Levels you teach: levels
 Where: my place, your place, online
 Introduction
+================
+Ensemble type
+
+currently, in composer profile, if you check an ensemble type
+there's no way to indicate whether you also write solo music.
+Or to search for composers that write music for solo instruments.
+
+fix:
+create
+COMPOSE_FOR_LIST
+This is ENSEMBLE_TYPE_LIST plus Solo
+
+============
+SSL update:
+
+back up:
+letsencrypt/
+apache2/
+or all of etc/
+scp -r
+cp -r or -R
+
+autoregen:
+cron.d/certbot

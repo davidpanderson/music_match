@@ -88,7 +88,7 @@ function handler1() {
     } else {
         $user = make_user($email_addr, $name, '');
     }
-    $code = random_int(100000, 999999);
+    $code = random_int(1000, 9999);
     $user->update("seti_id=$code");
     send_email($user, 'Music Match registration',
         "Your Music Match verification code is $code"
@@ -101,7 +101,7 @@ function handler1() {
 //
 function verify() {
     $user = get_logged_in_user();
-    $code = random_int(100000, 999999);
+    $code = random_int(1000, 9999);
     $user->update("seti_id=$code");
     send_email($user, 'Music Match registration',
         "Your Music Match verification code is $code"

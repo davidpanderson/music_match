@@ -33,7 +33,6 @@ if (!$start) $start = 0;
 $forum = BoincForum::lookup_id($id);
 if (!$forum) error_page("forum ID not found");
 $user = get_logged_in_user();
-update_visit_time($user);
 BoincForumPrefs::lookup($user);
 
 if (DISABLE_FORUMS && !is_admin($user)) {

@@ -32,7 +32,7 @@ function cp_form($user, $profile, $role) {
     );
     form_input_hidden("role", $role);
     form_checkboxes(
-        $role==COMPOSER?"Instruments you write for":"Instruments you play",
+        $role==COMPOSER?"Instruments I write for":"Instruments I play",
         array_merge(
             items_list(
                 $role==COMPOSER?INST_LIST_COARSE:INST_LIST_FINE,
@@ -47,7 +47,7 @@ function cp_form($user, $profile, $role) {
 
     if ($role==COMPOSER) {
         form_checkboxes(
-            "Groups you write for",
+            "Groups I write for",
             array_merge(
                 items_list(
                     COMPOSE_FOR_LIST,
@@ -62,7 +62,7 @@ function cp_form($user, $profile, $role) {
     }
 
     form_checkboxes(
-        $role==COMPOSER?"Styles you write in":"Styles you play",
+        $role==COMPOSER?"Styles I write in":"Styles I play",
         array_merge(
             items_list(STYLE_LIST, $profile->style, "style"),
             items_custom($profile->style_custom, "style_custom")
@@ -74,12 +74,12 @@ function cp_form($user, $profile, $role) {
     );
 
     form_checkboxes(
-        $role==COMPOSER?"Technical levels you write for":"Technical levels you play",
+        $role==COMPOSER?"Technical levels I write for":"Technical levels you play",
         items_list(LEVEL_LIST, $profile->level, "level")
     );
 
     if ($role==COMPOSER) {
-        $x = "Composers/musicians who influence your work";
+        $x = "Composers/musicians who influence my work";
         if ($profile->influence) {
             form_checkboxes(
                 $x,
@@ -97,7 +97,7 @@ function cp_form($user, $profile, $role) {
         }
     }
 
-    $sig_title = sprintf('Audio signature MP3<br><small>A short, representative example of your %s.<br>Max size 128 MB.</small>',
+    $sig_title = sprintf('Audio signature MP3<br><small>A short, representative example of my %s.<br>Max size 128 MB.</small>',
         $role==COMPOSER?"composition":"playing"
     );
     if ($profile->signature_filename) {
@@ -126,7 +126,7 @@ function cp_form($user, $profile, $role) {
         '<input name=link_desc size=40 %s value="%s">',
         text_input_default(LINK_ADD_DESC), LINK_ADD_DESC
     );
-    $title = 'Links<br><small>... to web pages with examples of your work.</small>';
+    $title = 'Links<br><small>... to web pages with examples of my work.</small>';
     validate_link_script('fname', 'link_url', 'link_desc');
 
     if ($profile->link) {
@@ -134,6 +134,20 @@ function cp_form($user, $profile, $role) {
         form_general('', "$in_url &nbsp;&nbsp;&nbsp; $in_desc");
     } else {
         form_general($title, "$in_url &nbsp;&nbsp;&nbsp; $in_desc");
+    }
+
+    if ($role == COMPOSER) {
+        form_checkboxes('I usually get paid to compose',
+            array(array('comp_paid', '', $profile->comp_paid))
+        );
+    }
+    if ($role == PERFORMER) {
+        form_checkboxes('I regularly perform for an audience',
+            array(array('perf_reg', '', $profile->perf_reg))
+        );
+        form_checkboxes('I usually get paid to perform',
+            array(array('perf_paid', '', $profile->perf_paid))
+        );
     }
 
     $have_profile = profile_exists($user->id, $role);
@@ -206,6 +220,15 @@ function action($user_id, $profile, $role) {
         $x->desc = $link_desc;
         $profile2->link[] = $x;
     }
+
+    if ($role == COMPOSER) {
+        $profile2->comp_paid = parse_post_bool('comp_paid');
+    }
+    if ($role == PERFORMER) {
+        $profile2->perf_reg = parse_post_bool('perf_reg');
+        $profile2->perf_paid = parse_post_bool('perf_paid');
+    }
+
 
     return $profile2;
 }

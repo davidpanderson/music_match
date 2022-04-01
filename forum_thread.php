@@ -37,7 +37,7 @@ if ($filter != "false"){
 }
 
 $logged_in_user = get_logged_in_user(false);
-update_visit_time($user);
+update_visit_time($logged_in_user);
 
 $tokens = "";
 if ($logged_in_user) {

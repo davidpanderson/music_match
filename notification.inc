@@ -64,18 +64,18 @@ function notification_string($n, $web) {
         $ens = Ensemble::lookup_id($n->opaque);
         if (!$ens) return null;
         return sprintf('The ensemble %s was removed by its founder.', $ens->name);
-    case NOTIFY_FRIEND_REQ:
+    case NOTIFY_FOLLOW:
+        $u = BoincUser::lookup_id($n->opaque);
+        if (!$u) return null;
         if ($web) {
-            return friend_notify_req_web_line($n);
+            return sprintf("<a href=user.php?user_id=%d>%s</a> is following you.",
+                $u->id, $u->name
+            );
         } else {
-            return friend_notify_req_email_line($n);
+            return "$u->name is following you.";
         }
     case NOTIFY_FRIEND_ACCEPT:
-        if ($web) {
-            return friend_notify_accept_web_line($n);
-        } else {
-            return friend_notify_accept_email_line($n);
-        }
+        return null;
     case NOTIFY_SUBSCRIBED_POST:
         if ($web) {
             return subscribed_post_web_line($n);
@@ -152,7 +152,8 @@ function notification_string($n, $web) {
 // show notifications (on home page)
 //
 function show_notifications($user) {
-    $ns = BoincNotify::enum("userid = $user->id order by id desc");
+    $t = time() - 7*86400;
+    $ns = BoincNotify::enum("userid = $user->id and create_time>$t order by id desc");
     if (!$ns) {
         row2('No recent notifications', '');
         return;
@@ -186,7 +187,7 @@ function send_notify_email($user) {
 '%s
 
 For details, or to change email settings, visit Music Match:
-https://isaac.ssl.berkeley.edu/mm/home.php
+https://music-match.org/home.php
 ',
             implode($x, "\n\n")
         );
@@ -196,9 +197,9 @@ https://isaac.ssl.berkeley.edu/mm/home.php
 For details, or to change email settings, <a href=%s>visit Music Match</a>.
 ',
             implode($x, "<p><p>"),
-            'https://isaac.ssl.berkeley.edu/mm/home.php'
+            'https://music-match.org/home.php'
         );
-        send_email($user, $subject, $body, $body_html);
+        send_email($user, $subject, $body, null);
     }
     return true;
 }

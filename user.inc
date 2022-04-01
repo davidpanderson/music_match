@@ -27,20 +27,6 @@ function total_posts($user) {
     return BoincPost::count("user=$user->id");
 }
 
-function notify_description($notify) {
-    switch ($notify->type) {
-    case NOTIFY_FRIEND_REQ:
-        return friend_notify_req_web_line($notify);
-    case NOTIFY_FRIEND_ACCEPT:
-        return friend_notify_accept_web_line($notify);
-    case NOTIFY_PM:
-        return pm_web_line($notify);
-    case NOTIFY_SUBSCRIBED_POST:
-        return subscribed_post_web_line($notify);
-    }
-    return null;
-}
-
 function weak_auth($user) {
     $x = md5($user->authenticator.$user->passwd_hash);
     return "{$user->id}_$x";
@@ -129,17 +115,6 @@ function show_user_info_private($user) {
     }
 }
 
-function friend_links($user) {
-    if (is_banished($user)) {
-        return "";
-    }
-    $x = " <a href=\"".url_base()."user.php?user_id=".$user->id."\">".$user->name."</a>";
-    if (function_exists("project_user_links")) {
-        $x .= project_user_links($user);
-    }
-    return $x;
-}
-
 // show user name, with links to profile if present.
 // if $badge_height is > 0, show badges
 // if $name_limit, limit name to N chars
@@ -166,86 +141,6 @@ function user_links($user, $badge_height=0, $name_limit=0) {
         $x .= badges_string(true, $user, $badge_height);
     }
     return $name_limit?"<nobr>$x</nobr>":$x;
-}
-
-function show_community_private($user) {
-    show_badges_row(true, $user);
-    if (!DISABLE_PROFILES) {
-        if ($user->has_profile) {
-            $x = "<a href=\"view_profile.php?userid=$user->id\">".tra("View")."</a> &middot; <a href=\"delete_profile.php\">".tra("Delete")."</a>";
-        } else {
-            $x = "<a href=\"create_profile.php\">".tra("Create")."</a>";
-        }
-        row2(tra("Profile"), $x);
-    }
-    if (!DISABLE_FORUMS) {
-        $tot = total_posts($user);
-        if ($tot) {
-            row2(tra("Message boards"), "<a href=\"".url_base()."forum_user_posts.php?userid=$user->id\">".tra("%1 posts", $tot)."</a>");
-        }
-    }
-
-    row2(tra("Private messages"), pm_notification($user).pm_email_remind($user));
-
-    $notifies = BoincNotify::enum("userid=$user->id");
-    if (count($notifies)) {
-        $x = "";
-        foreach ($notifies as $notify) {
-            $y = notify_description($notify);
-            if ($y) {
-                $x .= "&bull; $y<br>";
-            } else {
-                $notify->delete();
-            }
-        }
-        $x .= "<a href=\"".notify_rss_url($user)."\"><img vspace=\"4\" border=\"0\" src=\"img/rss_icon.gif\" alt=\"RSS\" /></a>";
-        row2(tra("Notifications"), $x);
-    }
-
-    if (!DISABLE_TEAMS) {
-        if ($user->teamid && ($team = BoincTeam::lookup_id($user->teamid))) {
-            $x = "<a href=\"team_display.php?teamid=$team->id\">$team->name</a>
-                &middot; <a href=\"team_quit_form.php\">".tra("Quit team")."</a>";
-            if (is_team_admin($user, $team)) {
-                $x .= " &middot; <a href=\"team_manage.php?teamid=$user->teamid\">".tra("Administer")."</a>";
-            }
-
-            // if there's a foundership request, notify the founder
-            //
-            if ($user->id==$team->userid && $team->ping_user >0) {
-                $x .= "<p class=\"text-danger\">".tra("(foundership change request pending)")."</p>";
-            }
-            row2(tra("Member of team"), $x);
-        } else {
-            row2(tra("Team"), tra("None")." &middot; <a href=\"team_search.php\">".tra("find a team")."</a>");
-        }
-
-        $teams_founded = BoincTeam::enum("userid=$user->id");
-        foreach ($teams_founded as $team) {
-            if ($team->id != $user->teamid) {
-                $x = "<a href=\"team_display.php?teamid=$team->id\">$team->name</a>";
-                $x .= " | <a href=\"team_manage.php?teamid=".$team->id."\">".tra("Administer")."</a>";
-                if ($team->ping_user > 0) {
-                    $x .= "<p class=\"text-danger\">".tra("(foundership change request pending)")."</span>";
-                }
-                row2(tra("Founder but not member of"), $x);
-            }
-        }
-    }
-
-    $friends = BoincFriend::enum("user_src=$user->id and reciprocated=1");
-    $x = "<a href=\"user_search.php\">".tra("Find friends")."</a><br/>\n";
-    $n = count($friends);
-    if ($n) {
-        foreach($friends as $friend) {
-            $fuser = BoincUser::lookup_id($friend->user_dest);
-            if (!$fuser) continue;
-            $x .= friend_links($fuser);
-        }
-        row2(tra("Friends")." ($n)", $x);
-    } else {
-        row2(tra("Friends"), $x);
-    }
 }
 
 // show summary of dynamic and static info (public)
@@ -281,44 +176,20 @@ function show_user_summary_public($user) {
     }
 }
 
-// Returns a cacheable community links data object
-// @param user The user to produce a community links object for
-
-function get_community_links_object($user){
-    $cache_object = new StdClass;
-    $cache_object->post_count = total_posts($user);
-    $cache_object->user = $user;
-    $cache_object->team = BoincTeam::lookup_id($user->teamid);
-    $cache_object->friends = array();
-
-    $friends = BoincFriend::enum("user_src=$user->id and reciprocated=1");
-    foreach($friends as $friend) {
-        $fuser = BoincUser::lookup_id($friend->user_dest);
-        if (!$fuser) continue;
-        $cache_object->friends[] = $fuser;
-    }
-    return $cache_object;
+function user_link($user) {
+    return sprintf("<a href=user.php?user_id=%d>%s</a>", $user->id, $user->name);
 }
 
-function community_links($clo, $logged_in_user){
-    $user = $clo->user;
-    $team = $clo->team;
-    $friends = $clo->friends;
-    $tot = $clo->post_count;
+function community_links($user, $logged_in_user){
+    $following = BoincFriend::enum("user_src=$user->id");
+    $followers = BoincFriend::enum("user_dest=$user->id");
+    $tot = total_posts($user);
 
-    if (!DISABLE_TEAMS) {
-        if ($user->teamid && $team) {
-            row2(tra("Team"), "<a href=\"".url_base()."team_display.php?teamid=$team->id\">$team->name</a>");
-        } else {
-            row2(tra("Team"), tra("None"));
-        }
+    if ($tot) {
+        row2(tra("Message boards"), "<a href=\"".url_base()."forum_user_posts.php?userid=$user->id\">".tra("%1 posts", $tot)."</a>");
     }
-    if (!DISABLE_FORUMS) {
-        if ($tot) {
-            row2(tra("Message boards"), "<a href=\"".url_base()."forum_user_posts.php?userid=$user->id\">".tra("%1 posts", $tot)."</a>");
-        }
-    }
-    if ($logged_in_user && $logged_in_user->id != $user->id) {
+
+    if ($logged_in_user->id != $user->id) {
         row2("Contact",
             mm_button_text(
                 "pm.php?action=new&userid=$user->id",
@@ -326,34 +197,43 @@ function community_links($clo, $logged_in_user){
                 BUTTON_SMALL
             )
         );
-        $friend = BoincFriend::lookup($logged_in_user->id, $user->id);
-        if ($friend && $friend->reciprocated) {
-            row2("This person is a friend",
-                mm_button_text(
-                    "friend.php?action=cancel_confirm&userid=$user->id",
-                    "Cancel friendship",
-                    BUTTON_SMALL
-                )
-            );
-        } else if ($friend) {
-            row2(tra("Friends"),  "<a href=\"friend.php?action=add&userid=$user->id\">".tra("Request pending")."</a>");
-        } else {
-            row2(tra("Friends"),
-                mm_button_text(
-                    "friend.php?action=add&userid=$user->id",
-                    "Send friend request",
-                    BUTTON_SMALL
-                )
-            );
-        }
     }
 
-    if ($friends) {
-        $x = [];
-        foreach($friends as $friend) {
-            $x[] = friend_links($friend);
+    $x = [];
+    $found = false;
+    foreach ($followers as $f) {
+        if ($f->user_src == $logged_in_user->id) {
+            $found = true;
+        } else {
+            $u = BoincUser::lookup_id($f->user_src);
+            $x[] = user_link($u);
         }
-        row2("Friends", implode($x, '<br>'));
+    }
+    if (!$x) $x[] = '---';
+    if ($found) {
+        $x[] = sprintf("You are following %s. %s",
+            $user->name,
+            mm_button_text(
+                "follow.php?action=unfollow&user_id=$user->id",
+                "Unfollow", BUTTON_SMALL
+            )
+        );
+    } else if ($user->id != $logged_in_user->id) {
+        $x[] = mm_button_text(
+            "follow.php?action=follow&user_id=$user->id",
+            "Follow $user->name",
+            BUTTON_SMALL
+        );
+    }
+    row2("Followers", implode($x, '<br>'));
+
+    $x = [];
+    foreach ($following as $f) {
+        $u = BoincUser::lookup_id($f->user_dest);
+        $x[] = user_link($u);
+    }
+    if ($x) {
+        row2("$user->name is following", implode($x, '<br>'));
     }
 }
 

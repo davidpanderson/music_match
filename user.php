@@ -92,10 +92,9 @@ function left() {
 
 function right() {
     global $user;
-    $clo = get_community_links_object($user);
-    start_table();
-    community_links($clo, get_logged_in_user(true));
     $u = get_logged_in_user();
+    start_table();
+    community_links($user, $u);
     if ($u->id != $user->id && $user->country) {
         row2('Country',
             country_distance($user, user_distance($u, $user), '  ')

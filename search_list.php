@@ -247,6 +247,16 @@ function main($user) {
     page_head("My searches");
     $searches = Search::enum("user_id = $user->id order by rerun_nnew desc");
     if ($searches) {
+        text_start();
+        echo "
+            <p>
+            Music Match records your searches,
+            and we'll notify you if there are new results
+            since the last time you looked.
+            You can delete searches you're not longer interested in.
+            <p>
+        ";
+        text_end();
         foreach($searches as $s) {
             $s->params = json_decode($s->params);
         }

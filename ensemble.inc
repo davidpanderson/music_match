@@ -53,7 +53,7 @@ function ens_profile_summary_header() {
     enable_audio();
     row_heading_array(array(
         'Name<br><small>click for details',
-        "<nobr>Music sample</nobr>&nbsp;&nbsp;&nbsp;<br><small>Click <img height=18px src=note.png> to play",
+        music_sample_header(),
         "Type", "Instruments", "Style", "Level", "Founder", "Country"
     ));
 }

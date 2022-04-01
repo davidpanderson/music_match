@@ -26,7 +26,7 @@ function tech_form($user) {
     page_head("Technician profile");
     form_start("tech_profile_edit.php", "POST");
     form_checkboxes(
-        "Areas of expertise",
+        "My areas of expertise",
         array_merge(
             items_list(TECH_AREA_LIST, $profile->tech_area, "tech_area"),
             items_custom($profile->tech_area_custom, "tech_area_custom")
@@ -37,7 +37,7 @@ function tech_form($user) {
         text_input_default(TECH_AREA_ADD).'class="sm" size="20"'
     );
     form_checkboxes(
-        "Software you're familiar with",
+        "Software I'm familiar with",
         array_merge(
             items_list(PROGRAM_LIST, $profile->program, "program"),
             items_custom($profile->program_custom, "program_custom")
@@ -47,6 +47,11 @@ function tech_form($user) {
         '', 'program_custom_new', PROGRAM_ADD, 'text',
         text_input_default(PROGRAM_ADD).'class="sm" size="20"'
     );
+
+    form_checkboxes('I usually get paid for my services',
+        array(array('tech_paid', '', $profile->tech_paid))
+    );
+
     $have_profile = profile_exists($user->id, TECHNICIAN);
     form_submit($have_profile?"Update profile":"Create profile", 'name=submit value=on');
     form_end();
@@ -71,6 +76,7 @@ function tech_action($user_id, $profile) {
     $profile2->program_custom = parse_custom(
         $profile->program_custom, "program_custom", PROGRAM_ADD
     );
+    $profile2->tech_paid = parse_post_bool('tech_paid');
     return $profile2;
 }
 

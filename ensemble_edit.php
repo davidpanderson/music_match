@@ -111,18 +111,18 @@ function ensemble_form($ens, $ens_info) {
     }
 
     // looking for members?
-    form_checkboxes('Is the ensemble seeking new members?',
+    form_checkboxes('The ensemble is seeking new members',
         array(array('seeking_members', '', $ens_info->seeking_members))
     );
 
 
     // perf reg?
-    form_checkboxes('Does the ensemble perform regularly?',
+    form_checkboxes('The ensemble regularly performs for an audience',
         array(array('perf_reg', '', $ens_info->perf_reg))
     );
 
     // money?
-    form_checkboxes('Does the ensemble typically get paid to perform?',
+    form_checkboxes('The ensemble usually gets paid to perform',
         array(array('perf_paid', '', $ens_info->perf_paid))
     );
 

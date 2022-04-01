@@ -31,6 +31,7 @@ define('DISABLE_TEAMS', true);
 define('POSTAL_CODE', true);
 //define('USER_HOME', "home.php");
 define('SHORTCUT_ICON', "icon.jpg");
+define('NEWS_FORUM_NAME', "Music Match news");
 
 //-------------- contact info
 

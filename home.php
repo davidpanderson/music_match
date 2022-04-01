@@ -194,15 +194,26 @@ function right() {
             BoincPrivateMessage::count("userid=$user->id AND opened=0")
         )
     );
-    $friends = BoincFriend::enum("user_src=$user->id and reciprocated=1");
+    $following = BoincFriend::enum("user_src=$user->id");
     $x = [];
-    foreach ($friends as $friend) {
+    foreach ($following as $friend) {
         $fuser = BoincUser::lookup_id($friend->user_dest);
         if (!$fuser) continue;
         $x[] = "<a href=user.php?user_id=$fuser->id>$fuser->name</a>";
     }
     if ($x) {
-        row2('Friends', implode($x, '<br>'));
+        row2("I'm following", implode($x, '<br>'));
+    }
+
+    $followers = BoincFriend::enum("user_dest=$user->id");
+    $x = [];
+    foreach ($followers as $friend) {
+        $fuser = BoincUser::lookup_id($friend->user_src);
+        if (!$fuser) continue;
+        $x[] = "<a href=user.php?user_id=$fuser->id>$fuser->name</a>";
+    }
+    if ($x) {
+        row2('My followers', implode($x, '<br>'));
     }
     end_table();
 

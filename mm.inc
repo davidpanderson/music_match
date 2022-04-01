@@ -43,6 +43,7 @@ define('EM_REMOVED',    3);
 // NOTIFY_SUBSCRIBED_POST
 //  opaque is thread ID
 
+define('NOTIFY_FOLLOW',         1);
 define('NOTIFY_SEARCH',         5);
     // a previous search has new result
     // opaque and id2 are zero
@@ -479,6 +480,7 @@ function read_profile($id, $role) {
         if (!array_key_exists('influence', $p)) $p->influence = array();
         if (!array_key_exists('signature_filename', $p)) $p->signature_filename = '';
         if (!array_key_exists('link', $p)) $p->link = array();
+        if (!array_key_exists('comp_paid', $p)) $p->comp_paid = 0;
         break;
     case PERFORMER:
         if (!array_key_exists('style', $p)) $p->style = array();
@@ -488,12 +490,15 @@ function read_profile($id, $role) {
         if (!array_key_exists('level', $p)) $p->level = array();
         if (!array_key_exists('signature_filename', $p)) $p->signature_filename = '';
         if (!array_key_exists('link', $p)) $p->link = array();
+        if (!array_key_exists('perf_reg', $p)) $p->perf_reg = 0;
+        if (!array_key_exists('perf_paid', $p)) $p->perf_paid = 0;
         break;
     case TECHNICIAN:
         if (!array_key_exists('tech_area', $p)) $p->tech_area = array();
         if (!array_key_exists('tech_area_custom', $p)) $p->tech_area_custom = array();
         if (!array_key_exists('program', $p)) $p->program = array();
         if (!array_key_exists('program_custom', $p)) $p->program_custom = array();
+        if (!array_key_exists('tech_paid', $p)) $p->tech_paid = 0;
         break;
     case ENSEMBLE:
         if (!array_key_exists('description', $p)) $p->description = '';
@@ -617,7 +622,14 @@ function links_to_string($links, $sep=',') {
 //
 function country_distance($user, $dist, $sep=' ') {
     if ($dist >= 0) {
-        return sprintf("%s%s<small>(%d miles from you)</small>", $user->country, $sep, (int)$dist);
+        $d = (int)$dist;
+        return sprintf(
+            "%s%s<small>(%d mile%s from you)</small>",
+            $user->country,
+            $sep,
+            $d,
+            $d==1?'':'s'
+        );
     } else {
         return $user->country;
     }
@@ -651,6 +663,12 @@ function mm_show_button($url, $label, $style=BUTTON_NORMAL) {
 }
 
 // ------------ utilities -------------
+
+// column header for Music Sample
+//
+function music_sample_header() {
+    return "<nobr>Music sample</nobr>&nbsp;&nbsp;&nbsp;<br><nobr><small>Click &nbsp; <img height=18px src=note.png> &nbsp; to play</nobr>&nbsp;&nbsp;&nbsp;";
+}
 
 // if user hasn't validated their email addr, ask them to do so
 //

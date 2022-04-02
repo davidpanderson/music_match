@@ -39,7 +39,7 @@ function left() {
 
 function show_profiles() {
     global $user;
-    echo "<h3>My profiles</h3>
+    echo "<font size=+3>My profiles</font>
         <h3>Composer</h3>
     ";
     start_table();

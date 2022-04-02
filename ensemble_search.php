@@ -65,7 +65,7 @@ function ens_search_action($req_user) {
     $form_args = get_form_args();
     $ensembles = ens_search($form_args, $req_user);
     if (!$ensembles) {
-        echo "No results found.  Try expanding your criteria.";
+        echo "No results found.  Try changing your criteria.";
         page_tail();
         return;
     }

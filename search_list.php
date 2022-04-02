@@ -39,7 +39,7 @@ function args_to_str($args, $role) {
         }
         if ($role == COMPOSER) {
             if ($args->ens_type) {
-                $s .= '<br>Ensemble types: ';
+                $s .= 'Ensemble types: ';
                 $x = [];
                 foreach ($args->ens_type as $i) {
                     $x[] = COMPOSE_FOR_LIST[$i];
@@ -197,6 +197,10 @@ function args_to_str($args, $role) {
 function show_search_list_item($s, $role) {
     $nresults = count(json_decode($s->view_results));
     $m = "$nresults";
+    if ($nresults) {
+        $m .= " &nbsp; ";
+        $m .= mm_button_text("search_show.php?search_id=$s->id", "View", BUTTON_SMALL);
+    }
     if ($s->rerun_nnew) {
         $m .= sprintf(
             "<br><font color=orange>This search has %d new %s</font>",
@@ -204,8 +208,6 @@ function show_search_list_item($s, $role) {
             $s->rerun_nnew==1?"match":"matches"
         );
     }
-    $m .= "<br>";
-    $m .= mm_button_text("search_show.php?search_id=$s->id", "View matches", BUTTON_SMALL);
 
     row_array([
         args_to_str($s->params->args, $role),
@@ -253,7 +255,7 @@ function main($user) {
             Music Match records your searches,
             and we'll notify you if there are new results
             since the last time you looked.
-            You can delete searches you're not longer interested in.
+            You can delete searches you're no longer interested in.
             <p>
         ";
         text_end();
@@ -283,8 +285,7 @@ if (get_str('action', true) == 'delete') {
         error_page("No such search");
     }
     $search->delete();
-    page_head("Search deleted");
-    page_tail();
+    Header("Location: search_list.php");
 } else {
     main($user);
 }

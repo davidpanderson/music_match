@@ -68,8 +68,9 @@ function teacher_search_action($req_user) {
 
     $form_args = get_form_args();
     $profiles = teacher_search($form_args, $req_user);
+    record_search($req_user, TEACHER, $form_args, $profiles);
     if (!$profiles) {
-        echo "No results found.  Try expanding your criteria.";
+        echo "No results found.  Try changing your criteria.";
         page_tail();
         return;
     }
@@ -81,8 +82,6 @@ function teacher_search_action($req_user) {
     }
     end_table();
     page_tail();
-
-    record_search($req_user, TEACHER, $form_args, $profiles);
 }
 
 $user = get_logged_in_user(true);

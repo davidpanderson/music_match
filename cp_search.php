@@ -48,7 +48,7 @@ function cp_search_form($profile, $role) {
         items_list(LEVEL_LIST, $profile->level, "level")
     );
     form_checkboxes(
-        "Who live close to me", array(array('close', '', false))
+        "who live close to me", array(array('close', '', false))
     );
     form_submit("Search", 'name=submit value=on');
     form_end();
@@ -78,8 +78,9 @@ function cp_search_action($role, $req_user) {
 
     $form_args = get_form_args($role);
     $profiles = cp_search($role, $form_args, $req_user);
+    record_search($req_user, $role, $form_args, $profiles);
     if (!$profiles) {
-        echo "No results found.  Try expanding your criteria.";
+        echo "No results found.  Try changing your criteria.";
         page_tail();
         return;
     }
@@ -91,8 +92,6 @@ function cp_search_action($role, $req_user) {
     }
     end_table();
     page_tail();
-
-    record_search($req_user, $role, $form_args, $profiles);
 }
 
 $user = get_logged_in_user(true);

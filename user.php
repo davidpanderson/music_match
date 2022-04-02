@@ -22,6 +22,7 @@ require_once("../inc/util.inc");
 require_once("../inc/mm.inc");
 require_once("../inc/cp_profile.inc");
 require_once("../inc/tech.inc");
+require_once("../inc/teacher.inc");
 require_once("../inc/mm_db.inc");
 require_once("../inc/user.inc");
 
@@ -85,6 +86,15 @@ function left() {
         echo tech_profile_summary_table($user, $profile, PERFORMER);
         end_table();
     }
+
+    if (profile_exists($user->id, TEACHER)) {
+        echo "<h3>Teacher profile</h3>";
+        $profile = read_profile($user->id, TEACHER);
+        start_table();
+        echo teacher_profile_summary_table($user, $profile);
+        end_table();
+    }
+
 
     show_ensembles($user);
 

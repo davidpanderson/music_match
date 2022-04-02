@@ -27,7 +27,7 @@ function tech_search_form() {
     page_head("Search for technicians");
     form_start("tech_search.php", "POST");
     form_checkboxes(
-       "... with expertise in",
+       "with expertise in",
        items_list(TECH_AREA_LIST, array(), "tech_area")
     );
     form_checkboxes(
@@ -35,7 +35,7 @@ function tech_search_form() {
        items_list(PROGRAM_LIST, array(), "program")
     );
     form_checkboxes(
-        "Who live close to me", array(array('close', '', false))
+        "who live close to me", array(array('close', '', false))
     );
     form_submit("Search", 'name=submit value=on');
     form_end();
@@ -54,8 +54,9 @@ function tech_search_action($req_user) {
     page_head("Technician search results");
     $form_args = get_form_args();
     $profiles = tech_search($form_args, $req_user);
+    record_search($req_user, TECHNICIAN, $form_args, $profiles);
     if (!$profiles) {
-        echo "No results found.  Try expanding your criteria.";
+        echo "No results found.  Try changing your criteria.";
         page_tail();
         return;
     }
@@ -66,7 +67,6 @@ function tech_search_action($req_user) {
     }
     end_table();
     page_tail();
-    record_search($req_user, TECHNICIAN, $form_args, $profiles);
 }
 
 $user = get_logged_in_user();

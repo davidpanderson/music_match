@@ -127,11 +127,11 @@ define('LEVEL_LIST', array(
 ));
 
 define('ENSEMBLE_TYPE_LIST', array(
-    'orchestra' => 'Orchestra',
-    'choir' => 'Choir',
-    'opera' => 'Opera company',
     'chamber' => 'Chamber group',
+    'choir' => 'Choir',
     'duo' => 'Duo',
+    'opera' => 'Opera company',
+    'orchestra' => 'Orchestra',
 ));
 
 define('COMPOSE_FOR_LIST', array_merge(ENSEMBLE_TYPE_LIST, ['soloist'=>'Soloist']));
@@ -151,6 +151,7 @@ define('PROGRAM_LIST', array(
     'logic_pro' => 'Logic Pro',
     'musescore' => 'MuseScore',
     'pro_tools' => 'Pro Tools',
+    'reaper' => 'Reaper',
     'sibelius' => 'Sibelius',
 ));
 
@@ -215,7 +216,7 @@ function items_link($current, $prefix) {
     foreach ($current as $i=>$link) {
         $x[] = array(
             sprintf("%s_%d", $prefix, $i),
-            sprintf("%s (%s)", $link->desc, $link->url),
+            sprintf("%s -> %s", $link->desc, $link->url),
             true
         );
     }
@@ -477,10 +478,10 @@ function read_profile($id, $role) {
         if (!array_key_exists('ens_type', $p)) $p->ens_type = array();
         if (!array_key_exists('ens_type_custom', $p)) $p->ens_type_custom = array();
         if (!array_key_exists('level', $p)) $p->level = array();
-        if (!array_key_exists('influence', $p)) $p->influence = array();
         if (!array_key_exists('signature_filename', $p)) $p->signature_filename = '';
         if (!array_key_exists('link', $p)) $p->link = array();
         if (!array_key_exists('comp_paid', $p)) $p->comp_paid = 0;
+        if (!array_key_exists('description', $p)) $p->description = '';
         break;
     case PERFORMER:
         if (!array_key_exists('style', $p)) $p->style = array();
@@ -492,6 +493,7 @@ function read_profile($id, $role) {
         if (!array_key_exists('link', $p)) $p->link = array();
         if (!array_key_exists('perf_reg', $p)) $p->perf_reg = 0;
         if (!array_key_exists('perf_paid', $p)) $p->perf_paid = 0;
+        if (!array_key_exists('description', $p)) $p->description = '';
         break;
     case TECHNICIAN:
         if (!array_key_exists('tech_area', $p)) $p->tech_area = array();
@@ -499,6 +501,7 @@ function read_profile($id, $role) {
         if (!array_key_exists('program', $p)) $p->program = array();
         if (!array_key_exists('program_custom', $p)) $p->program_custom = array();
         if (!array_key_exists('tech_paid', $p)) $p->tech_paid = 0;
+        if (!array_key_exists('description', $p)) $p->description = '';
         break;
     case ENSEMBLE:
         if (!array_key_exists('description', $p)) $p->description = '';
@@ -522,6 +525,7 @@ function read_profile($id, $role) {
         if (!array_key_exists('level', $p)) $p->level = array();
         if (!array_key_exists('link', $p)) $p->link = array();
         if (!array_key_exists('where', $p)) $p->where = array();
+        if (!array_key_exists('description', $p)) $p->description = '';
         break;
     }
     return $p;
@@ -556,7 +560,7 @@ function get_profiles($role) {
 // ------------ display -------------
 
 
-// Javascript for mouse-over audio
+// Javascript for audio on search results
 //
 function enable_audio() {
 echo '
@@ -771,4 +775,44 @@ function interval_to_str($x) {
     if ($x < 2*$y) return sprintf("%d months ago", intdiv($x, $m));
     return sprintf("%s years ago", intdiv($x, $y));
 }
+
+// divide a list into $ncols parts
+//
+function split_list($items, $ncols) {
+    $n = count($items);
+    $x = [];
+    for ($i=0; $i<$ncols; $i++) {
+        $a = ceil($n*$i/$ncols);
+        $b = ceil($n*($i+1)/$ncols);
+        $x[] = array_slice($items, $a, ($b-$a));
+    }
+    return $x;
+}
+
+function checkbox_array($items, $ncols, $last=null) {
+    $y = split_list($items, $ncols);
+    $x = '<table width=100%><tr>';
+    for ($i=0; $i<$ncols; $i++) {
+        $x .= sprintf("<td valign=top style=\"padding: 4px\" width=\"%d%%\">%s</td>\n",
+            intdiv(100, $ncols),
+            implode('<br>', checkbox_item_strings($y[$i]))
+        );
+    }
+    $x .= '</tr>';
+    if ($last) {
+        $x .= sprintf('<tr colspan=%d><td>%s</td></tr>', $ncols, $last);
+    }
+    $x .= "</table>\n";
+    return $x;
+}
+
+// user name, with link to user page and optional hover for description
+//
+function user_name_link($user, $profile) {
+    return sprintf('<a %s href=user.php?user_id=%d>%s</a>',
+        $profile->description?sprintf('title="%s"', $profile->description):'',
+        $user->id, $user->name
+    );
+}
+
 ?>

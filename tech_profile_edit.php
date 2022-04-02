@@ -48,6 +48,11 @@ function tech_form($user) {
         text_input_default(PROGRAM_ADD).'class="sm" size="20"'
     );
 
+    form_input_textarea(
+        'Introduction<br><small>My background as a technician</small>',
+        'description',
+        $profile->description
+    );
     form_checkboxes('I usually get paid for my services',
         array(array('tech_paid', '', $profile->tech_paid))
     );
@@ -76,6 +81,7 @@ function tech_action($user_id, $profile) {
     $profile2->program_custom = parse_custom(
         $profile->program_custom, "program_custom", PROGRAM_ADD
     );
+    $profile2->description = strip_tags(post_str('description'));
     $profile2->tech_paid = parse_post_bool('tech_paid');
     return $profile2;
 }

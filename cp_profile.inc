@@ -38,9 +38,6 @@ function cp_profile_summary($user, $profile, $role) {
     $x .= sprintf('<br>Levels: %s',
         lists_to_string(LEVEL_LIST, $profile->level)
     );
-    if ($role==COMPOSER && $profile->influence) {
-        $x .= "<br>Influences: ".implode(", ", $profile->influence);
-    }
     if ($profile->link) {
         $x .= "<br>Links: ".links_to_string($profile->link);
     }
@@ -76,11 +73,6 @@ function cp_profile_summary_table($user, $profile, $role) {
     row2('Levels',
         lists_to_string(LEVEL_LIST, $profile->level)
     );
-    if ($role==COMPOSER && $profile->influence) {
-        row2('Influences',
-            implode(", ", $profile->influence)
-        );
-    }
     if ($profile->signature_filename) {
         row2('Audio signature',
             sprintf('<a href=%s/%d.mp3>%s</a>',
@@ -93,6 +85,10 @@ function cp_profile_summary_table($user, $profile, $role) {
         row2('Links',
             links_to_string($profile->link)
         );
+    }
+
+    if ($profile->description) {
+        row2('Description', "<small>$profile->description</small>");
     }
 }
 
@@ -124,7 +120,7 @@ function cp_profile_summary_row($profile, $role) {
     }
 
     $x = array();
-    $x[] = sprintf('<a href=user.php?user_id=%d>%s</a>', $user->id, $user->name);
+    $x[] = user_name_link($user, $profile);
     $x[] = cp_listen_link($user, $profile);
     $x[] = lists_to_string(
         $role==COMPOSER?INST_LIST_COARSE:INST_LIST_FINE,
@@ -140,13 +136,6 @@ function cp_profile_summary_row($profile, $role) {
         STYLE_LIST, $profile->style, $profile->style_custom, "<br>"
     );
     $x[] = lists_to_string(LEVEL_LIST, $profile->level, null, "<br>");
-    if ($role==COMPOSER) {
-        if ($profile->influence) {
-            $x[] = implode("<br>", $profile->influence);
-        } else {
-            $x[] = '';
-        }
-    }
     $x[] = links_to_string($profile->link, "<br>");
     $x[] = country_distance($user, $profile->dist, "<br>");
     row_array($x);
@@ -157,7 +146,7 @@ function cp_profile_summary_row($profile, $role) {
 function cp_profile_summary_header($role) {
     enable_audio();
     $x= [
-        'Name<br><small>click for details</small>',
+        'Name<br><small>click for details<br>hover for intro</small>',
         music_sample_header(),
         "Instruments"
     ];
@@ -166,7 +155,6 @@ function cp_profile_summary_header($role) {
     }
     $x[] = "Styles";
     $x[] = "Level";
-    if ($role==COMPOSER) $x[] = "Influences";
     $x[] = "Links";
     $x[] = "Country";
     row_heading_array($x);

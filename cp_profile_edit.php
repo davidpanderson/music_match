@@ -31,41 +31,51 @@ function cp_form($user, $profile, $role) {
         'ENCTYPE="multipart/form-data" name="fname" onsubmit="return validate_link()"'
     );
     form_input_hidden("role", $role);
-    form_checkboxes(
+    form_general(
         $role==COMPOSER?"Instruments I write for":"Instruments I play",
-        array_merge(
-            items_list(
-                $role==COMPOSER?INST_LIST_COARSE:INST_LIST_FINE,
-                $profile->inst, "inst"
+        checkbox_array(
+            array_merge(
+                items_list(
+                    $role==COMPOSER?INST_LIST_COARSE:INST_LIST_FINE,
+                    $profile->inst, "inst"
+                ),
+                items_custom($profile->inst_custom, "inst_custom")
             ),
-            items_custom($profile->inst_custom, "inst_custom")
+            3,
+            form_input_text_field('inst_custom_new', INST_ADD, 'text',
+                text_input_default(INST_ADD).'class="sm" size="20"'
+            )
         )
-    );
-    form_input_text('', 'inst_custom_new', INST_ADD, 'text',
-        text_input_default(INST_ADD).'class="sm" size="20"'
     );
 
     if ($role==COMPOSER) {
-        form_checkboxes(
-            "Groups I write for",
-            array_merge(
-                items_list(
-                    COMPOSE_FOR_LIST,
-                    $profile->ens_type, "ens_type"
+        form_general(
+            'Groups I write for',
+            checkbox_array(
+                array_merge(
+                    items_list(
+                        COMPOSE_FOR_LIST,
+                        $profile->ens_type, "ens_type"
+                    ),
+                    items_custom($profile->ens_type_custom, "ens_type_custom")
                 ),
-                items_custom($profile->ens_type_custom, "ens_type_custom")
+                3,
+                form_input_text_field(
+                    'ens_type_custom_new', ENSEMBLE_TYPE_ADD, 'text',
+                    text_input_default(ENSEMBLE_TYPE_ADD).'class="sm" size="20"'
+                )
             )
-        );
-        form_input_text('', 'ens_type_custom_new', ENSEMBLE_TYPE_ADD, 'text',
-            text_input_default(ENSEMBLE_TYPE_ADD).'class="sm" size="20"'
         );
     }
 
-    form_checkboxes(
+    form_general(
         $role==COMPOSER?"Styles I write in":"Styles I play",
-        array_merge(
-            items_list(STYLE_LIST, $profile->style, "style"),
-            items_custom($profile->style_custom, "style_custom")
+        checkbox_array(
+            array_merge(
+                items_list(STYLE_LIST, $profile->style, "style"),
+                items_custom($profile->style_custom, "style_custom")
+            ),
+            3
         )
     );
     form_input_text(
@@ -73,29 +83,25 @@ function cp_form($user, $profile, $role) {
         text_input_default(STYLE_ADD).'class="sm" size="20"'
     );
 
-    form_checkboxes(
-        $role==COMPOSER?"Technical levels I write for":"Technical levels you play",
-        items_list(LEVEL_LIST, $profile->level, "level")
+    form_general(
+        $role==COMPOSER?"Technical levels I write for":"Technical levels I play",
+        checkbox_array(
+            items_list(LEVEL_LIST, $profile->level, "level"),
+            3
+        )
     );
 
-    if ($role==COMPOSER) {
-        $x = "Composers/musicians who influence my work";
-        if ($profile->influence) {
-            form_checkboxes(
-                $x,
-                items_custom($profile->influence, "influence")
-            );
-            form_input_text(
-                '', 'influence_new', INFLUENCE_ADD, 'text',
-                text_input_default(INFLUENCE_ADD).'class="sm" size="20"'
-            );
-        } else {
-            form_input_text(
-                $x, 'influence_new', INFLUENCE_ADD, 'text',
-                text_input_default(INFLUENCE_ADD).'class="sm" size="20"'
-            );
-        }
-    }
+    form_input_textarea(
+        $role==COMPOSER?
+            "Introduction<br>
+            <small>Me as a composer: background, influences, etc.</small>"
+            :
+            "Introduction<br><small>
+            Me as a performer: background, favorite composers, etc. </small>"
+        ,
+        'description',
+        $profile->description
+    );
 
     $sig_title = sprintf('Audio signature MP3<br><small>A short, representative example of my %s.<br>Max size 128 MB.</small>',
         $role==COMPOSER?"composition":"playing"
@@ -191,11 +197,7 @@ function action($user_id, $profile, $role) {
     );
     $profile2->level = parse_list(LEVEL_LIST, "level");
 
-    if ($role==COMPOSER) {
-        $profile2->influence = parse_custom(
-            $profile->influence, "influence", INFLUENCE_ADD
-        );
-    }
+    $profile2->description = strip_tags(post_str('description'));
 
     $profile2 = handle_audio_signature_upload(
         $profile, $profile2, $role, $user_id

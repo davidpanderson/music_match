@@ -82,7 +82,11 @@ function ens_profile_summary_row($ens) {
     }
     $user = $ens->user;
     row_array(array(
-        $ens->name,
+        sprintf('<a href=ensemble.php?ens_id=%d title="%s">%s</a>',
+            $ens->id,
+            $p->description,
+            $ens->name
+        ),
         ens_listen_link($ens, $p),
         ENSEMBLE_TYPE_LIST[$p->type],
         lists_to_string(INST_LIST_FINE, $p->inst, $p->inst_custom, "<br>"),

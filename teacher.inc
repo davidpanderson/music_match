@@ -18,34 +18,6 @@
 
 // Functions for teacher profiles
 
-// Show profile as a list of name: value lines
-// Not currently used.
-//
-function teacher_profile_summary($user, $profile) {
-    $x = sprintf('Topics: %s',
-        lists_to_string(
-            TOPIC_LIST,
-            $profile->topic, $profile->topic_custom
-        )
-    );
-    $x .= sprintf('<br>Styles: %s',
-        lists_to_string(
-            STYLE_LIST, $profile->style, $profile->style_custom
-        )
-    );
-    $x .= sprintf('<br>Levels: %s',
-        lists_to_string(LEVEL_LIST, $profile->level)
-    );
-    if ($profile->link) {
-        $x .= "<br>Links: ".links_to_string($profile->link);
-    }
-    $u = get_logged_in_user();
-    if ($u->id != $user->id && $user->country) {
-        $x .= sprintf('<br>Country: %s', country_distance($user, $profile->dist));
-    }
-    return $x;
-}
-
 // show a profile as a list of name/value rows
 //
 function teacher_profile_summary_table($user, $profile) {
@@ -66,20 +38,14 @@ function teacher_profile_summary_table($user, $profile) {
     row2('Where',
         lists_to_string(WHERE_LIST, $profile->where)
     );
+    if ($profile->description) {
+        row2('Description', "<small>$profile->description</small>");
+    }
     if ($profile->link) {
         row2('Links',
             links_to_string($profile->link)
         );
     }
-}
-
-
-// name, with link
-//
-function teacher_name_link($user, $profile) {
-    return sprintf('<a href=user.php?user_id=%d>%s</a>',
-        $user->id, $user->name
-    );
 }
 
 // show profile as an N-column table row
@@ -88,7 +54,7 @@ function teacher_profile_summary_row($profile) {
     $user = $profile->user;
 
     row_array([
-        teacher_name_link($user, $profile),
+        user_name_link($user, $profile),
         lists_to_string(
             TOPIC_LIST,
             $profile->topic, $profile->topic_custom, "<br>"

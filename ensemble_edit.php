@@ -60,37 +60,45 @@ function ensemble_form($ens, $ens_info) {
     );
 
     // instruments
-    form_checkboxes(
+    form_general(
         "Instruments in the ensemble",
-        array_merge(
-            items_list(INST_LIST_FINE, $ens_info->inst, "inst"),
-            items_custom($ens_info->inst_custom, "inst_custom")
+        checkbox_array(
+            array_merge(
+                items_list(INST_LIST_FINE, $ens_info->inst, "inst"),
+                items_custom($ens_info->inst_custom, "inst_custom")
+            ),
+            3,
+            form_input_text_field('inst_custom_new', INST_ADD, 'text',
+                text_input_default(INST_ADD).'class="sm" size="20"'
+            )
         )
-    );
-    form_input_text('', 'inst_custom_new', INST_ADD, 'text',
-        text_input_default(INST_ADD).'class="sm" size="20"'
     );
 
     // styles
-    form_checkboxes(
+    form_general(
         "Styles",
-        array_merge(
-            items_list(STYLE_LIST, $ens_info->style, "style"),
-            items_custom($ens_info->style_custom, "style_custom")
+        checkbox_array(
+            array_merge(
+                items_list(STYLE_LIST, $ens_info->style, "style"),
+                items_custom($ens_info->style_custom, "style_custom")
+            ),
+            3,
+            form_input_text_field('style_custom_new', STYLE_ADD, 'text',
+                text_input_default(STYLE_ADD).'class="sm" size="20"'
+            )
         )
-    );
-    form_input_text(
-        '', 'style_custom_new', STYLE_ADD, 'text',
-        text_input_default(STYLE_ADD).'class="sm" size="20"'
     );
 
     // tech level
-    form_checkboxes(
+    form_general(
         "Technical levels",
-        items_list(LEVEL_LIST, $ens_info->level, "level")
+        checkbox_array(
+            items_list(LEVEL_LIST, $ens_info->level, "level"),
+            3
+        )
     );
 
-    // intro
+    // description
     form_input_textarea('Description', 'description', $ens_info->description);
 
     // audio sig

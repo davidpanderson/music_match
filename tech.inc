@@ -27,6 +27,9 @@ function tech_profile_summary_table($user, $profile) {
             PROGRAM_LIST, $profile->program, $profile->program_custom
         )
     );
+    if ($profile->description) {
+        row2('Description', "<small>$profile->description</small>");
+    }
 }
 
 function tech_summary_header() {
@@ -36,7 +39,7 @@ function tech_summary_header() {
 function tech_summary_row($profile) {
     $user = $profile->user;
     row_array(array(
-        "<a href=user.php?user_id=$user->id>$user->name</a>",
+        user_name_link($user, $profile),
         lists_to_string(
             TECH_AREA_LIST, $profile->tech_area, $profile->tech_area_custom, "<br>"
         ),

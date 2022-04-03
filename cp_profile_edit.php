@@ -95,7 +95,7 @@ function cp_form($user, $profile, $role) {
         $role==COMPOSER?
             "Introduction<br>
             <small>Me as a composer: background, influences, etc.</small>"
-            :
+        :
             "Introduction<br><small>
             Me as a performer: background, favorite composers, etc. </small>"
         ,
@@ -148,7 +148,7 @@ function cp_form($user, $profile, $role) {
         );
     }
     if ($role == PERFORMER) {
-        form_checkboxes('I regularly perform for an audience',
+        form_checkboxes('I regularly perform for audiences',
             array(array('perf_reg', '', $profile->perf_reg))
         );
         form_checkboxes('I usually get paid to perform',

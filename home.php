@@ -142,31 +142,38 @@ function show_ens() {
 
 function show_search() {
     echo "<h3>Search for</h3>";
+    echo "<table><tr><td align=center width=18%>";
+    echo "<p><img width=80% src=comp.png><p>";
     mm_show_button(
         sprintf("cp_search.php?role=%d", COMPOSER),
         "Composers", BUTTON_SMALL
     );
-    echo "&nbsp;&nbsp;";
+    echo "</td><td align=center width=18%>";
+    echo "<p><img width=80% src=perf.png><p>";
     mm_show_button(
         sprintf("cp_search.php?role=%d", PERFORMER),
         "Performers", BUTTON_SMALL
     );
-    echo "&nbsp;&nbsp;";
+    echo "</td><td align=center width=18%>";
+    echo "<p><img width=80% src=tech.png><p>";
     mm_show_button(
         "tech_search.php",
         "Technicians", BUTTON_SMALL
     );
-    echo "&nbsp;&nbsp;";
+    echo "</td><td align=center width=18%>";
+    echo "<p><img width=80% src=ens.png><p>";
     mm_show_button(
         "ensemble_search.php",
         "Ensembles", BUTTON_SMALL
     );
-    echo "&nbsp;&nbsp;";
+    echo "</td><td align=center width=18%>";
+    echo "<p><img width=80% src=teach.png><p>";
     mm_show_button(
         "teacher_search.php",
         "Teachers", BUTTON_SMALL
     );
     echo "
+        </td></tr></table>
         <p><p>
         <a href=search_list.php>Previous searches</a>
     ";

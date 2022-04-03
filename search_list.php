@@ -197,10 +197,8 @@ function args_to_str($args, $role) {
 function show_search_list_item($s, $role) {
     $nresults = count(json_decode($s->view_results));
     $m = "$nresults";
-    if ($nresults) {
-        $m .= " &nbsp; ";
-        $m .= mm_button_text("search_show.php?search_id=$s->id", "View", BUTTON_SMALL);
-    }
+    $m .= " &nbsp; ";
+    $m .= mm_button_text("search_show.php?search_id=$s->id", "View", BUTTON_SMALL);
     if ($s->rerun_nnew) {
         $m .= sprintf(
             "<br><font color=orange>This search has %d new %s</font>",

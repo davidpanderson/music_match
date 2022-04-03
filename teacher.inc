@@ -39,7 +39,7 @@ function teacher_profile_summary_table($user, $profile) {
         lists_to_string(WHERE_LIST, $profile->where)
     );
     if ($profile->description) {
-        row2('Description', "<small>$profile->description</small>");
+        row2('Introduction', "<small>$profile->description</small>");
     }
     if ($profile->link) {
         row2('Links',

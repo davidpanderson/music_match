@@ -20,35 +20,8 @@
 // These are sufficiently similar that we use the same functions
 // with a "role" argument.
 
-// Show profile as a list of name: value lines
-// Not currently used.
-//
-function cp_profile_summary($user, $profile, $role) {
-    $x = sprintf('Instruments: %s',
-        lists_to_string(
-            $role==COMPOSER?INST_LIST_COARSE:INST_LIST_FINE,
-            $profile->inst, $profile->inst_custom
-        )
-    );
-    $x .= sprintf('<br>Styles: %s',
-        lists_to_string(
-            STYLE_LIST, $profile->style, $profile->style_custom
-        )
-    );
-    $x .= sprintf('<br>Levels: %s',
-        lists_to_string(LEVEL_LIST, $profile->level)
-    );
-    if ($profile->link) {
-        $x .= "<br>Links: ".links_to_string($profile->link);
-    }
-    $u = get_logged_in_user();
-    if ($u->id != $user->id && $user->country) {
-        $x .= sprintf('<br>Country: %s', country_distance($user, $profile->dist));
-    }
-    return $x;
-}
-
-// show a profile as a list of name/value rows
+// show a profile as a list of name/value rows.
+// Used in home page and user page.
 //
 function cp_profile_summary_table($user, $profile, $role) {
     row2('Instruments',
@@ -86,9 +59,21 @@ function cp_profile_summary_table($user, $profile, $role) {
             links_to_string($profile->link)
         );
     }
+    if ($role == COMPOSER) {
+        row2(
+            'Usually paid', $profile->comp_paid?"Yes":"No"
+        );
+    } else {
+        row2('Performing',
+            sprintf('Regularly: %s. Usually paid: %s',
+                $profile->perf_reg?"yes":"no",
+                $profile->perf_paid?"yes":"no"
+            )
+        );
+    }
 
     if ($profile->description) {
-        row2('Description', "<small>$profile->description</small>");
+        row2('Introduction', "<small>$profile->description</small>");
     }
 }
 

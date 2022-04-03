@@ -22,7 +22,14 @@ require_once("../inc/mm.inc");
 function left() {
     //text_start();
     echo "
-        <h1>Music Match</h1>
+        <p>
+        <font size=+4>Music Match</font>
+        <p>
+        <img width=19% src=comp.png>
+        <img width=19% src=perf.png>
+        <img width=19% src=tech.png>
+        <img width=19% src=ens.png>
+        <img width=19% src=teach.png>
         <p>
         <br>
         Music Match lets people involved in classical and modern music -

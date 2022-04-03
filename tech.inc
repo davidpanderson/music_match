@@ -28,8 +28,9 @@ function tech_profile_summary_table($user, $profile) {
         )
     );
     if ($profile->description) {
-        row2('Description', "<small>$profile->description</small>");
+        row2('Introduction', "<small>$profile->description</small>");
     }
+    row2('Usually paid', $profile->tech_paid?"Yes":"No");
 }
 
 function tech_summary_header() {

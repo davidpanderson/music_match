@@ -72,11 +72,12 @@ function show_ensemble($ens_id, $user) {
         );
     }
 
-    $x = sprintf("Performs regularly: %s<br>Typically paid to perform: %s",
-        $profile->perf_reg?"yes":"no",
-        $profile->perf_paid?"yes":"no"
+    row2('Performing',
+        sprintf('Regularly: %s. Usually paid: %s',
+            $profile->perf_reg?"yes":"no",
+            $profile->perf_paid?"yes":"no"
+        )
     );
-    row2("Performance", "$x");
 
     if ($ens->user_id == $user->id) {
         // founder

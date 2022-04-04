@@ -100,7 +100,8 @@ function cp_form($user, $profile, $role) {
             Me as a performer: background, favorite composers, etc. </small>"
         ,
         'description',
-        $profile->description
+        $profile->description,
+        3
     );
 
     $sig_title = sprintf('Audio signature MP3<br><small>A short, representative example of my %s.<br>Max size 128 MB.</small>',

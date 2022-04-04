@@ -225,7 +225,7 @@ function community_links($user, $logged_in_user){
             BUTTON_SMALL
         );
     }
-    row2("Followers", implode($x, '<br>'));
+    row2("Followers", implode('<br>', $x));
 
     $x = [];
     foreach ($following as $f) {
@@ -233,7 +233,7 @@ function community_links($user, $logged_in_user){
         $x[] = user_link($u);
     }
     if ($x) {
-        row2("$user->name is following", implode($x, '<br>'));
+        row2("$user->name is following", implode('<br>', $x));
     }
 }
 

@@ -37,6 +37,9 @@ function tech_search_form() {
     form_checkboxes(
         "who live close to me", array(array('close', '', false))
     );
+    form_input_text(
+        'Introduction includes', 'writing'
+    );
     form_submit("Search", 'name=submit value=on');
     form_end();
     page_tail();
@@ -47,6 +50,7 @@ function get_form_args() {
     $x->tech_area = parse_list(TECH_AREA_LIST, "tech_area");
     $x->program = parse_list(PROGRAM_LIST, "program");
     $x->close = post_str('close', true)=='on';
+    $x->writing = post_str('writing');
     return $x;
 }
 

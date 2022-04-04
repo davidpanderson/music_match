@@ -47,6 +47,9 @@ function cp_search_form($profile, $role) {
         "in difficulty levels including",
         items_list(LEVEL_LIST, $profile->level, "level")
     );
+    form_input_text(
+        'whose introduction includes', 'writing'
+    );
     form_checkboxes(
         "who live close to me", array(array('close', '', false))
     );
@@ -68,6 +71,7 @@ function get_form_args($role) {
     $x->style = parse_list(STYLE_LIST, "style");
     $x->level = parse_list(LEVEL_LIST, "level");
     $x->close = post_str('close', true)=='on';
+    $x->writing = post_str('writing');
     return $x;
 }
 

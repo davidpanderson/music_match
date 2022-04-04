@@ -99,7 +99,9 @@ function ensemble_form($ens, $ens_info) {
     );
 
     // description
-    form_input_textarea('Description', 'description', $ens_info->description);
+    form_input_textarea(
+        'Description', 'description', $ens_info->description, 3
+    );
 
     // audio sig
     $sig_title = "Audio signature MP3<br><small>A short, representative example of the ensemble's playing.<br>Max size 128 MB.</small>";

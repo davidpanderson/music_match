@@ -5,6 +5,40 @@
 require_once("../inc/mm.inc");
 require_once("../inc/mm_db.inc");
 
+// $query and $text are lists of words.
+// return the number of words in $query that are in $text
+//
+function word_matches($query, $text) {
+    $n = 0;
+    foreach ($query as $w) {
+        if (in_array($w, $text)) {
+            $n++;
+        }
+    }
+    return $n;
+}
+
+// parse the given string into words; downcase and return a list of them
+//
+function parse_words($string) {
+    static $delim = " \n\t,.!?:;/";
+    $x = [];
+    $word = strtok($string, $delim);
+    while ($word) {
+        $x[] = strtolower($word);
+        $word = strtok($delim);
+    }
+    return $x;
+}
+
+function parse_words_array($arr) {
+    $x = [];
+    foreach ($arr as $w) {
+        $x = array_merge($x, parse_words($w));
+    }
+    return $x;
+}
+
 // ---------------- Composer/performer --------------
 
 // compare profile with form args
@@ -39,6 +73,15 @@ function cp_match_args($role, $profile, $args) {
             }
         }
     }
+    $x->writing = word_matches(
+        parse_words($args->writing),
+        array_merge(
+            parse_words_array($profile->style_custom),
+            parse_words_array($profile->inst_custom),
+            parse_words($profile->description)
+        )
+    );
+
     return $x;
 }
 
@@ -53,6 +96,7 @@ function cp_match_value($role, $match) {
     if ($role == COMPOSER) {
         if ($match->ens_type) $x += 100 + $match->ens_type;
     }
+    if ($match->writing) $x += 100 + $match->writing;
     return $x;
 }
 
@@ -111,6 +155,14 @@ function tech_match_args($profile, $args) {
             $x->program++;
         }
     }
+    $x->writing = word_matches(
+        parse_words($args->writing),
+        array_merge(
+            parse_words_array($profile->tech_area_custom),
+            parse_words_array($profile->program_custom),
+            parse_words($profile->description)
+        )
+    );
     return $x;
 }
 
@@ -118,6 +170,7 @@ function tech_match_value($match) {
     $x = 0;
     if ($match->tech_area) $x += 100 + $match->tech_area;
     if ($match->program) $x += 100 + $match->program;
+    if ($match->writing) $x += 100 + $match->writing;
     return $x;
 }
 
@@ -182,6 +235,15 @@ function ens_match_args($profile, $args) {
             $x->level++;
         }
     }
+    $x->writing = word_matches(
+        parse_words($args->writing),
+        array_merge(
+            parse_words($profile->type),
+            parse_words_array($profile->style_custom),
+            parse_words_array($profile->inst_custom),
+            parse_words($profile->description)
+        )
+    );
     return $x;
 }
 
@@ -191,6 +253,7 @@ function ens_match_value($match) {
     if ($match->inst) $x += 100 + $match->inst;
     if ($match->style) $x += 100 + $match->style;
     if ($match->level) $x += 100 + $match->level;
+    if ($match->writing) $x += 100 + $match->writing;
     return $x;
 }
 
@@ -264,6 +327,14 @@ function teacher_match_args($profile, $args) {
             $x->level++;
         }
     }
+    $x->writing = word_matches(
+        parse_words($args->writing),
+        array_merge(
+            parse_words_array($profile->topic_custom),
+            parse_words_array($profile->style_custom),
+            parse_words($profile->description)
+        )
+    );
     return $x;
 }
 
@@ -272,6 +343,7 @@ function teacher_match_value($match) {
     if ($match->topic) $x += 100 + $match->topic;
     if ($match->style) $x += 100 + $match->style;
     if ($match->level) $x += 100 + $match->level;
+    if ($match->writing) $x += 100 + $match->writing;
     return $x;
 }
 

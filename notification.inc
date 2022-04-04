@@ -189,14 +189,14 @@ function send_notify_email($user) {
 For details, or to change email settings, visit Music Match:
 https://music-match.org/home.php
 ',
-            implode($x, "\n\n")
+            implode("\n\n", $x)
         );
         $body_html = sprintf(
 '%s
 <p><p>
 For details, or to change email settings, <a href=%s>visit Music Match</a>.
 ',
-            implode($x, "<p><p>"),
+            implode("<p><p>", $x),
             'https://music-match.org/home.php'
         );
         send_email($user, $subject, $body, null);

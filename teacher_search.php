@@ -45,6 +45,9 @@ function teacher_search_form($profile) {
     form_checkboxes(
         "Who live close to me", array(array('close', '', false))
     );
+    form_input_text(
+        'Introduction includes', 'writing'
+    );
     form_submit("Search", 'name=submit value=on');
     form_end();
     page_tail();
@@ -59,6 +62,7 @@ function get_form_args() {
     $x->level = parse_list(LEVEL_LIST, "level");
     $x->where = parse_list(WHERE_LIST, "where");
     $x->close = post_str('close', true)=='on';
+    $x->writing = post_str('writing');
     return $x;
 }
 

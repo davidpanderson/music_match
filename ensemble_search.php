@@ -42,6 +42,10 @@ function ens_search_form() {
     form_checkboxes(
         "Close to me", array(array('close', '', false))
     );
+    form_input_text(
+        'Description includes', 'writing'
+    );
+
     form_submit("Search", 'name=submit value=on');
     form_end();
     page_tail();
@@ -57,6 +61,7 @@ function get_form_args() {
     $x->perf_reg = post_str('perf_reg');
     $x->perf_paid = post_str('perf_paid');
     $x->close = post_str('close', true)=='on';
+    $x->writing = post_str('writing');
     return $x;
 }
 

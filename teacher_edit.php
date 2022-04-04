@@ -76,7 +76,8 @@ function teacher_form($user, $profile) {
     form_input_textarea(
         'Introduction<br><small>My background as a teacher</small>',
         'description',
-        $profile->description
+        $profile->description,
+        3
     );
 
     // links

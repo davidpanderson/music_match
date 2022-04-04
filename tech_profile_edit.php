@@ -51,7 +51,8 @@ function tech_form($user) {
     form_input_textarea(
         'Introduction<br><small>My background as a technician</small>',
         'description',
-        $profile->description
+        $profile->description,
+        3
     );
     form_checkboxes('I usually get paid for my services',
         array(array('tech_paid', '', $profile->tech_paid))

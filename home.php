@@ -209,7 +209,7 @@ function right() {
         $x[] = "<a href=user.php?user_id=$fuser->id>$fuser->name</a>";
     }
     if ($x) {
-        row2("I'm following", implode($x, '<br>'));
+        row2("I'm following", implode('<br>', $x));
     }
 
     $followers = BoincFriend::enum("user_dest=$user->id");
@@ -220,7 +220,7 @@ function right() {
         $x[] = "<a href=user.php?user_id=$fuser->id>$fuser->name</a>";
     }
     if ($x) {
-        row2('My followers', implode($x, '<br>'));
+        row2('My followers', implode('<br>', $x));
     }
     end_table();
 

@@ -190,6 +190,9 @@ function args_to_str($args, $role) {
         }
         break;
     }
+    if (isset($args->writing)) {
+        $s .= "Key words: $args->writing<br>";
+    }
     return $s;
 
 }

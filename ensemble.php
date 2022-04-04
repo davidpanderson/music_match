@@ -28,12 +28,7 @@ function show_ensemble($ens_id, $user) {
     $ens = Ensemble::lookup_id($ens_id);
     page_head(sprintf("Ensemble: %s", $ens->name));
     start_table();
-    if (array_key_exists($profile->type, ENSEMBLE_TYPE_LIST)) {
-        $t = ENSEMBLE_TYPE_LIST[$profile->type];
-    } else {
-        $t = $profile->type;
-    }
-    row2("Ensemble type", $t);
+    row2("Ensemble type", ensemble_type_str($profile->type));
     row2("Instruments",
         lists_to_string(
             INST_LIST_FINE, $profile->inst, $profile->inst_custom

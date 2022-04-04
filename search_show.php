@@ -49,8 +49,9 @@ function show_item($item, $role) {
 function show_search($search, $user) {
     $params = json_decode($search->params);
     $role = $params->role;
-    $args = $params->args;
+    $args = add_missing_args($params->args);
     $view_results = json_decode($search->view_results);
+    page_head(sprintf("%s search results", role_name($role)));
     switch ($role) {
     case COMPOSER:
     case PERFORMER:
@@ -66,7 +67,6 @@ function show_search($search, $user) {
         $results = teacher_search($args, $user);
         break;
     }
-    page_head(sprintf("%s search results", role_name($role)));
     if (!$results) {
         echo "No results found.";
         page_tail();

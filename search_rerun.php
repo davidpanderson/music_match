@@ -40,7 +40,7 @@ function main() {
         $user = BoincUser::lookup_id($search->user_id);
         $params = json_decode($search->params);
         $role = $params->role;
-        $args = $params->args;
+        $args = add_missing_args($params->args);
         switch ($role) {
         case COMPOSER:
         case PERFORMER:
@@ -52,8 +52,12 @@ function main() {
         case ENSEMBLE:
             $results = ens_search($args, $user);
             break;
+        case TEACHER:
+            $results = teacher_search($args, $user);
+            break;
         default:
-            die("bad role");
+            echo("bad role: $role");
+            continue;
         }
         $old_results = json_decode($search->view_results);
         $ids = [];

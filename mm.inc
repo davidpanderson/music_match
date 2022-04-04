@@ -167,6 +167,15 @@ define ('WHERE_LIST', [
     'online' => 'Online'
 ]);
 
+// ensemble type may be custom
+//
+function ensemble_type_str($type) {
+    if (array_key_exists($type, ENSEMBLE_TYPE_LIST)) {
+        return ENSEMBLE_TYPE_LIST[$type];
+    } else {
+        return $type;
+    }
+}
 
 // ---------- Functions for generating and parsing forms (search, edit)
 

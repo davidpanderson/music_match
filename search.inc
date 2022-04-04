@@ -39,6 +39,13 @@ function parse_words_array($arr) {
     return $x;
 }
 
+// if you add new search args, set them here to old searchs don't break
+//
+function add_missing_args($args) {
+    if (!isset($args->writing)) $args->writing=null;
+    return $args;
+}
+
 // ---------------- Composer/performer --------------
 
 // compare profile with form args

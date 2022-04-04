@@ -88,7 +88,7 @@ function ens_profile_summary_row($ens) {
             $ens->name
         ),
         ens_listen_link($ens, $p),
-        ENSEMBLE_TYPE_LIST[$p->type],
+        ensemble_type_str($p->type),
         lists_to_string(INST_LIST_FINE, $p->inst, $p->inst_custom, "<br>"),
         lists_to_string(STYLE_LIST, $p->style, $p->style_custom, "<br>"),
         lists_to_string(LEVEL_LIST, $p->level, null, "<br>"),

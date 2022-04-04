@@ -35,7 +35,7 @@ function show_ensemble($e) {
     row_array([
         "<a href=ensemble.php?ens_id=$e->id>$e->name</a>",
         "<a href=user.php?user_id=$user->id>$user->name</a>",
-        ENSEMBLE_TYPE_LIST[$profile->type]
+        ensemble_type_str($profile->type)
     ]);
 }
 

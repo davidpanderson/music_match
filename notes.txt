@@ -517,3 +517,24 @@ cp -r or -R
 
 autoregen:
 cron.d/certbot
+
+================
+Monica 4/5/22:
+use MM to create a mini-festival?
+5 composers, 5 performers
+themed
+
+events/deadlines
+
+simplify;
+intro, 2 rep. pieces
+----------
+Mosa 4/12/22:
+
+Demo/reaction
+    simplify?
+
+How to promote?
+Can you suggest people I should cold-call about it?
+Facebook, Twitter?
+what did groupmuse do initially?

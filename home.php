@@ -143,31 +143,31 @@ function show_ens() {
 function show_search() {
     echo "<h3>Search for</h3>";
     echo "<table><tr><td align=center width=18%>";
-    echo "<p><img width=80% src=comp.png><p>";
+    echo '<p><img width=80% src=comp.png alt="Picture of a musical score"><p>';
     mm_show_button(
         sprintf("cp_search.php?role=%d", COMPOSER),
         "Composers", BUTTON_SMALL
     );
     echo "</td><td align=center width=18%>";
-    echo "<p><img width=80% src=perf.png><p>";
+    echo '<p><img width=80% src=perf.png alt="Picture of a violinist"><p>';
     mm_show_button(
         sprintf("cp_search.php?role=%d", PERFORMER),
         "Performers", BUTTON_SMALL
     );
     echo "</td><td align=center width=18%>";
-    echo "<p><img width=80% src=tech.png><p>";
+    echo '<p><img width=80% src=tech.png alt="Picture of a mixing board"><p>';
     mm_show_button(
         "tech_search.php",
         "Technicians", BUTTON_SMALL
     );
     echo "</td><td align=center width=18%>";
-    echo "<p><img width=80% src=ens.png><p>";
+    echo '<p><img width=80% src=ens.png alt="Picture of an orchestra"><p>';
     mm_show_button(
         "ensemble_search.php",
         "Ensembles", BUTTON_SMALL
     );
     echo "</td><td align=center width=18%>";
-    echo "<p><img width=80% src=teach.png><p>";
+    echo '<p><img width=80% src=teach.png alt="Picture of a cello student and teacher"><p>';
     mm_show_button(
         "teacher_search.php",
         "Teachers", BUTTON_SMALL
@@ -195,10 +195,11 @@ function right() {
 
     row2("Private messages",
         sprintf(
-            '<a href=%s>Inbox</a><br><small>%d messages, %d unread</small>',
+            '<a href=%s>Inbox</a> <small>(%d messages, %d unread)</small><br><a href=%s>Sent</a>',
             'pm.php?action=inbox',
-            BoincPrivateMessage::count("userid=$user->id"),
-            BoincPrivateMessage::count("userid=$user->id AND opened=0")
+            pm_total($user),
+            pm_unread($user),
+            'pm.php?action=outbox'
         )
     );
     $following = BoincFriend::enum("user_src=$user->id");

@@ -17,9 +17,12 @@
 // --------------------------------------------------------------------
 
 // search for teachers
+//
+// If you add any search parameters, add them in search.inc too
 
 require_once("../inc/util.inc");
 require_once("../inc/mm.inc");
+require_once("../inc/notification.inc");
 require_once("../inc/teacher.inc");
 require_once("../inc/search.inc");
 
@@ -78,6 +81,7 @@ function teacher_search_action($req_user) {
         page_tail();
         return;
     }
+    notify_search_results($req_user, TEACHER, $profiles);
 
     start_table("table-striped");
     teacher_profile_summary_header();

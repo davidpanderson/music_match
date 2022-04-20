@@ -49,7 +49,7 @@ function show_item($item, $role) {
 function show_search($search, $user) {
     $params = json_decode($search->params);
     $role = $params->role;
-    $args = add_missing_args($params->args);
+    $args = add_missing_args($params->args, $role);
     $view_results = json_decode($search->view_results);
     page_head(sprintf("%s search results", role_name($role)));
     switch ($role) {

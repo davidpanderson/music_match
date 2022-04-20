@@ -16,14 +16,15 @@
 // along with Music Match.  If not, see <http://www.gnu.org/licenses/>.
 // --------------------------------------------------------------------
 
+// stuff related to notifications.
+
 require_once("../inc/mm.inc");
 require_once("../inc/mm_db.inc");
 require_once("../inc/forum_db.inc");
 require_once("../inc/user.inc");
 
-// we use:
-//      user.send_email to store prefs
-//      user.expavg_time to store time of last email
+define('NOTIFY_SEARCH_NRESULTS', 10);
+    // notify the top N search results that user looked for them
 
 define('NOTIFY_NEVER', 0);
 define('NOTIFY_DAILY', 1);
@@ -37,7 +38,9 @@ define('NOTIFY_LIST', array(
     NOTIFY_NEVER => 'Never'
 ));
 
-// show notification on web, with links where relevant
+// return a string describing the notification.
+// If $web is true, it's for a web page, so include <a> links where relevant.
+// Otherwise it's for a (non-HTML) email.
 //
 function notification_string($n, $web) {
     switch($n->type) {
@@ -86,11 +89,11 @@ function notification_string($n, $web) {
         $user = BoincUser::lookup_id($n->opaque);
         if (!$user) return null;
         if ($web) {
-            return sprintf("<a href=user.php?user_id=%d>%s</a> has changed their %s profile.",
+            return sprintf("<a href=user.php?user_id=%d>%s</a> changed their %s profile.",
                 $user->id, $user->name, role_name($n->id2)
             );
         } else {
-            return sprintf("%s has changed their %s profile.",
+            return sprintf("%s changed their %s profile.",
                 $user->name, role_name($n->id2)
             );
         }
@@ -101,12 +104,12 @@ function notification_string($n, $web) {
         if (!$u) return null;
         if ($web) {
             return sprintf(
-                '%s has asked to join %s.  <a href=%s&ens_id=%d>Accept or decline</a>.',
+                '%s asked to join %s.  <a href=%s&ens_id=%d>Accept or decline</a>.',
                 $u->name, $ens->name,
                 'ensemble_join.php?action=review', $ens->id
             );
         } else {
-            return sprintf('%s has asked to join %s.', $u->name, $ens->name);
+            return sprintf('%s asked to join %s.', $u->name, $ens->name);
         }
     case NOTIFY_ENS_JOIN_REPLY:
         $ens = Ensemble::lookup_id($n->opaque);
@@ -142,6 +145,20 @@ function notification_string($n, $web) {
             );
         } else {
             return sprintf('%s resigned from %s.', $u->name, $ens->name);
+        }
+        break;
+    case NOTIFY_LOOKING_FOR_YOU:
+        $u = BoincUser::lookup_id($n->id2);
+        if ($web) {
+            return sprintf('<a href=%s>%s</a> searched for %ss like you.',
+                "user.php?user_id=$u->id",
+                $u->name,
+                role_dir($n->opaque)
+            );
+        } else {
+            return sprintf('%s searched for %ss like you',
+                $u->name, role_dir($n->opaque)
+            );
         }
         break;
     default:
@@ -210,6 +227,44 @@ For details, or to change email settings, <a href=%s>visit Music Match</a>.
 function email_if_immediate($user) {
     if ($user && $user->send_email == NOTIFY_IMMEDIATE) {
         send_notify_email($user);
+    }
+}
+
+// The given user X just did a search.
+// Notify the top N users that X is looking for someone like them.
+//
+function notify_search_results($user, $role, $profiles) {
+    $n = 0;
+    $now = time();
+    foreach ($profiles as $p) {
+        BoincNotify::replace(
+            sprintf("userid=%d, create_time=%d, type=%d, opaque=%d, id2=%d, sent_by_email=0",
+                $p->user->id, $now, NOTIFY_LOOKING_FOR_YOU, $role, $user->id
+            )
+        );
+        email_if_immediate($p->user);
+        $n++;
+        if ($n == NOTIFY_SEARCH_NRESULTS) {
+            break;
+        }
+    }
+}
+
+// The user has modified their given profile.
+// Notify the people who follow them
+//
+function notify_profile_change($user, $role) {
+    $friends = BoincFriend::enum("user_dest = $user->id");
+    $now = time();
+    foreach ($friends as $friend) {
+        $user2 = BoincUser::lookup_id($friend->user_src);
+        if (!$user2) continue;
+        BoincNotify::replace(
+            sprintf("userid=%d, create_time=%d, type=%d, opaque=%d, id2=%d, sent_by_email=0",
+                $user2->id, $now, NOTIFY_PROFILE, $user->id, $role
+            )
+        );
+        email_if_immediate($user2);
     }
 }
 

@@ -17,184 +17,27 @@
 // --------------------------------------------------------------------
 
 // show a list of searches, with links to view or delete
+// No details (i.e. search params) should be here
 
 require_once("../inc/util.inc");
 require_once("../inc/mm_db.inc");
+require_once("../inc/search.inc");
 
 // convert search args to a list of lines
 //
 function args_to_str($args, $role) {
-    $s = '';
     switch ($role) {
     case COMPOSER:
     case PERFORMER:
-        if ($args->inst) {
-            $s .= "Instruments: ";
-            $x = [];
-            foreach ($args->inst as $i) {
-                $x[] = $role==COMPOSER?INST_LIST_COARSE[$i]:INST_LIST_FINE[$i];
-            }
-            $s .= implode(', ', $x);
-            $s .= '<br>';
-        }
-        if ($role == COMPOSER) {
-            if ($args->ens_type) {
-                $s .= 'Ensemble types: ';
-                $x = [];
-                foreach ($args->ens_type as $i) {
-                    $x[] = COMPOSE_FOR_LIST[$i];
-                }
-                $s .= implode(', ', $x);
-                $s .= '<br>';
-            }
-        }
-        if ($args->style) {
-            $s .= 'Style: ';
-            $x = [];
-            foreach ($args->style as $i) {
-                $x[] = STYLE_LIST[$i];
-            }
-            $s .= implode(', ', $x);
-            $s .= '<br>';
-        }
-        if ($args->level) {
-            $s .= 'Level: ';
-            $x = [];
-            foreach ($args->level as $i) {
-                $x[] = LEVEL_LIST[$i];
-            }
-            $s .= implode(', ', $x);
-            $s .= '<br>';
-        }
-        if ($args->close) {
-            $s .= 'Nearby: ';
-            $s .= 'yes';
-            $s .= '<br>';
-        }
-        break;
+        return cp_args_to_str($args, $role);
     case TECHNICIAN:
-        if ($args->tech_area) {
-            $s = 'Areas: ';
-            $x = [];
-            foreach ($args->tech_area as $i) {
-                $x[] = TECH_AREA_LIST[$i];
-            }
-            $s .= implode(', ', $x);
-            $s .= '<br>';
-        }
-        if ($args->program) {
-            $s .= 'Software: ';
-            $x = [];
-            foreach ($args->program as $i) {
-                $x[] = PROGRAM_LIST[$i];
-            }
-            $s .= implode(', ', $x);
-            $s .= '<br>';
-        }
-        if ($args->close) {
-            $s .= 'Nearby: ';
-            $s .= 'yes';
-            $s .= '<br>';
-        }
-        break;
+        return tech_args_to_str($args, $role);
     case ENSEMBLE:
-        if ($args->type) {
-            $s = 'Ensemble type: ';
-            $x = [];
-            foreach ($args->type as $i) {
-                $x[] = ENSEMBLE_TYPE_LIST[$i];
-            }
-            $s .= implode(', ', $x);
-            $s .= '<br>';
-        }
-        if ($args->inst) {
-            $s .= 'Instruments: ';
-            $x = [];
-            foreach ($args->inst as $i) {
-                $x[] = INST_LIST_FINE[$i];
-            }
-            $s .= implode(', ', $x);
-            $s .= '<br>';
-        }
-        if ($args->level) {
-            $s .= 'Level: ';
-            $x = [];
-            foreach ($args->level as $i) {
-                $x[] = LEVEL_LIST[$i];
-            }
-            $s .= implode(', ', $x);
-            $s .= '<br>';
-        }
-        if ($args->seeking_members != 'either') {
-            $s .= 'Seeking members: ';
-            $s .= $args->seeking_members;
-            $s .= '<br>';
-        }
-        if ($args->perf_reg != 'either') {
-            $s .= 'Perform regularly: ';
-            $s .= $args->perf_reg;
-            $s .= '<br>';
-        }
-        if ($args->perf_paid != 'either') {
-            $s .= 'Paid to perform: ';
-            $s .= $args->perf_paid;
-            $s .= '<br>';
-        }
-        if ($args->close) {
-            $s .= 'Nearby: ';
-            $s .= 'yes';
-            $s .= '<br>';
-        }
-        break;
+        return ens_args_to_str($args);
     case TEACHER:
-        if ($args->topic) {
-            $s .= 'Topic: ';
-            $x = [];
-            foreach ($args->topic as $i) {
-                $x[] = TOPIC_LIST[$i];
-            }
-            $s .= implode(', ', $x);
-            $s .= '<br>';
-        }
-        if ($args->style) {
-            $s .= 'Style: ';
-            $x = [];
-            foreach ($args->style as $i) {
-                $x[] = STYLE_LIST[$i];
-            }
-            $s .= implode(', ', $x);
-            $s .= '<br>';
-        }
-        if ($args->level) {
-            $s .= 'Level: ';
-            $x = [];
-            foreach ($args->level as $i) {
-                $x[] = LEVEL_LIST[$i];
-            }
-            $s .= implode(', ', $x);
-            $s .= '<br>';
-        }
-        if (isset($args->where)) {
-            $s .= 'Where: ';
-            $x = [];
-            foreach ($args->where as $i) {
-                $x[] = WHERE_LIST[$i];
-            }
-            $s .= implode(', ', $x);
-            $s .= '<br>';
-        }
-        if ($args->close) {
-            $s .= 'Nearby: ';
-            $s .= 'yes';
-            $s .= '<br>';
-        }
-        break;
+        return teacher_args_to_str($args);
     }
-    if (isset($args->writing)) {
-        $s .= "Key words: $args->writing<br>";
-    }
-    return $s;
-
+    die('args_to_str');
 }
 
 function show_search_list_item($s, $role) {
@@ -210,15 +53,17 @@ function show_search_list_item($s, $role) {
         );
     }
 
+    $a = args_to_str(add_missing_args($s->params->args, $role), $role);
+    if (!$a) return;
     row_array([
-        args_to_str($s->params->args, $role),
+        $a,
         $m,
         date_str($s->view_time),
         mm_button_text("search_list.php?search_id=$s->id&action=delete",
             "Delete", BUTTON_SMALL
         )
     ]);
-    row1('&nbsp;', 99, 'bg-dark');
+    echo '<tr><td colspan=99><hr style="height:2px;border-width:0;background-color:#444444"></td></tr>';
 }
 
 function show_searches($searches, $role) {

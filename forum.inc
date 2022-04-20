@@ -87,7 +87,7 @@ define('RATE_POSITIVE_IMAGE_HEIGHT','9');
 define('RATE_NEGATIVE_IMAGE', 'img/rate_negative.png');
 define('RATE_NEGATIVE_IMAGE_HEIGHT','9');
 define('REPORT_POST_IMAGE', 'img/report_post.png');
-define('REPORT_POST_IMAGE_HEIGHT','9');
+define('REPORT_POST_IMAGE_HEIGHT','12');
 
 define('SOLUTION', tra('This answered my question'));
 define('SUFFERER', tra('I also have this question'));
@@ -819,30 +819,17 @@ function post_rules() {
         <li> %s
         <li> %s
         <li> %s
-        <li> %s
-        <li> %s
-        <li> %s
-        <li> %s
-        <li> %s
-        <li> %s
         %s
         </ul>
         ",
-        tra("Posts must be 'kid friendly': they may not contain content that is obscene, hate-related, sexually explicit or suggestive."),
         tra("No commercial advertisements."),
-        tra("No links to web sites involving sexual content, gambling, or intolerance of others."),
-        tra("No messages intended to annoy or antagonize other people, or to hijack a thread."),
-        tra("No messages that are deliberately hostile, threatening, or insulting."),
-        tra("No abusive messages involving race, religion, nationality, gender, class or sexuality."),
-        tra("Posts that violate these rules may be deleted."),
-        tra("The posting privileges of violators may be suspended or revoked."),
-        tra("If your account is suspended, don't create a new one."),
+        tra("No hostile, threatening, or insulting messages."),
+        tra("Messages that violate these rules may be deleted."),
         $project_rules
     );
 }
 
 function post_warning($forum=null) {
-    return '';
     $x = "<br><br>
         <table><tr><td align=left>
     ";
@@ -855,7 +842,7 @@ function post_warning($forum=null) {
     }
 
     $x .= "
-        <font size=-2>
+        <font size=-1>
         ".tra("Rules:").post_rules()."
         </font>
         </td></tr></table>

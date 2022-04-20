@@ -17,6 +17,8 @@
 // --------------------------------------------------------------------
 
 // search for composers or performers
+//
+// If you add any search parameters, add them in search.inc too
 
 require_once("../inc/util.inc");
 require_once("../inc/mm.inc");
@@ -47,6 +49,7 @@ function cp_search_form($profile, $role) {
         "in difficulty levels including",
         items_list(LEVEL_LIST, $profile->level, "level")
     );
+    radio_bool("Usually paid?", "paid");
     form_input_text(
         'whose introduction includes', 'writing'
     );
@@ -71,6 +74,7 @@ function get_form_args($role) {
     $x->style = parse_list(STYLE_LIST, "style");
     $x->level = parse_list(LEVEL_LIST, "level");
     $x->close = post_str('close', true)=='on';
+    $x->paid = post_str('paid');
     $x->writing = post_str('writing');
     return $x;
 }
@@ -88,6 +92,7 @@ function cp_search_action($role, $req_user) {
         page_tail();
         return;
     }
+    notify_search_results($req_user, $role, $profiles);
 
     start_table("table-striped");
     cp_profile_summary_header($role);

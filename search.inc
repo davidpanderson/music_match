@@ -1,9 +1,60 @@
 <?php
 
-// functions to do searches of various types
+// This file is part of Music Match.
+// Copyright (C) 2022 David P. Anderson
+//
+// Music Match is free software; you can redistribute it and/or modify it
+// under the terms of the GNU Lesser General Public License
+// as published by the Free Software Foundation,
+// either version 3 of the License, or (at your option) any later version.
+//
+// Music Match is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+// See the GNU Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public License
+// along with Music Match.  If not, see <http://www.gnu.org/licenses/>.
+// --------------------------------------------------------------------
+
+// Utility functions for searches.
+// For each search type (comp/perf, tech, ensemble, teacher)
+// *_match_args()
+//      Take parsed form args and count number of matches with given profile
+// *_match_value()
+//      Compute "value" of the above
+// *_search()
+//      given form args, return value-ordered list of profiles
+// *_args_to_str()
+//      convert search args to string (for search list display)
+//
+// Searches have two types of parameters:
+//
+// soft parameters:
+//      Things like instrument, style, level, and writing.
+//      Each profile is given a "value"
+//      depending on how many total matches there are,
+//      and how many soft parameters have >0 matches
+// hard parameters:
+//      booleans like "paid", where the parameter is yes/no/either
+//      profiles for which a hard parameter doesn't match
+//      are not included in the results.
 
 require_once("../inc/mm.inc");
 require_once("../inc/mm_db.inc");
+
+// if you add new search params, set them here so old searches don't break
+//
+function add_missing_args($args, $role) {
+    if (!isset($args->writing)) $args->writing=null;
+    switch ($role) {
+    case COMPOSER:
+    case PERFORMER:
+        if (!isset($args->paid)) $args->paid = "either";
+        break;
+    }
+    return $args;
+}
 
 // $query and $text are lists of words.
 // return the number of words in $query that are in $text
@@ -39,11 +90,14 @@ function parse_words_array($arr) {
     return $x;
 }
 
-// if you add new search args, set them here to old searchs don't break
+// return true if the form arg (yes/no/either) matches the profile value (0/1)
 //
-function add_missing_args($args) {
-    if (!isset($args->writing)) $args->writing=null;
-    return $args;
+function check_bool($arg, $value) {
+    switch ($arg) {
+    case 'yes': return $value;
+    case 'no': return !$value;
+    }
+    return true;
 }
 
 // ---------------- Composer/performer --------------
@@ -119,6 +173,9 @@ function cp_search($role, $form_args, $req_user) {
             // don't show user their own profile
             continue;
         }
+        if (!check_bool($form_args->paid, $role==COMPOSER?$profile->comp_paid:$profile->perf_paid)) {
+            continue;
+        }
         $profile->match = cp_match_args($role, $profile, $form_args);
         $profile->value = cp_match_value($role, $profile->match);
         if ($profile->value == 0) {
@@ -144,6 +201,62 @@ function cp_search($role, $form_args, $req_user) {
     }
     uasort($profiles, 'compare_value');
     return $profiles;
+}
+
+function cp_args_to_str($args, $role) {
+    $s = '';
+    if ($args->inst) {
+        $s .= "Instruments: ";
+        $x = [];
+        foreach ($args->inst as $i) {
+            $x[] = $role==COMPOSER?INST_LIST_COARSE[$i]:INST_LIST_FINE[$i];
+        }
+        $s .= implode(', ', $x);
+        $s .= '<br>';
+    }
+    if ($role == COMPOSER) {
+        if ($args->ens_type) {
+            $s .= 'Ensemble types: ';
+            $x = [];
+            foreach ($args->ens_type as $i) {
+                $x[] = COMPOSE_FOR_LIST[$i];
+            }
+            $s .= implode(', ', $x);
+            $s .= '<br>';
+        }
+    }
+    if ($args->style) {
+        $s .= 'Style: ';
+        $x = [];
+        foreach ($args->style as $i) {
+            $x[] = STYLE_LIST[$i];
+        }
+        $s .= implode(', ', $x);
+        $s .= '<br>';
+    }
+    if ($args->level) {
+        $s .= 'Level: ';
+        $x = [];
+        foreach ($args->level as $i) {
+            $x[] = LEVEL_LIST[$i];
+        }
+        $s .= implode(', ', $x);
+        $s .= '<br>';
+    }
+    if ($args->paid != 'either') {
+        $s .= 'Usually paid: ';
+        $s .= $args->paid;
+        $s .= '<br>';
+    }
+    if ($args->close) {
+        $s .= 'Nearby: ';
+        $s .= 'yes';
+        $s .= '<br>';
+    }
+    if ($args->writing) {
+        $s .= "Keywords: <i>$args->writing</i><br>";
+    }
+    return $s;
 }
 
 // ---------------- Technician --------------
@@ -216,6 +329,37 @@ function tech_search($form_args, $req_user) {
     return $profiles;
 }
 
+function tech_args_to_str($args) {
+    $s = '';
+    if ($args->tech_area) {
+        $s = 'Areas: ';
+        $x = [];
+        foreach ($args->tech_area as $i) {
+            $x[] = TECH_AREA_LIST[$i];
+        }
+        $s .= implode(', ', $x);
+        $s .= '<br>';
+    }
+    if ($args->program) {
+        $s .= 'Software: ';
+        $x = [];
+        foreach ($args->program as $i) {
+            $x[] = PROGRAM_LIST[$i];
+        }
+        $s .= implode(', ', $x);
+        $s .= '<br>';
+    }
+    if ($args->close) {
+        $s .= 'Nearby: ';
+        $s .= 'yes';
+        $s .= '<br>';
+    }
+    if (isset($args->writing)) {
+        $s .= "Key words: <i>$args->writing</i><br>";
+    }
+    return $s;
+}
+
 // ---------------- Ensemble --------------
 
 function ens_match_args($profile, $args) {
@@ -264,14 +408,6 @@ function ens_match_value($match) {
     return $x;
 }
 
-function check_bool($arg, $value) {
-    switch ($arg) {
-    case 'yes': return $value;
-    case 'no': return !$value;
-    }
-    return true;
-}
-
 function ens_search($form_args, $req_user) {
     [$close_country, $close_zip] = handle_close($form_args, $req_user);
     $ensembles_in = Ensemble::enum("");
@@ -310,6 +446,61 @@ function ens_search($form_args, $req_user) {
     }
     uasort($ensembles, 'compare_value');
     return $ensembles;
+}
+
+function ens_args_to_str($args) {
+    $s = '';
+    if ($args->type) {
+        $s = 'Ensemble type: ';
+        $x = [];
+        foreach ($args->type as $i) {
+            $x[] = ENSEMBLE_TYPE_LIST[$i];
+        }
+        $s .= implode(', ', $x);
+        $s .= '<br>';
+    }
+    if ($args->inst) {
+        $s .= 'Instruments: ';
+        $x = [];
+        foreach ($args->inst as $i) {
+            $x[] = INST_LIST_FINE[$i];
+        }
+        $s .= implode(', ', $x);
+        $s .= '<br>';
+    }
+    if ($args->level) {
+        $s .= 'Level: ';
+        $x = [];
+        foreach ($args->level as $i) {
+            $x[] = LEVEL_LIST[$i];
+        }
+        $s .= implode(', ', $x);
+        $s .= '<br>';
+    }
+    if ($args->seeking_members != 'either') {
+        $s .= 'Seeking members: ';
+        $s .= $args->seeking_members;
+        $s .= '<br>';
+    }
+    if ($args->perf_reg != 'either') {
+        $s .= 'Perform regularly: ';
+        $s .= $args->perf_reg;
+        $s .= '<br>';
+    }
+    if ($args->perf_paid != 'either') {
+        $s .= 'Paid to perform: ';
+        $s .= $args->perf_paid;
+        $s .= '<br>';
+    }
+    if ($args->close) {
+        $s .= 'Nearby: ';
+        $s .= 'yes';
+        $s .= '<br>';
+    }
+    if (isset($args->writing)) {
+        $s .= "Key words: <i>$args->writing</i><br>";
+    }
+    return $s;
 }
 
 // -------------- teacher ------------------
@@ -391,6 +582,55 @@ function teacher_search($form_args, $req_user) {
     }
     uasort($profiles, 'compare_value');
     return $profiles;
+}
+
+function teacher_args_to_str($args) {
+    $s = '';
+    if ($args->topic) {
+        $s .= 'Topic: ';
+        $x = [];
+        foreach ($args->topic as $i) {
+            $x[] = TOPIC_LIST[$i];
+        }
+        $s .= implode(', ', $x);
+        $s .= '<br>';
+    }
+    if ($args->style) {
+        $s .= 'Style: ';
+        $x = [];
+        foreach ($args->style as $i) {
+            $x[] = STYLE_LIST[$i];
+        }
+        $s .= implode(', ', $x);
+        $s .= '<br>';
+    }
+    if ($args->level) {
+        $s .= 'Level: ';
+        $x = [];
+        foreach ($args->level as $i) {
+            $x[] = LEVEL_LIST[$i];
+        }
+        $s .= implode(', ', $x);
+        $s .= '<br>';
+    }
+    if (count($args->where)) {
+        $s .= 'Where: ';
+        $x = [];
+        foreach ($args->where as $i) {
+            $x[] = WHERE_LIST[$i];
+        }
+        $s .= implode(', ', $x);
+        $s .= '<br>';
+    }
+    if ($args->close) {
+        $s .= 'Nearby: ';
+        $s .= 'yes';
+        $s .= '<br>';
+    }
+    if (isset($args->writing)) {
+        $s .= "Key words: <i>$args->writing</i><br>";
+    }
+    return $s;
 }
 
 // -------------- utilities ------------------

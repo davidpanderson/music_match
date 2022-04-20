@@ -25,11 +25,11 @@ function left() {
         <p>
         <font size=+4>Music Match</font>
         <p>
-        <img width=19% src=comp.png>
-        <img width=19% src=perf.png>
-        <img width=19% src=tech.png>
-        <img width=19% src=ens.png>
-        <img width=19% src=teach.png>
+        <img width=19% src=comp.png alt=\"Picture of a musical score\">
+        <img width=19% src=perf.png alt=\"Picture of a violinist\">
+        <img width=19% src=tech.png alt=\"Picture of a mixing board\">
+        <img width=19% src=ens.png alt=\"Picture of an orchestra\">
+        <img width=19% src=teach.png alt=\"Picture of a cello student and teacher\">
         <p>
         <br>
         Music Match lets people involved in classical and modern music -
@@ -63,7 +63,7 @@ function left() {
     $user = get_logged_in_user(true);
     if ($user) {
         update_visit_time($user);
-        mm_show_button("home.php", "Go to home page");
+        mm_show_button("home.php", "Go to my home page");
         //home_button();
     } else {
         join_button();

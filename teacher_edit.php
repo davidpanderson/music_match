@@ -20,6 +20,7 @@
 
 require_once("../inc/util.inc");
 require_once("../inc/mm.inc");
+require_once("../inc/notification.inc");
 
 // ---------------- form ------------------
 
@@ -182,7 +183,7 @@ if (post_str('submit', true)) {
     $profile = read_profile($user->id, TEACHER);
     $profile = action($user->id, $profile);
     write_profile($user->id, $profile, TEACHER);
-    profile_change_notify($user, TEACHER);
+    notify_profile_change($user, TEACHER);
     Header("Location: home.php");
 } else {
     $action = get_str('action', true);

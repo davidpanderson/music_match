@@ -100,4 +100,20 @@ class Search {
     }
 }
 
+function pm_total($user) {
+    return BoincPrivateMessage::count(
+        sprintf('userid=%d and opened<>%d',
+            $user->id, PM_DELETED
+        )
+    );
+}
+
+function pm_unread($user) {
+    return BoincPrivateMessage::count(
+        sprintf('userid=%d AND opened=%d',
+            $user->id, PM_UNREAD
+        )
+    );
+}
+
 ?>

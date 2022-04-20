@@ -20,6 +20,7 @@
 
 require_once("../inc/util.inc");
 require_once("../inc/mm.inc");
+require_once("../inc/notification.inc");
 
 // ---------------- form ------------------
 
@@ -264,7 +265,7 @@ if (post_str('submit', true)) {
     $profile = read_profile($user->id, $role);
     $profile = action($user->id, $profile, $role);
     write_profile($user->id, $profile, $role);
-    profile_change_notify($user, $role);
+    notify_profile_change($user, $role);
     Header("Location: home.php");
 } else {
     $role = get_int('role');

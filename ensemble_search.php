@@ -16,6 +16,10 @@
 // along with Music Match.  If not, see <http://www.gnu.org/licenses/>.
 // --------------------------------------------------------------------
 
+// ensemble search
+//
+// If you add any search parameters, add them in search.inc too
+
 require_once("../inc/util.inc");
 require_once("../inc/mm.inc");
 require_once("../inc/ensemble.inc");

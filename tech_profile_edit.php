@@ -20,6 +20,7 @@
 
 require_once("../inc/util.inc");
 require_once("../inc/mm.inc");
+require_once("../inc/notification.inc");
 
 function tech_form($user) {
     $profile = read_profile($user->id, TECHNICIAN);
@@ -111,7 +112,7 @@ if (post_str('submit', true)) {
     $profile = read_profile($user->id, TECHNICIAN);
     $profile = tech_action($user->id, $profile);
     write_profile($user->id, $profile, TECHNICIAN);
-    profile_change_notify($user, TECHNICIAN);
+    notify_profile_change($user, TECHNICIAN);
     Header("Location: home.php");
 } else {
     $action = get_str('action', true);

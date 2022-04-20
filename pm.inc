@@ -28,21 +28,12 @@ function pm_header() {
 }
 
 function pm_rules() {
-    return '';
     $x = "<table><tr><td align=left><small>";
     $x .= tra("
         <ul>
-        <li> Messages may not contain content that is obscene, hate-related,
-            sexually explicit or suggestive.
-        <li> No commercial advertisements.
-        <li> No links to web sites involving sexual content,
-            gambling, or intolerance of others.
-        <li> No messages intended to annoy or antagonize other people.
-        <li> No messages that are deliberately hostile, threatening, or insulting.
-        <li> No abusive comments involving race, religion,
-            nationality, gender, class or sexuality.
-        <li> The privileges of violators may be suspended or revoked.
-        <li> If your account is suspended, don't create a new one.
+        <li> No commercial advertisements or other spam.
+        <li> No hostile, threatening, or insulting messages.
+        <li> If you violate these rules, your account may be deleted.
         </ul>
     ");
     $x .= "</small></td></tr></table>\n";

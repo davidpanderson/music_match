@@ -25,7 +25,6 @@ require_once("../inc/akismet.inc");
 check_get_args(array("replyto", "deleted", "userid", "action", "sent", "id", "tnow", "ttok", "teamid"));
 
 function show_block_link($userid) {
-    return '';
     echo " <a href=\"pm.php?action=block&amp;id=$userid\">";
     show_image(REPORT_POST_IMAGE, tra("Block messages from this user"), tra("Block user"), REPORT_POST_IMAGE_HEIGHT);
     echo "</a>";
@@ -67,7 +66,10 @@ function do_inbox($logged_in_user) {
     BoincNotify::delete_aux("userid=$logged_in_user->id and type=".NOTIFY_PM);
 
     $msgs = BoincPrivateMessage::enum(
-        "userid=$logged_in_user->id ORDER BY date DESC"
+        sprintf( "userid=%d and opened<>%d ORDER BY date DESC",
+            $logged_in_user->id,
+            PM_DELETED
+        )
     );
     if (count($msgs) == 0) {
         echo tra("You have no private messages.");
@@ -89,13 +91,14 @@ function do_inbox($logged_in_user) {
             }
             echo "<tr>\n";
             $checkbox = "<input type=checkbox name=pm_select_$msg->id>";
-            if (!$msg->opened) {
-                $msg->update("opened=1");
+            if ($msg->opened == PM_UNREAD) {
+                $msg->update(sprintf("opened=%d", PM_READ));
             }
             echo "<td valign=top> $checkbox $msg->subject </td>\n";
             echo "<td valign=top>".user_links($sender, BADGE_HEIGHT_SMALL);
+            echo "<br><small>".time_str($msg->date)."</small><br>";
             show_block_link($msg->senderid);
-            echo "<br><small>".time_str($msg->date)."</small></td>\n";
+            echo "</td>\n";
             echo "<td valign=top>".output_transform($msg->content, $options)."<p>";
             $tokens = url_tokens($logged_in_user->authenticator);
             show_button_small(
@@ -122,38 +125,6 @@ function do_inbox($logged_in_user) {
         ";
         end_table();
         echo "</form>\n";
-    }
-    page_tail();
-}
-
-// the following isn't currently used - we never show single messages
-//
-function do_read($logged_in_user) {
-    $id = get_int("id");
-    $message = BoincPrivateMessage::lookup_id($id);
-    if (!$message || $message->userid != $logged_in_user->id) {
-        error_page(tra("no such message"));
-    }
-    page_head(tra("Private messages")." : ".$message->subject);
-    pm_header();
-
-    $sender = BoincUser::lookup_id($message->senderid);
-
-    start_table();
-    echo "<tr><th>".tra("Subject")."</th><td>".$message->subject."</td></tr>";
-    echo "<tr><th>".tra("Sender")."</th><td>".user_links($sender, BADGE_HEIGHT_SMALL);
-    show_block_link($message->senderid);
-    echo "</td></tr>";
-    echo "<tr><th>".tra("Date")."</th><td>".time_str($message->date)."</td></tr>";
-    echo "<tr><th>".tra("Message")."</th><td>".output_transform($message->content, $options)."</td></tr>";
-    echo "<tr><td></td><td>\n";
-    echo "<a href=\"pm.php?action=new&amp;replyto=$id\">".tra("Reply")."</a>\n";
-    echo " &middot; <a href=\"pm.php?action=delete&amp;id=$id\">".tra("Delete")."</a>\n";
-    echo " &middot; <a href=\"pm.php?action=inbox\">".tra("Inbox")."</a>\n";
-    end_table();
-
-    if ($message->opened == 0) {
-        $message->update("opened=1");
     }
     page_tail();
 }
@@ -241,17 +212,14 @@ function do_block($logged_in_user) {
     if (!$user) {
         error_page(tra("No such user"));
     }
-    page_head(tra("Really block %1?", $user->name));
-    echo "<div>".tra("Are you really sure you want to block user %1 from sending you private messages?", $user->name)."<br>\n";
-    echo tra("Please note that you can only block a limited amount of users.")."</div>\n";
-    echo "<div>".tra("Once the user has been blocked you can unblock it using forum preferences page.")."</div>\n";
+    page_head(tra("Block %1?", $user->name));
+    echo "Are you sure you want to prevent $user->name from sending you private messages?<p>\n";
 
     echo "<form action=\"pm.php\" method=\"POST\">\n";
     echo form_tokens($logged_in_user->authenticator);
     echo "<input type=\"hidden\" name=\"action\" value=\"confirmedblock\">\n";
     echo "<input type=\"hidden\" name=\"id\" value=\"$id\">\n";
-    echo "<input class=\"btn btn-default\" type=\"submit\" value=\"".tra("Add user to filter")."\">\n";
-    echo "<a href=\"pm.php?action=inbox\">".tra("No, cancel")."</a>\n";
+    echo "<input class=\"btn btn-success\" type=\"submit\" value=\"".tra("Block")."\">\n";
     echo "</form>\n";
     page_tail();
 }
@@ -280,10 +248,33 @@ function do_delete_selected($logged_in_user) {
         $x = "pm_select_$msg->id";
         if (post_str($x, true)) {
             $msg = BoincPrivateMessage::lookup_id($msg->id);
-            $msg->delete();
+            $msg->update(sprintf('opened=%d', PM_DELETED));
         }
     }
     Header("Location: pm.php?action=inbox&deleted=1");
+}
+
+function do_outbox($user) {
+    $msgs = BoincPrivateMessage::enum("senderid=$user->id order by date desc");
+    $options = get_output_options($user);
+    page_head("Private messages: sent");
+    start_table('table-striped');
+    row_heading_array(["To", "Subject", "Message"]);
+    foreach($msgs as $m) {
+        $u = BoincUser::lookup_id($m->userid);
+        if (!$u) continue;
+        row_array([
+            sprintf('<a href=user.php?user_id=%d>%s</a><br><small>%s</small>',
+                $u->id,
+                $u->name,
+                time_str($m->date)
+            ),
+            $m->subject,
+            output_transform($m->content, $options)
+        ]);
+    }
+    end_table();
+    page_tail();
 }
 
 $replyto = get_int("replyto", true);
@@ -300,8 +291,6 @@ if (!$action) {
 
 if ($action == "inbox") {
     do_inbox($logged_in_user);
-} elseif ($action == "read") {
-    do_read($logged_in_user);
 } elseif ($action == "new") {
     do_new($logged_in_user);
 } elseif ($action == "delete") {
@@ -318,6 +307,8 @@ if ($action == "inbox") {
     page_head("Private messages");
     echo "Your message has been sent.";
     page_tail();
+} elseif ($action == "outbox") {
+    do_outbox($logged_in_user);
 } else {
     error_page(tra("Unknown action"));
 }

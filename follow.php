@@ -13,12 +13,12 @@ if ($action == 'follow') {
     $now = time();
     BoincFriend::replace("user_src=$user->id, user_dest=$uid, create_time=$now");
     page_head("Follow");
-    echo "Your are now following $u->name.";
+    echo "You are now following $u->name.";
     page_tail();
 } else if ($action == 'unfollow') {
     BoincFriend::delete_aux("user_src = $user->id and user_dest = $uid");
     page_head("Unfollow");
-    echo "Your are no longer following $u->name.";
+    echo "You are no longer following $u->name.";
     page_tail();
 } else {
     error_page("no such action");

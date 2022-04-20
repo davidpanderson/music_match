@@ -127,7 +127,7 @@ function project_footer($show_return, $show_date, $prefix) {
     global $show_home_link, $g_logged_in_user;
     if ($g_logged_in_user && $show_home_link) {
         echo "<p><p>";
-        mm_show_button("home.php", "Return to home page");
+        home_button();
     }
     return;
     // If you include any links, prepend URL with $prefix
@@ -230,7 +230,7 @@ function mm_navbar(
 ) {
     global $master_url;
 
-    $brand = "<a class=\"navbar-brand\" href=$master_url>".PROJECT."</a>";
+    $brand = "<a class=\"navbar-brand\" href=$master_url title='Music Match front page'>Music Match</a>";
     navbar_start($brand, $fixed, $inverse);
 
     $x = array();
@@ -238,11 +238,12 @@ function mm_navbar(
     $x[] = array(tra("Contact"), $url_prefix."contact.php");
     navbar_menu(tra("Project"), $x);
 
-    navbar_menu(tra("Community"), array(
-        array(tra("Message boards"), $url_prefix."forum_index.php"),
-        array("User name lookup", "name_lookup.php"),
-        array("Ensemble name lookup", "name_lookup.php?ensemble=1")
-    ));
+    navbar_menu(tra("Community"), [
+        [tra("Message boards"), $url_prefix."forum_index.php"],
+        ["Community preferences", "edit_forum_preferences_form.php"],
+        ["User name lookup", "name_lookup.php"],
+        ["Ensemble name lookup", "name_lookup.php?ensemble=1"]
+    ]);
     if ($user) {
         navbar_menu(tra("Account"), array(
             array(tra("Settings"), $url_prefix."settings.php"),

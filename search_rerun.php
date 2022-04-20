@@ -40,7 +40,7 @@ function main() {
         $user = BoincUser::lookup_id($search->user_id);
         $params = json_decode($search->params);
         $role = $params->role;
-        $args = add_missing_args($params->args);
+        $args = add_missing_args($params->args, $role);
         switch ($role) {
         case COMPOSER:
         case PERFORMER:

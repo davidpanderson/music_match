@@ -22,6 +22,10 @@ require_once("../inc/zip.inc");
 
 // DB fields
 
+// user: we use:
+//      user.send_email to store prefs
+//      user.expavg_time to store time of last email
+
 // ensemble_member.status
 
 define('EM_PENDING',    0);
@@ -51,7 +55,7 @@ define('NOTIFY_ENS_DEL',        6);
     // an ensemble you're in was deleted
     // opaque is ens ID
 define('NOTIFY_PROFILE',        7);
-    // a friend changed a profile
+    // someone you follow changed a profile
     // opaque is user ID; id2 is role
 define('NOTIFY_ENS_JOIN_REQ',   8);
     // someone asked to join an ensemble you founded
@@ -65,6 +69,14 @@ define('NOTIFY_ENS_REMOVE',     10);
 define('NOTIFY_ENS_QUIT',       11);
     // someone quit an ensemble you founded
     // opaque is ens ID; id2 is user ID
+define('NOTIFY_LOOKING_FOR_YOU', 12);
+    // user X did a search for which you are in the top N results
+    // opaque is the role of the search, id2 is X.id
+
+// values for private_messages.opened: recipient status
+define('PM_UNREAD',     0);
+define('PM_READ',       1);
+define('PM_DELETED',    2);
 
 // values for "role"; each has an associated JSON structure
 //
@@ -83,7 +95,7 @@ define('STYLE_LIST', array(
     'impressionist' => 'Impressionist',
     'minimalist' => 'Minimalist',
     'modern' => 'Modern',
-    'new_age' => 'New age',
+    'new_age' => 'New Age',
     'atonal' => 'Atonal'
 ));
 
@@ -733,30 +745,12 @@ function em_status_string($status) {
 }
 
 function home_button() {
-    mm_show_button("home.php", "Return to home page");
+    mm_show_button("home.php", "Return to my home page");
 }
 
 function join_button() {
     echo "<p>";
     mm_show_button("signup.php", "JOIN", BUTTON_BIG);
-}
-
-// The user has modified their given profile.
-// Notify their friends.
-//
-function profile_change_notify($user, $role) {
-    $friends = BoincFriend::enum("user_src = $user->id");
-    $now = time();
-    foreach ($friends as $friend) {
-        $user2 = BoincUser::lookup_id($friend->user_dest);
-        if (!$user2) continue;
-        BoincNotify::replace(
-            sprintf("userid=%d, create_time=%d, type=%d, opaque=%d, id2=%d, sent_by_email=0",
-                $user2->id, $now, NOTIFY_PROFILE, $user->id, $role
-            )
-        );
-        email_if_immediate($user2);
-    }
 }
 
 // we use user.seti_total_cpu to store last visit time

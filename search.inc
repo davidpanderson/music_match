@@ -183,6 +183,9 @@ function cp_search($role, $form_args, $req_user) {
             continue;
         }
         $user = BoincUser::lookup_id($user_id);
+        if (!$user) {
+            continue;
+        }
         if ($close_country && $close_country != $user->country) {
             continue;
         }
@@ -306,7 +309,6 @@ function tech_search($form_args, $req_user) {
         if ($profile->value == 0) continue;
         $user = BoincUser::lookup_id($user_id);
         if (!$user) {
-            echo "No user ID $user_id\n";
             continue;
         }
         if ($close_country && $close_country != $user->country) {
@@ -564,6 +566,9 @@ function teacher_search($form_args, $req_user) {
             continue;
         }
         $user = BoincUser::lookup_id($user_id);
+        if (!$user) {
+            continue;
+        }
         if ($close_country && $close_country != $user->country) {
             continue;
         }
@@ -613,7 +618,7 @@ function teacher_args_to_str($args) {
         $s .= implode(', ', $x);
         $s .= '<br>';
     }
-    if (count($args->where)) {
+    if (isset($args->where) && count($args->where)>0) {
         $s .= 'Where: ';
         $x = [];
         foreach ($args->where as $i) {
@@ -638,6 +643,10 @@ function teacher_args_to_str($args) {
 // record a search in the DB, or update existing record
 //
 function record_search($user, $role, $args, $profiles) {
+    if (!args_to_str($args, $role)) {
+        // don't record empty search
+        return;
+    }
     $params = new stdClass;
     $params->role = $role;
     $params->args = $args;
@@ -666,6 +675,23 @@ function record_search($user, $role, $args, $profiles) {
             )
         );
     }
+}
+
+// convert search args to a list of lines
+//
+function args_to_str($args, $role) {
+    switch ($role) {
+    case COMPOSER:
+    case PERFORMER:
+        return cp_args_to_str($args, $role);
+    case TECHNICIAN:
+        return tech_args_to_str($args, $role);
+    case ENSEMBLE:
+        return ens_args_to_str($args);
+    case TEACHER:
+        return teacher_args_to_str($args);
+    }
+    die('args_to_str');
 }
 
 ?>

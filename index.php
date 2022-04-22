@@ -85,15 +85,6 @@ function left() {
 }
 
 function right() {
-    echo "
-        <br>
-        <font color=#ffcc88>Music Match is being developed and tested.
-        The database is populated with artificial users and ensembles.
-        You're welcome to create an account, test the site,
-        and <a href=contact.php>give feedback</a>.
-        </font>
-        <p><br>
-    ";
     panel('News',
         function() {
             show_news(0, 5);

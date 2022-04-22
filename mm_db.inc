@@ -98,6 +98,10 @@ class Search {
         $db = BoincDb::get();
         return $db->delete($this, 'search');
     }
+    static function delete_aux($clause) {
+        $db = BoincDb::get();
+        return $db->delete_aux('search', $clause);
+    }
 }
 
 function pm_total($user) {

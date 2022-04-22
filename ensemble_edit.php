@@ -62,39 +62,37 @@ function ensemble_form($ens, $ens_info) {
     // instruments
     form_general(
         "Instruments in the ensemble",
-        checkbox_array(
-            array_merge(
-                items_list(INST_LIST_FINE, $ens_info->inst, "inst"),
-                items_custom($ens_info->inst_custom, "inst_custom")
-            ),
-            3,
+        checkbox_table([
+            items_list(INST_LIST_FINE, $ens_info->inst, "inst"),
+            //checkbox_all_none(INST_LIST_FINE, 'inst'),
+            items_custom($ens_info->inst_custom, "inst_custom"),
             form_input_text_field('inst_custom_new', INST_ADD, 'text',
                 text_input_default(INST_ADD).'class="sm" size="20"'
             )
+            ], 3
         )
     );
 
     // styles
     form_general(
         "Styles",
-        checkbox_array(
-            array_merge(
-                items_list(STYLE_LIST, $ens_info->style, "style"),
-                items_custom($ens_info->style_custom, "style_custom")
-            ),
-            3,
+        checkbox_table([
+            items_list(STYLE_LIST, $ens_info->style, "style"),
+            checkbox_all_none(STYLE_LIST, 'style'),
+            items_custom($ens_info->style_custom, "style_custom"),
             form_input_text_field('style_custom_new', STYLE_ADD, 'text',
                 text_input_default(STYLE_ADD).'class="sm" size="20"'
             )
+            ], 3
         )
     );
 
     // tech level
     form_general(
         "Technical levels",
-        checkbox_array(
+        checkbox_table([
             items_list(LEVEL_LIST, $ens_info->level, "level"),
-            3
+            ], 3
         )
     );
 
@@ -121,18 +119,18 @@ function ensemble_form($ens, $ens_info) {
     }
 
     // looking for members?
-    form_checkboxes('The ensemble is seeking new members',
+    form_checkboxes("We're seeking new members",
         array(array('seeking_members', '', $ens_info->seeking_members))
     );
 
 
     // perf reg?
-    form_checkboxes('The ensemble regularly performs for an audience',
+    form_checkboxes('We regularly perform for an audience',
         array(array('perf_reg', '', $ens_info->perf_reg))
     );
 
     // money?
-    form_checkboxes('The ensemble usually gets paid to perform',
+    form_checkboxes('We usually get paid to perform',
         array(array('perf_paid', '', $ens_info->perf_paid))
     );
 

@@ -23,23 +23,6 @@ require_once("../inc/util.inc");
 require_once("../inc/mm_db.inc");
 require_once("../inc/search.inc");
 
-// convert search args to a list of lines
-//
-function args_to_str($args, $role) {
-    switch ($role) {
-    case COMPOSER:
-    case PERFORMER:
-        return cp_args_to_str($args, $role);
-    case TECHNICIAN:
-        return tech_args_to_str($args, $role);
-    case ENSEMBLE:
-        return ens_args_to_str($args);
-    case TEACHER:
-        return teacher_args_to_str($args);
-    }
-    die('args_to_str');
-}
-
 function show_search_list_item($s, $role) {
     $nresults = count(json_decode($s->view_results));
     $m = "$nresults";

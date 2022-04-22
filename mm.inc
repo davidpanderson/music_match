@@ -216,6 +216,28 @@ function items_list($list, $current, $prefix) {
     return $x;
 }
 
+// make all/none links for groups of checkboxes
+//
+function checkbox_all_none($list, $prefix) {
+    $x = sprintf('<script>
+        function set_all_%s(val) {
+        ', $prefix
+    );
+    foreach ($list as $tag => $name) {
+        $x .= sprintf('document.getElementsByName("%s_%s")[0].checked=val;
+            ', $prefix, $tag
+        );
+    }
+    $x .= sprintf('
+        }
+        </script>
+        <small><a href=# onclick="set_all_%s(true)">all</a> &middot
+        <a href=# onclick="set_all_%s(false)">none</a></small>
+        ', $prefix, $prefix
+    );
+    return $x;
+}
+
 // Make checkbox list for custom (user-defined) items
 //
 function items_custom($current, $prefix) {
@@ -563,7 +585,7 @@ function write_profile($user_id, $profile, $role) {
 function delete_mm_profile($id, $role) {
     $dir = role_dir($role);
     $fname = "$dir/$id.json";
-    unlink($fname);
+    @unlink($fname);
 }
 
 function get_profiles($role) {
@@ -789,6 +811,41 @@ function split_list($items, $ncols) {
         $b = ceil($n*($i+1)/$ncols);
         $x[] = array_slice($items, $a, ($b-$a));
     }
+    return $x;
+}
+
+// helper function for the checkbox_table()
+//
+function checkbox_table_array($items, $ncols) {
+    $x = '';
+    $y = split_list($items, $ncols);
+    for ($i=0; $i<$ncols; $i++) {
+        $x .= sprintf("<td valign=top style=\"padding: 4px\" width=\"%d%%\">%s</td>\n",
+            intdiv(100, $ncols),
+            implode('<br>', checkbox_item_strings($y[$i]))
+        );
+    }
+    $x .= '</tr>';
+    return $x;
+}
+
+// display a table with $ncols columns.
+// for each item in $items:
+// - if it's an array, it's a list of checkbox items; divide it into columns
+// - otherwise show it in a single column
+//
+function checkbox_table($items, $ncols) {
+    $x = '<table width=100%><tr>';
+    foreach ($items as $item) {
+        if (is_array($item)) {
+            if (count($item)) {
+                $x .= checkbox_table_array($item, $ncols);
+            }
+        } else {
+            $x .= sprintf('<tr colspan=%d><td>%s</td></tr>', $ncols, $item);
+        }
+    }
+    $x .= "</table>\n";
     return $x;
 }
 

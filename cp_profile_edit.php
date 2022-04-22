@@ -34,61 +34,59 @@ function cp_form($user, $profile, $role) {
     form_input_hidden("role", $role);
     form_general(
         $role==COMPOSER?"Instruments I write for":"Instruments I play",
-        checkbox_array(
-            array_merge(
-                items_list(
-                    $role==COMPOSER?INST_LIST_COARSE:INST_LIST_FINE,
-                    $profile->inst, "inst"
-                ),
-                items_custom($profile->inst_custom, "inst_custom")
+        checkbox_table([
+            items_list(
+                $role==COMPOSER?INST_LIST_COARSE:INST_LIST_FINE,
+                $profile->inst, "inst"
             ),
-            3,
+            $role==COMPOSER?checkbox_all_none(INST_LIST_COARSE, "inst"):[],
+            items_custom($profile->inst_custom, "inst_custom"),
             form_input_text_field('inst_custom_new', INST_ADD, 'text',
                 text_input_default(INST_ADD).'class="sm" size="20"'
             )
+            ], 3
         )
     );
 
     if ($role==COMPOSER) {
         form_general(
             'Groups I write for',
-            checkbox_array(
-                array_merge(
-                    items_list(
-                        COMPOSE_FOR_LIST,
-                        $profile->ens_type, "ens_type"
-                    ),
-                    items_custom($profile->ens_type_custom, "ens_type_custom")
+            checkbox_table([
+                items_list(
+                    COMPOSE_FOR_LIST,
+                    $profile->ens_type, "ens_type"
                 ),
-                3,
+                checkbox_all_none(COMPOSE_FOR_LIST, 'ens_type'),
+                items_custom($profile->ens_type_custom, "ens_type_custom"),
                 form_input_text_field(
                     'ens_type_custom_new', ENSEMBLE_TYPE_ADD, 'text',
                     text_input_default(ENSEMBLE_TYPE_ADD).'class="sm" size="20"'
                 )
+                ], 3
             )
         );
     }
 
     form_general(
         $role==COMPOSER?"Styles I write in":"Styles I play",
-        checkbox_array(
-            array_merge(
-                items_list(STYLE_LIST, $profile->style, "style"),
-                items_custom($profile->style_custom, "style_custom")
-            ),
-            3
+        checkbox_table([
+            items_list(STYLE_LIST, $profile->style, "style"),
+            checkbox_all_none(STYLE_LIST, 'style'),
+            items_custom($profile->style_custom, "style_custom"),
+            form_input_text_field(
+                'style_custom_new', STYLE_ADD, 'text',
+                text_input_default(STYLE_ADD).'class="sm" size="20"'
+            )
+            ], 3
         )
-    );
-    form_input_text(
-        '', 'style_custom_new', STYLE_ADD, 'text',
-        text_input_default(STYLE_ADD).'class="sm" size="20"'
     );
 
     form_general(
         $role==COMPOSER?"Technical levels I write for":"Technical levels I play",
-        checkbox_array(
-            items_list(LEVEL_LIST, $profile->level, "level"),
-            3
+        checkbox_table([
+            items_list(LEVEL_LIST, $profile->level, "level")
+            //checkbox_all_none(LEVEL_LIST, 'level'),
+            ], 3
         )
     );
 

@@ -229,6 +229,14 @@ function right() {
     start_table();
     show_notifications($user);
     end_table();
+
+    echo "<h3>Spread the word</h3>
+        <p>
+        Help us grow!
+        <a href=email.php>Tell your musical friends and colleagues</a>
+        about Music Match.
+
+    ";
 }
 
 function top() {

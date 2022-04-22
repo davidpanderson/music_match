@@ -33,39 +33,40 @@ function teacher_form($user, $profile) {
     );
     form_general(
         "Things I teach",
-        checkbox_array(
+        checkbox_table([
             array_merge(
                 items_list(
                     TOPIC_LIST,
                     $profile->topic, "topic"
                 ),
                 items_custom($profile->topic_custom, "topic_custom")
-            ), 3,
+            ),
             form_input_text_field('topic_custom_new', TOPIC_ADD, 'text',
                 text_input_default(TOPIC_ADD).'class="sm" size="20"'
             )
+            ], 3
         )
     );
 
     form_general(
         "Styles I teach",
-        checkbox_array(
-            array_merge(
-                items_list(STYLE_LIST, $profile->style, "style"),
-                items_custom($profile->style_custom, "style_custom")
-            ), 3,
+        checkbox_table([
+            items_list(STYLE_LIST, $profile->style, "style"),
+            checkbox_all_none(STYLE_LIST, 'style'),
+            items_custom($profile->style_custom, "style_custom"),
             form_input_text_field(
                 'style_custom_new', STYLE_ADD, 'text',
                 text_input_default(STYLE_ADD).'class="sm" size="20"'
             )
+            ], 3
         )
     );
 
     form_general(
         "Technical levels I teach",
-        checkbox_array(
+        checkbox_table([
             items_list(LEVEL_LIST, $profile->level, "level"),
-            3
+            ], 3
         )
     );
 

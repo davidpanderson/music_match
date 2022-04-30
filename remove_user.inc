@@ -92,10 +92,4 @@ function remove_user($user) {
     remove_user_profiles($user->id);
 }
 
-$users = BoincUser::enum("email_addr like 'fake%'");
-foreach ($users as $user) {
-    echo "removing $user->id $user->email_addr\n";
-    remove_user($user);
-}
-
 ?>

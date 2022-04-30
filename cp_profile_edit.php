@@ -256,7 +256,6 @@ function do_delete_profile($user, $role) {
 }
 
 $user = get_logged_in_user();
-update_visit_time($user);
 
 if (post_str('submit', true)) {
     $role = post_int('role');

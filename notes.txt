@@ -538,3 +538,11 @@ How to promote?
 Can you suggest people I should cold-call about it?
 Facebook, Twitter?
 what did groupmuse do initially?
+
+button to share on FB, twitter
+    FB: need followers to be seen
+    ads: can spend what you want; can target e.g. composers
+email lapsed users?
+    changes to site, last login time
+    get in at the beginning
+    help us build our community

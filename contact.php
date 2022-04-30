@@ -19,9 +19,12 @@
 require_once("../inc/util.inc");
 require_once("../inc/email.inc");
 require_once("../inc/mm.inc");
+require_once("../inc/recaptchalib.php");
+
 
 function form($user) {
-    page_head("Contact Music Match");
+    global $recaptcha_public_key;
+    page_head("Contact Music Match", null, null, null, boinc_recaptcha_get_head_extra());
     echo "
         <p>
         Please let us know if
@@ -41,6 +44,9 @@ function form($user) {
         form_input_text('Your email address', 'email_addr');
     }
     form_input_textarea("Message to Music Match", 'message');
+    if (!$user) {
+        form_general('', boinc_recaptcha_get_html($recaptcha_public_key));
+    }
     form_submit("Send", "name=submit value=on");
     form_end();
     echo "
@@ -53,15 +59,20 @@ function form($user) {
     page_tail();
 }
 
-function action() {
+function action($user) {
+    global $recaptcha_private_key;
     $message = post_str('message');
     if (!$message) {
         error_page('No message');
     }
-    $user_id = post_int('user_id', true);
-    if ($user_id) {
-        $message = "(message from user $user_id)\n".$message;
+    if ($user) {
+        $message = "(message from user $user->name email $user->email_addr ID $user->id)\n".$message;
     } else {
+        if (!boinc_recaptcha_isValidated($recaptcha_private_key)) {
+            error_page(
+                tra("Your reCAPTCHA response was not correct. Please try again.")
+            );
+        }
         $e = post_str('email_addr');
         $message = "(message from $e)\n".$message;
     }
@@ -78,7 +89,8 @@ function action() {
 }
 
 if (post_str('submit', true)) {
-    action();
+    $user = get_logged_in_user(false);
+    action($user);
 } else {
     $user = get_logged_in_user(false);
     form($user);

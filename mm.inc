@@ -778,6 +778,7 @@ function join_button() {
 // we use user.seti_total_cpu to store last visit time
 //
 function update_visit_time($user) {
+    if (!$user) return;
     $now = time();
     if ($user->seti_total_cpu < $now - 600) {
         $user->update("seti_total_cpu=$now");

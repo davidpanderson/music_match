@@ -26,6 +26,7 @@ require_once("../inc/mm_db.inc");
 function show_ensemble($ens_id, $user) {
     $profile = read_profile($ens_id, ENSEMBLE);
     $ens = Ensemble::lookup_id($ens_id);
+    if (!$ens) error_page("no such ensemble");
     page_head(sprintf("Ensemble: %s", $ens->name));
     start_table();
     row2("Ensemble type", ensemble_type_str($profile->type));

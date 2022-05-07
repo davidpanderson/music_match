@@ -179,8 +179,7 @@ data about you will be removed.
 A <a href=https://docs.google.com/document/d/1WNvM1ALKSd74GRmRE9cOXQsWlRvvWL7c/edit?usp=sharing&ouid=104033427951329566684&rtpof=true&sd=true>design document</a>.
 <p>
 An
-<a href=https://docs.google.com/document/d/1VePJZlnIn6rK91ymJ0Xo8uFGD3ZCRj66/edit?usp=sharing&ouid=104033427951329566684&rtpof=true&sd=true>earlier design document</a>
-targeted at Groupmuse.
+<a href=https://docs.google.com/document/d/1VePJZlnIn6rK91ymJ0Xo8uFGD3ZCRj66/edit?usp=sharing&ouid=104033427951329566684&rtpof=true&sd=true>earlier design document</a>.
 EOT;
 text_end();
 

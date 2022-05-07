@@ -608,7 +608,10 @@ function show_post(
     
     $url = "pm.php?action=new&amp;userid=".$user->id;
     $name = $user->name;
-    show_button_small($url, tra("Send message"), tra("Send %1 a private message",$name));
+    if (has_picture($user)) {
+        echo sprintf('<img src=%s width=110>', picture_path($user));
+    }
+    //show_button_small($url, tra("Send message"), tra("Send %1 a private message",$name));
     echo '<br>'.tra("Joined: %1", gmdate('j M y', $user->create_time)), "<br>";
 
     if (!isset($user->nposts)) {

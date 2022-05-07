@@ -104,6 +104,11 @@ function right() {
     global $user;
     $u = get_logged_in_user();
     start_table();
+    if (has_picture($user)) {
+        row2('',
+            sprintf("<img src=%s width=120>", picture_path($user))
+        );
+    }
     community_links($user, $u);
     if ($u->id != $user->id && $user->country) {
         row2('Country',

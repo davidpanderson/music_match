@@ -223,6 +223,13 @@ function right() {
     if ($x) {
         row2('My followers', implode('<br>', $x));
     }
+    if (has_picture($user)) {
+        row2('My picture<br><a href=picture.php><font size=-1>edit</font></a>',
+            sprintf('<img src=%s width=100>', picture_path($user))
+        );
+    } else {
+        row2('My picture', '<a href=picture.php>Add</a>');
+    }
     end_table();
 
     echo "<h3>Notifications</h3>";

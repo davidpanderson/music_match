@@ -876,4 +876,12 @@ function user_name_link($user, $profile) {
     );
 }
 
+function picture_path($user) {
+    return sprintf("pictures/%d.jpg", $user->id);
+}
+
+function has_picture($user) {
+    return file_exists(picture_path($user));
+}
+
 ?>

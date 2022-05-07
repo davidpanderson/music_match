@@ -105,7 +105,11 @@ function cp_profile_summary_row($profile, $role) {
     }
 
     $x = array();
-    $x[] = user_name_link($user, $profile);
+    $n = user_name_link($user, $profile);
+    if (has_picture($user)) {
+        $n .= sprintf('<br><img src=%s width=120>', picture_path($user));
+    }
+    $x[] = $n;
     $x[] = cp_listen_link($user, $profile);
     $x[] = lists_to_string(
         $role==COMPOSER?INST_LIST_COARSE:INST_LIST_FINE,

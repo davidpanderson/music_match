@@ -112,8 +112,10 @@ function verify() {
 function form2($user) {
     page_head("Enter verification code");
     echo "
+        <p>
         We emailed a verification code to $user->email_addr.
         Please enter it here:
+        <p>
     ";
     form_start("signup.php", "POST");
     form_input_text("Verification code", 'code');
@@ -142,7 +144,7 @@ function form3($code) {
     form_start("signup.php", "POST");
     form_input_text("Password", "passwd", "", "password", 'id="passwd"', passwd_visible_checkbox("passwd"));
     form_select('Country', 'country', country_select_options());
-    form_input_text('Postal code', 'postal_code');
+    form_input_text('Postal code<br><small>Used for identifying nearby users</small>', 'postal_code');
     form_input_hidden('code', $code);
     form_submit('OK', 'name=action value=form3');
     form_end();
@@ -173,7 +175,7 @@ function handler3() {
             BoincDb::escape_string($postal_code)
         )
     );
-    Header("Location: intro.php");
+    Header("Location: home.php");
 }
 
 $action = post_str('action', true);

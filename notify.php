@@ -23,15 +23,14 @@ require_once("../inc/mm.inc");
 require_once("../inc/notification.inc");
 
 // scan through users, see which are due for an email
+// user.expavg_time is the last time we emailed them
 //
 function main() {
     $now = time();
     $day = $now - 86400 - 3600;
     $week = $now - 7*86400 - 3600;
 
-    $users = BoincUser::enum(
-        sprintf('send_email<>%d', NOTIFY_NEVER)
-    );
+    $users = BoincUser::enum(sprintf('send_email<>%d', NOTIFY_NEVER));
     foreach ($users as $user) {
         $sent_any = false;
         switch ($user->send_email) {

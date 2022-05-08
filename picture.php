@@ -19,7 +19,7 @@
 // upload picture
 
 require_once("../inc/util.inc");
-require_once("../inc/image.inc");
+require_once("../inc/mm_image.inc");
 
 function upload_form($user) {
     page_head("Upload picture");
@@ -32,7 +32,7 @@ function upload_form($user) {
         'ENCTYPE="multipart/form-data"'
     );
     form_general(
-        "Image file (JPEG or PNG)",
+        "Image file (JPEG, PNG or GIFF)",
         '<input name=picture type=file>'
     );
     form_submit("Upload", 'name=submit value=upload');
@@ -59,13 +59,14 @@ function upload_action($user) {
         error_page("no file selected");
     }
     if (is_uploaded_file($pic_name)) {
-        $size = getImageSize($pic_name);
-        if ($size[2] != 2 && size[2] != 3) {
-            error_page("image must be JPEG or PNG");
+        [$w, $y, $type] = getImageSize($pic_name);
+        if ($type < 1 or $type > 3) {
+            error_page("image must be JPEG, PNG, or GIFF");
         }
-        $image = intelligently_scale_image($pic_name, 512, 512);
-        $new_name = sprintf("pictures/%s.jpg", $user->id);
-        ImageJPEG($image, $new_name);
+        $filename = sprintf('%d_%d.jpg', $user->id, time());
+        $user->update("venue='$filename'");
+        $user->venue = $filename;
+        extract_middle_square($pic_name, picture_path($user), 512);
     } else {
         error_page("can't upload $orig_name; it may be too large.");
     }
@@ -75,7 +76,8 @@ function upload_action($user) {
 }
 
 function delete_action($user) {
-    unlink(picture_path($user));
+    @unlink(picture_path($user));
+    $user->update("venue=''");
     page_head("Picture deleted");
     echo "Your picture has been deleted.";
     page_tail();

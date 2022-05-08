@@ -25,6 +25,7 @@ require_once("../inc/zip.inc");
 // user: we use:
 //      user.send_email to store prefs
 //      user.expavg_time to store time of last email
+//      user.venue to store name of picture file in pictures/
 
 // ensemble_member.status
 
@@ -876,12 +877,18 @@ function user_name_link($user, $profile) {
     );
 }
 
+// user pictures.
+// users can change pictures, so we need to timestamp them;
+// otherwise browser caching will show the old image.
+// Call the file ID_timestamp.jpg, and store this name in user.venue
+//
+//
 function picture_path($user) {
-    return sprintf("pictures/%d.jpg", $user->id);
+    return sprintf("pictures/%s", $user->venue);
 }
 
 function has_picture($user) {
-    return file_exists(picture_path($user));
+    return strlen($user->venue)>0 && file_exists(picture_path($user));
 }
 
 ?>

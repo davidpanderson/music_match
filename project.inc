@@ -233,9 +233,9 @@ function mm_navbar(
     $brand = "<a class=\"navbar-brand\" href=$master_url title='Music Match front page'>Music Match</a>";
     navbar_start($brand, $fixed, $inverse);
 
-    $x = array();
-    $x[] = array(tra("About"), $url_prefix."intro.php");
-    $x[] = array(tra("Contact"), $url_prefix."contact.php");
+    $x = [];
+    $x[] = [tra("About"), $url_prefix."intro.php"];
+    $x[] = [tra("Contact"), $url_prefix."contact.php"];
     navbar_menu(tra("Project"), $x);
 
     navbar_menu(tra("Community"), [
@@ -245,12 +245,17 @@ function mm_navbar(
         ["Ensemble name lookup", "name_lookup.php?ensemble=1"]
     ]);
     if ($user) {
-        navbar_menu(tra("Account"), array(
-            array(tra("Settings"), $url_prefix."settings.php"),
-        ));
+        navbar_menu(tra("Account"), [
+            [tra("Settings"), $url_prefix."settings.php"]
+        ]);
     }
-
-    // add your own menu here if you want
+    navbar_menu(tra("Search"), [
+        ["Composers", "cp_search.php?role=0"],
+        ["Performers", "cp_search.php?role=1"],
+        ["Technicians", "tech_search.php"],
+        ["Ensembles", "ensemble_search.php"],
+        ["Teachers", "teacher_search.php"]
+    ]);
 
     navbar_right($user);
     navbar_end();

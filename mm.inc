@@ -110,6 +110,8 @@ define('INST_LIST_COARSE', array(
 ));
 
 define('INST_LIST_FINE', array(
+    'bass' => 'Double bass',
+    'bassoon' => 'Bassoon',
     'cello' => 'Cello',
     'clarinet' => 'Clarinet',
     'bass' => 'Double bass',
@@ -122,15 +124,16 @@ define('INST_LIST_FINE', array(
     'organ' => 'Organ',
     'percussion' => 'Percussion',
     'piano' => 'Piano',
+    'saxophone' => 'Saxophone',
     'trombone' => 'Trombone',
     'trumpet' => 'Trumpet',
     'tuba' => 'Tuba',
     'viola' => 'Viola',
     'violin' => 'Violin',
-    'vocal_soprano' => 'Vocal (Soprano)',
-    'vocal_alto' => 'Vocal (Alto)',
-    'vocal_tenor' => 'Vocal (Tenor)',
-    'vocal_bass' => 'Vocal (Bass/Baritone)',
+    'vocal_soprano' => 'Vocal (soprano)',
+    'vocal_alto' => 'Vocal (alto)',
+    'vocal_tenor' => 'Vocal (tenor, countertenor)',
+    'vocal_bass' => 'Vocal (bass, baritone)',
 ));
 
 define('LEVEL_LIST', array(

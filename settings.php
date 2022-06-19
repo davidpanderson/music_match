@@ -179,7 +179,7 @@ if ($action) {
         case 'name':
             page_head("Change user name");
             form_start("settings.php", "POST");
-            form_input_text('User name', 'name', $user->name);
+            form_input_text('User name<br><font size=-1>Your real name or a pseudonym</font>', 'name', $user->name);
             form_submit('Update', 'name=action value=name');
             form_end();
             page_tail();

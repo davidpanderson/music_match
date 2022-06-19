@@ -94,7 +94,11 @@ function right() {
 }
 
 $show_home_link = false;
-page_head("");
+page_head("", null, true, '',
+    '<meta name=description content="Music Match is a meeting place for classical music performers, composers, technicians, teachers, and ensembles">
+    <meta name=keywords content="classical music performer composer orchestra meet">
+    '
+);
 grid(null, 'left', 'right', 7);
 page_tail();
 

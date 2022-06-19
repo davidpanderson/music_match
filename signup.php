@@ -53,7 +53,7 @@ require_once("../inc/account.inc");
 function form1() {
     page_head("Create account");
     form_start("signup.php", "POST", "name=f");
-    form_input_text("User name", 'name');
+    form_input_text("User name<br><font size=-1>Your real name or a pseudonym</font>", 'name');
     form_focus("f", "name");
     form_input_text("Email address", 'email_addr');
     form_submit("OK", 'name=action value=form1');

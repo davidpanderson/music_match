@@ -32,8 +32,16 @@ function cp_form($user, $profile, $role) {
         'ENCTYPE="multipart/form-data" name="fname" onsubmit="return validate_link()"'
     );
     form_input_hidden("role", $role);
+    if ($role == COMPOSER) {
+        form_general("<font size=-1>All fields are optional</font>", '');
+        $x = "
+            Instruments I write for";
+    } else {
+        $x = "Instruments I play
+            <br><font size=-1>Required; all other fields are optional</font>";
+    }
     form_general(
-        $role==COMPOSER?"Instruments I write for":"Instruments I play",
+        $x,
         checkbox_table([
             items_list(
                 $role==COMPOSER?INST_LIST_COARSE:INST_LIST_FINE,
@@ -103,7 +111,7 @@ function cp_form($user, $profile, $role) {
         3
     );
 
-    $sig_title = sprintf('Audio signature MP3<br><small>A short, representative example of my %s.<br>Max size 128 MB.</small>',
+    $sig_title = sprintf('Audio signature MP3<br><small>A representative example of my %s.<br>Max size 128 MB.</small>',
         $role==COMPOSER?"composition":"playing"
     );
     if ($profile->signature_filename) {
@@ -132,7 +140,8 @@ function cp_form($user, $profile, $role) {
         '<input name=link_desc size=40 %s value="%s">',
         text_input_default(LINK_ADD_DESC), LINK_ADD_DESC
     );
-    $title = 'Links<br><small>... to web pages with examples of my work.</small>';
+    $title = 'Web links<br><font size=-1>... to examples of my work.
+        Add as many as you want, one at a time.</font>';
     validate_link_script('fname', 'link_url', 'link_desc');
 
     if ($profile->link) {
@@ -182,6 +191,11 @@ function action($user_id, $profile, $role) {
         $profile->inst_custom, "inst_custom", INST_ADD
     );
 
+    if ($role==PERFORMER) {
+        if (!count($profile2->inst) && !count($profile2->inst_custom)) {
+            error_page("You must specify at least one instrument.");
+        }
+    }
     if ($role==COMPOSER) {
         $profile2->ens_type = parse_list(
             COMPOSE_FOR_LIST, "ens_type"

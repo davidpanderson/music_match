@@ -242,7 +242,14 @@ function right() {
         Help us grow!
         <a href=email.php>Tell your musical friends and colleagues</a>
         about Music Match.
-
+        <p>
+    ";
+    echo '<table><tr><td><a href="https://twitter.com/music_match_org?ref_src=twsrc%5Etfw" class="twitter-follow-button" data-show-screen-name="false" data-show-count="false">Follow @music_match_org</a><script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script></td>';
+    echo "
+        <td>&nbsp;&nbsp; </td>
+        <td><a href=https://www.facebook.com/Music-matchorg-113556814665297>
+        <img style=\"vertical-align:baseline\" height=20 src=fb.png></a>
+        </td></tr></table>
     ";
 }
 

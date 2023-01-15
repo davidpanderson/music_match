@@ -187,12 +187,14 @@ groupmuse
 
 race/gender questions
 
+possible partners
 CNMAT
-databases:
+composer databases:
 iceorg.org
 chambermusic america
 https://www.musicbyblackcomposers.org/
 https://www.composerdiversity.com/
+New Music America: https://newmusicusa.org/
 
 protection/hiding/locking
 -------------------
@@ -443,16 +445,21 @@ View search page
 Alpha testers
 
 Ellie
+    her composer friends
+    her performer friends
+        lewis patzner
 Maryse
 Chelsea
 Monica
 Lily
 Brian Tang
 Rich Kraft
+    his contacts
 Molly McCann
 Mosa Tsay
 Kyle Schmolze
 Gareth Loy
+    Jonathan
 Robert Au
 Weinberg
 
@@ -554,7 +561,6 @@ robert schwartz
 tim zhou
     z.timothy96@gmail.com
 chiara bertogli
-daniel shapiro
 eric tran
 joanna rozewska
 phil covitz
@@ -563,3 +569,66 @@ Eri
 
 current people (call them):
 tell your friends
+------------
+Ron:
+"support" instead of "technician"
+
+show "others" in popup
+
+promote through BAMC
+
+getting old compositions played
+(non-compete with commissioning structures)
+
+events: e.g. specific concert
+
+sign up for MM -> get to perform at piano club
+
+tech workers who are musical
+Zach weiner
+tim zhou
+pam/mike fong
+stock email cc me
+music email list at google?
+who else do I know?
+
+local choirs
+---------------------
+PUT STUFF ON SOUNDCLOUD what stuff?
+===============
+As I see it, there are several scenarios for composer/performer interaction:
+
+1) The performer "commissions" the composer to write a piece,
+    i.e. the performer pays the composer
+
+2) Similar to 1), but mediated by an organization,
+    which pays the composer
+
+3) Similar to 1), but no money is involved; the composer works for free
+
+4) The performer discovers the composer,
+    browses their existing compositions, and plays or performs some.
+
+5) The composer discovers the performer,
+    and tries to get the performer interested in playing
+    existing compositions.
+
+For a famous composer, only 1 and 2 are relevant.
+But a non-famous composer may have lots of compositions
+that have never been played.
+For such a composer, the goal is probably to get their compositions played,
+rather than to get paid for them.
+
+The purpose of Music Match is to let people (e.g. composers and performers)
+discover each other.
+What happens after that is up to them.
+So it supports all the above scenarios,
+with an emphasis on 3-5.
+------------------
+IMSLP
+eguo@imslp.org  (Edward Guo: founder)
+------------------
+
+Assoc chamber music players (acmp.net)
+    offers a service similar (but weaker) than MM
+    fancy wordpress-based web site

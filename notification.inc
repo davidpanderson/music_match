@@ -205,6 +205,9 @@ function send_notify_email($user) {
 
 For details, or to change email settings, visit Music Match:
 https://music-match.org/home.php
+
+Spread the word about Music Match: visit
+https://music-match.org/email.php
 ',
             implode("\n\n", $x)
         );
@@ -212,6 +215,8 @@ https://music-match.org/home.php
 '%s
 <p><p>
 For details, or to change email settings, <a href=%s>visit Music Match</a>.
+<p><p>
+<a href=https://music-match.org/email.php>Spread the word</a> about Music Match.
 ',
             implode("<p><p>", $x),
             'https://music-match.org/home.php'

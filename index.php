@@ -32,15 +32,15 @@ function left() {
         <img width=19% src=teach.png alt=\"Picture of a cello student and teacher\">
         <p>
         <br>
-        Music Match lets people involved in classical and modern music -
-        performers, composers, technicians -
+        Music Match is LinkedIn for classical musicians.
+        It lets performers, composers, technicians
         find each other, communicate, and collaborate.
         <p>
         <h3>Performers:</h3>
         <ul>
         <li> Find composers who write music for your instrument,
         in your style and level.
-        Check out their compositions, or get them to write new ones for you.
+        Check out their compositions, or ask them to write new ones for you.
         <li> Find local musicians to play and perform music with.
 
         </ul>
@@ -96,7 +96,7 @@ function right() {
 $show_home_link = false;
 page_head("", null, true, '',
     '<meta name=description content="Music Match is a meeting place for classical music performers, composers, technicians, teachers, and ensembles">
-    <meta name=keywords content="classical music performer composer orchestra meet">
+    <meta name=keywords content="classical music musician performer composer orchestra meet">
     '
 );
 grid(null, 'left', 'right', 7);

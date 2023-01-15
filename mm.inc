@@ -819,28 +819,15 @@ function split_list($items, $ncols) {
     return $x;
 }
 
-// helper function for the checkbox_table()
-//
-function checkbox_table_array($items, $ncols) {
-    $x = '';
-    $y = split_list($items, $ncols);
-    for ($i=0; $i<$ncols; $i++) {
-        $x .= sprintf("<td valign=top style=\"padding: 4px\" width=\"%d%%\">%s</td>\n",
-            intdiv(100, $ncols),
-            implode('<br>', checkbox_item_strings($y[$i]))
-        );
-    }
-    $x .= '</tr>';
-    return $x;
-}
-
-// display a table with $ncols columns.
+// Display lots of checkboxes divided into columns.
+// Returns text for a table with $ncols columns.
 // for each item in $items:
 // - if it's an array, it's a list of checkbox items; divide it into columns
-// - otherwise show it in a single column
+// - otherwise show it in a row that spans all cols
+// Use this as arg to form_general();
 //
 function checkbox_table($items, $ncols) {
-    $x = '<table width=100%><tr>';
+    $x = '<table width=100%>';
     foreach ($items as $item) {
         if (is_array($item)) {
             if (count($item)) {
@@ -854,6 +841,25 @@ function checkbox_table($items, $ncols) {
     return $x;
 }
 
+// Helper function for the above.
+// Return '<tr><td>x</td> ... <td>x</td></tr>'
+// where each table cell contains 1/ncols of the given checkbox items
+//
+function checkbox_table_array($items, $ncols) {
+    $x = '<tr>';
+    $y = split_list($items, $ncols);
+    for ($i=0; $i<$ncols; $i++) {
+        $x .= sprintf("<td valign=top style=\"padding: 4px\" width=\"%d%%\">%s</td>\n",
+            intdiv(100, $ncols),
+            implode('<br>', checkbox_item_strings($y[$i]))
+        );
+    }
+    $x .= '</tr>';
+    return $x;
+}
+
+// Not used - delete?
+//
 function checkbox_array($items, $ncols, $last=null) {
     $y = split_list($items, $ncols);
     $x = '<table width=100%><tr>';

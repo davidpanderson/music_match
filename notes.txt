@@ -627,8 +627,16 @@ with an emphasis on 3-5.
 ------------------
 IMSLP
 eguo@imslp.org  (Edward Guo: founder)
+
+Sarah Cahill?
 ------------------
 
 Assoc chamber music players (acmp.net)
     offers a service similar (but weaker) than MM
     fancy wordpress-based web site
+
+https://www.sfcivicmusic.org/
+    SF civic comm orch
+
+https://amateurmusic.org/info/
+    lets people post various things

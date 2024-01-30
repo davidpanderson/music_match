@@ -1,5 +1,5 @@
 # Music Match
-A Web-based system for establishing communicaiton
+A Web-based system for establishing communication
 between classical musicians (composers, performers, teachers, technicians).
 
 Its [web site](https://music-match.org) lets musicians

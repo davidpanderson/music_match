@@ -174,9 +174,25 @@ function show_search() {
     );
     echo "
         </td></tr></table>
-        <p><p>
-        <a href=search_list.php>Previous searches</a>
     ";
+
+    global $user;
+    $searches = Search::enum("user_id = $user->id");
+    $n = count($searches);
+    $nnew = 0;
+    foreach ($searches as $s) {
+        if ($s->rerun_nnew) {
+            $nnew++;
+        }
+    }
+    if ($n) {
+        echo "<p><p>Your previous searches:
+            <a href=search_list.php>View all $n</a>
+        ";
+        if ($nnew) {
+            echo " &nbsp;&middot;&nbsp; <a href=search_list.php?new=1>View $nnew with new results</a>";
+        }
+    }
 }
 
 function right() {

@@ -167,7 +167,8 @@ or you can unsubscribe.
 <hr>
 <p>
 Music Match is a non-profit project
-based at the University of California, Berkeley.
+based at the University of California, Berkeley,
+led by <a href=https://boinc.berkeley.edu/anderson/>Dr. David P. Anderson</a>.
 The source code is
 <a href=https://github.com/davidpanderson/music_match/>on Github</a>.
 <p>

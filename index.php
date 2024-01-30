@@ -32,9 +32,9 @@ function left() {
         <img width=19% src=teach.png alt=\"Picture of a cello student and teacher\">
         <p>
         <br>
-        Music Match is LinkedIn for classical musicians.
-        It lets performers, composers, technicians
-        find each other, communicate, and collaborate.
+        Music Match is like LinkedIn for classical musicians:
+        performers, composers, technicians and teachers.
+        It lets musicians find each other, communicate, and collaborate.
         <p>
         <h3>Performers:</h3>
         <ul>
@@ -75,6 +75,9 @@ function left() {
         <p>
         Music Match is a non-profit open-source project
         based at the University of California, Berkeley.
+        Its source code is on <a href=https://github.com/davidpanderson/music_match/>Github</a>.
+        <p>
+        <a href=https://berkeley.edu><img src=ucbseal.png height=150></a>
         <p>
         The data collected by Music Match will not be
         sold, distributed, or used for other purposes.

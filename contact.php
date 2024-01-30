@@ -65,6 +65,10 @@ function action($user) {
     if (!$message) {
         error_page('No message');
     }
+
+    if (strpos($message, 'SEO')!==false) {
+        error_page('get lost, spammer');
+    }
     if ($user) {
         $message = "(message from user $user->name email $user->email_addr ID $user->id)\n".$message;
     } else {

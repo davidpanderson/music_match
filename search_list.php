@@ -30,7 +30,7 @@ function show_search_list_item($s, $role) {
     $m .= mm_button_text("search_show.php?search_id=$s->id", "View", BUTTON_SMALL);
     if ($s->rerun_nnew) {
         $m .= sprintf(
-            "<br><font color=orange>This search has %d new %s</font>",
+            "<p><p><font color=orange>This search has %d new %s</font>",
             $s->rerun_nnew,
             $s->rerun_nnew==1?"match":"matches"
         );
@@ -74,16 +74,20 @@ function show_search_list_header() {
     );
 }
 
-function main($user) {
-    page_head("My searches");
-    $searches = Search::enum("user_id = $user->id order by rerun_nnew desc");
+function main($user, $new_only) {
+    if ($new_only) {
+        page_head("My searches with new results");
+        $searches = Search::enum("user_id = $user->id and rerun_nnew>0 order by rerun_nnew desc");
+    } else {
+        page_head("My searches");
+        $searches = Search::enum("user_id = $user->id order by rerun_nnew desc");
+    }
     if ($searches) {
         text_start();
         echo "
             <p>
-            Music Match records your searches,
-            and we'll notify you if there are new results
-            since the last time you looked.
+            Music Match records your searches
+            and notifies you if there are new results.
             You can delete searches you're no longer interested in.
             <p>
         ";
@@ -116,6 +120,7 @@ if (get_str('action', true) == 'delete') {
     $search->delete();
     Header("Location: search_list.php");
 } else {
-    main($user);
+    $new_only = get_str('new', true);
+    main($user, $new_only);
 }
 ?>

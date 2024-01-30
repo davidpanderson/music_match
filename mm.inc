@@ -16,6 +16,8 @@
 // along with Music Match.  If not, see <http://www.gnu.org/licenses/>.
 // --------------------------------------------------------------------
 
+// Music-match-specific utility functions and constants
+
 define('DEBUG', false);
 
 require_once("../inc/zip.inc");

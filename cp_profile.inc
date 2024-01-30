@@ -78,7 +78,7 @@ function cp_profile_summary_table($user, $profile, $role) {
 }
 
 
-// name, with link and audio mouseover
+// Note icon that plays user's audio signature when clicked
 //
 function cp_listen_link($user, $profile) {
     $x = '';

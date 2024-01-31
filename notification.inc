@@ -59,7 +59,7 @@ function notification_string($n, $web) {
         }
     case NOTIFY_SEARCH:
         if ($web) {
-            return "One of your <a href=search_list.php>previous searches</a> has a new result.";
+            return "One of your <a href=search_list.php?new=1>previous searches</a> has a new result.";
         } else {
             return "One of your previous searches has a new result.";
         }

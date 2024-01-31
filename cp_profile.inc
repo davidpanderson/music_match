@@ -87,7 +87,7 @@ function cp_listen_link($user, $profile) {
             ' onclick="play_sound(\'a%d\');" onmouseleave="stop_sound(\'a%d\');" ',
             $user->id, $user->id
         );
-        $x .= sprintf('&nbsp;<a %s href=#><img height=24px src=note.png></a>', $audio);
+        $x .= sprintf('&nbsp;<a %s ><img height=24px src=note.png></a>', $audio);
     }
     return $x;
 }
@@ -135,8 +135,8 @@ function cp_profile_summary_row($profile, $role) {
 function cp_profile_summary_header($role) {
     enable_audio();
     $x= [
-        'Name<br><small>click for details<br>hover for intro</small>',
-        music_sample_header(),
+        'Name<br><small><nobr>click for details</nobr><br><nobr>hover for intro</nobr></small>',
+        music_sample_header($role),
         "Instruments"
     ];
     if ($role == COMPOSER) {

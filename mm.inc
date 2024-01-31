@@ -719,8 +719,9 @@ function mm_show_button($url, $label, $style=BUTTON_NORMAL) {
 
 // column header for Music Sample
 //
-function music_sample_header() {
-    return "<nobr>Music sample</nobr>&nbsp;&nbsp;&nbsp;<br><nobr><small>Click &nbsp; <img height=18px src=note.png> &nbsp; to play</nobr>&nbsp;&nbsp;&nbsp;";
+function music_sample_header($role=PERFORMER) {
+    $x = ($role==COMPOSER)?'Composition':'Performance';
+    return "<nobr>$x sample</nobr>&nbsp;&nbsp;&nbsp;<br><nobr><small>To play: click &nbsp; <img height=18px src=note.png> &nbsp; and hover</nobr>&nbsp;&nbsp;&nbsp;";
 }
 
 // if user hasn't validated their email addr, ask them to do so

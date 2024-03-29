@@ -105,7 +105,11 @@ function main($user, $new_only) {
         show_searches($searches, TEACHER);
         end_table();
     } else {
-        echo "No searches so far.";
+        if ($new_only) {
+            echo "None of your searches have new results.";
+        } else {
+            echo "No searches so far.";
+        }
     }
     page_tail();
 }

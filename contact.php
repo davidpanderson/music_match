@@ -67,7 +67,13 @@ function action($user) {
     }
 
     if (strpos($message, 'SEO')!==false) {
-        error_page('get lost, spammer');
+        error_page('go away');
+    }
+    if (strpos($message, 'Viagra')!==false) {
+        error_page('go away');
+    }
+    if (strpos($message, 'ryptocurrency')!==false) {
+        error_page('go away');
     }
     if ($user) {
         $message = "(message from user $user->name email $user->email_addr ID $user->id)\n".$message;

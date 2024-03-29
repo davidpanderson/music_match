@@ -26,7 +26,7 @@ require_once("../inc/ensemble.inc");
 require_once("../inc/search.inc");
 
 function ens_search_form() {
-    page_head("Ensemble search");
+    page_head("Search for ensembles");
     form_start("ensemble_search.php", "POST");
     form_checkboxes("Ensemble type",
         items_list(ENSEMBLE_TYPE_LIST, array(), "type")

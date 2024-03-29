@@ -140,6 +140,7 @@ function handler2() {
 }
 
 function form3($code) {
+    global $show_home_link;
     page_head("Account setup");
     form_start("signup.php", "POST");
     form_input_text("Password", "passwd", "", "password", 'id="passwd"', passwd_visible_checkbox("passwd"));
@@ -148,6 +149,7 @@ function form3($code) {
     form_input_hidden('code', $code);
     form_submit('OK', 'name=action value=form3');
     form_end();
+    $show_home_link = false;
     page_tail();
 }
 

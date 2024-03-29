@@ -22,6 +22,8 @@
 // remove a user
 // (or edit to remove fake users)
 
+die('foo');
+
 require_once("../inc/remove_user.inc");
 
 function remove_fake_users() {

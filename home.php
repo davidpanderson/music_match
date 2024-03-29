@@ -76,7 +76,7 @@ function show_profiles() {
         );
     } else {
         row2('',
-            mm_show_button(
+            mm_button_text(
                 sprintf("cp_profile_edit.php?role=%d", PERFORMER),
                 "Create performer profile", BUTTON_SMALL
             )
@@ -97,7 +97,7 @@ function show_profiles() {
         );
     } else {
         row2('',
-            mm_show_button(
+            mm_button_text(
                 "tech_profile_edit.php",
                 "Create technician profile"
             )
@@ -143,35 +143,46 @@ function show_ens() {
 function show_search() {
     echo "<h3>Search for</h3>";
     echo "<table><tr><td align=center width=18%>";
-    echo '<p><img width=80% src=comp.png alt="Picture of a musical score"><p>';
-    mm_show_button(
-        sprintf("cp_search.php?role=%d", COMPOSER),
-        "Composers", BUTTON_SMALL
+
+    $url = sprintf("cp_search.php?role=%d", COMPOSER);
+    echo sprintf(
+        '<p><a href=%s><img width=80%% src=comp.png alt="%s"></a><p>',
+        $url, 'Picture of a musical score'
     );
+    mm_show_button($url, "Composers", BUTTON_SMALL);
+
     echo "</td><td align=center width=18%>";
-    echo '<p><img width=80% src=perf.png alt="Picture of a violinist"><p>';
-    mm_show_button(
-        sprintf("cp_search.php?role=%d", PERFORMER),
-        "Performers", BUTTON_SMALL
+    $url = sprintf("cp_search.php?role=%d", PERFORMER);
+    echo sprintf(
+        '<p><a href=%s><img width=80%% src=perf.png alt="%s"></a><p>',
+        $url, 'Picture of a violinist'
     );
+    mm_show_button($url, "Performers", BUTTON_SMALL);
+
     echo "</td><td align=center width=18%>";
-    echo '<p><img width=80% src=tech.png alt="Picture of a mixing board"><p>';
-    mm_show_button(
-        "tech_search.php",
-        "Technicians", BUTTON_SMALL
+    $url = 'tech_search.php';
+    echo sprintf(
+        '<p><a href=%s><img width=80%% src=tech.png alt="%s"></a><p>',
+        $url, 'Picture of a mixing board'
     );
+    mm_show_button($url, "Technicians", BUTTON_SMALL);
+
     echo "</td><td align=center width=18%>";
-    echo '<p><img width=80% src=ens.png alt="Picture of an orchestra"><p>';
-    mm_show_button(
-        "ensemble_search.php",
-        "Ensembles", BUTTON_SMALL
+    $url = 'ensemble_search.php';
+    echo sprintf(
+        '<p><a href=%s><img width=80%% src=ens.png alt="%s"></a><p>',
+        $url, 'Picture of an orchestra'
     );
+    mm_show_button($url, "Ensembles", BUTTON_SMALL);
+
     echo "</td><td align=center width=18%>";
-    echo '<p><img width=80% src=teach.png alt="Picture of a cello student and teacher"><p>';
-    mm_show_button(
-        "teacher_search.php",
-        "Teachers", BUTTON_SMALL
+    $url = 'teacher_search.php';
+    echo sprintf(
+        '<p><a href=%s><img width=80%% src=teach.png alt="%s"></a><p>',
+        $url, 'Picture of cello student and teacher'
     );
+    mm_show_button($url, "Teachers", BUTTON_SMALL);
+
     echo "
         </td></tr></table>
     ";

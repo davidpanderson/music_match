@@ -206,6 +206,7 @@ function community_links($user, $logged_in_user){
             $found = true;
         } else {
             $u = BoincUser::lookup_id($f->user_src);
+            if (!$u) continue;
             $x[] = user_link($u);
         }
     }
@@ -230,6 +231,7 @@ function community_links($user, $logged_in_user){
     $x = [];
     foreach ($following as $f) {
         $u = BoincUser::lookup_id($f->user_dest);
+        if (!$u) continue;
         $x[] = user_link($u);
     }
     if ($x) {

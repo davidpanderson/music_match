@@ -107,6 +107,7 @@ function ens_members_string($ens_id) {
     $x = array();
     foreach ($ms as $m) {
         $u = BoincUser::lookup_id($m->user_id);
+        if (!$u) continue;
         $x[] = "<a href=user.php?user_id=$u->id>$u->name</a>";
     }
     return implode("<br>", $x);

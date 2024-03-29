@@ -1,6 +1,6 @@
 <?php
 // This file is part of Music Match.
-// Copyright (C) 2022 David P. Anderson
+// Copyright (C) 2024 David P. Anderson
 //
 // Music Match is free software; you can redistribute it and/or modify it
 // under the terms of the GNU Lesser General Public License
@@ -64,6 +64,7 @@ function show_settings($user) {
         )
     );
     row2("Member since", date_str($user->create_time));
+    row2('', button_text('mm_delete_account.php', 'Delete account', null, 'btn-danger'));
     end_table();
     page_tail();
 }

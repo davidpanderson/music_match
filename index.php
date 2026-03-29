@@ -55,15 +55,29 @@ function left() {
         Music Match is designed for musicians at all levels,
         both amateur and professional.
         <p>
+        Music Match is a non-profit project,
+        created and operated by volunteers.
+        Its source code is open-source and is available on
+        <a href=https://github.com/davidpanderson/music_match/>Github</a>.
+        The data collected by Music Match will not be
+        sold, distributed, or used for other purposes.
+        You can delete your account, in which case all
+        data about you will be removed.
+        <p>
         <a href=intro.php>Learn more about Music Match.</a>
-        <br><br>
+        <p>
+        Check out our companion site,
+        <a href=https://classicalmusicindex.org>Classical Music Index</a>.
+        It provides another way to discover music.
+        <p>
         <center>
+        <p> <br>
     ";
 
-    $user = get_logged_in_user(true);
+    $user = get_logged_in_user(false);
     if ($user) {
         update_visit_time($user);
-        mm_show_button("home.php", "Go to my home page");
+        mm_show_button("home.php", "Go to my home page", BUTTON_NORMAL);
         //home_button();
     } else {
         join_button();
@@ -71,18 +85,6 @@ function left() {
 
     echo "
         </center>
-        <hr>
-        <p>
-        Music Match is a non-profit open-source project
-        based at the University of California, Berkeley.
-        Its source code is on <a href=https://github.com/davidpanderson/music_match/>Github</a>.
-        <p>
-        <a href=https://berkeley.edu><img src=ucbseal.png height=150></a>
-        <p>
-        The data collected by Music Match will not be
-        sold, distributed, or used for other purposes.
-        You can delete your account, in which case all
-        data about you will be removed.
     ";
     //text_end();
 }

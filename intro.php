@@ -167,7 +167,6 @@ or you can unsubscribe.
 <hr>
 <p>
 Music Match is a non-profit project
-based at the University of California, Berkeley,
 led by <a href=https://boinc.berkeley.edu/anderson/>Dr. David P. Anderson</a>.
 The source code is
 <a href=https://github.com/davidpanderson/music_match/>on Github</a>.
@@ -176,11 +175,6 @@ The data collected by Music Match will not be
 sold, distributed, or used for other purposes.
 You can delete your account, in which case all
 data about you will be removed.
-<hr>
-A <a href=https://docs.google.com/document/d/1WNvM1ALKSd74GRmRE9cOXQsWlRvvWL7c/edit?usp=sharing&ouid=104033427951329566684&rtpof=true&sd=true>design document</a>.
-<p>
-An
-<a href=https://docs.google.com/document/d/1VePJZlnIn6rK91ymJ0Xo8uFGD3ZCRj66/edit?usp=sharing&ouid=104033427951329566684&rtpof=true&sd=true>earlier design document</a>.
 EOT;
 text_end();
 

@@ -17,6 +17,7 @@
 // --------------------------------------------------------------------
 
 require_once("../inc/util.inc");
+require_once("../inc/news.inc");
 require_once("../inc/mm.inc");
 
 function left() {
@@ -25,15 +26,15 @@ function left() {
         <p>
         <font size=+4>Music Match</font>
         <p>
-        <img width=19% src=comp.png alt=\"Picture of a musical score\">
-        <img width=19% src=perf.png alt=\"Picture of a violinist\">
-        <img width=19% src=tech.png alt=\"Picture of a mixing board\">
-        <img width=19% src=ens.png alt=\"Picture of an orchestra\">
-        <img width=19% src=teach.png alt=\"Picture of a cello student and teacher\">
+        <a href=cp_search.php?role=0><img width=19% src=comp.png title=\"Search for composers\"></a>
+        <a href=cp_search.php?role=1><img width=19% src=perf.png title=\"Search for performers\">
+        <a href=tech_search.php><img width=19% src=tech.png title=\"Search for technicians\"></a>
+        <a href=ensemble_search.php><img width=19% src=ens.png title=\"Picture of an orchestra\"></a>
+        <a href=teacher_search.php><img width=19% src=teach.png title=\"Picture of a cello student and teacher\"></a>
         <p>
         <br>
-        Music Match is like LinkedIn for classical musicians:
-        performers, composers, technicians and teachers.
+        Music Match is like LinkedIn for classical musicians
+        (performers, composers, technicians and teachers).
         It lets musicians find each other, communicate, and collaborate.
         <p>
         <h3>Performers:</h3>
@@ -68,7 +69,7 @@ function left() {
         <p>
         Check out our companion site,
         <a href=https://classicalmusicindex.org>Classical Music Index</a>.
-        It provides another way to discover music.
+        It provides other ways to discover music.
         <p>
         <center>
         <p> <br>

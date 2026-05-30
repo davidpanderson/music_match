@@ -1,0 +1,68 @@
+<?xml version="1.0" ?>
+<boinc>
+    <config>
+        <upload_dir>/home/boincadm/projects/mm/upload</upload_dir>
+        <disable_account_creation_rpc>0</disable_account_creation_rpc>
+        <send_result_abort>1</send_result_abort>
+        <long_name>Music Match</long_name>
+        <no_computing>1</no_computing>
+        <sched_debug_level>3</sched_debug_level>
+        <cache_md5_info>1</cache_md5_info>
+        <disable_account_creation>0</disable_account_creation>
+        <uldl_dir_fanout>1024</uldl_dir_fanout>
+        <disable_web_account_creation>0</disable_web_account_creation>
+        <db_user>boincadm</db_user>
+        <log_dir>/home/boincadm/projects/mm/log_isaac</log_dir>
+        <account_creation_rpc_require_consent>0</account_creation_rpc_require_consent>
+        <enable_delete_account>0</enable_delete_account>
+        <app_dir>/home/boincadm/projects/mm/apps</app_dir>
+        <download_dir>/home/boincadm/projects/mm/download</download_dir>
+        <fuh_debug_level>3</fuh_debug_level>
+        <master_url>https://music-match.org/</master_url>
+        <host>isaac</host>
+        <db_name>mm</db_name>
+        <shmem_key>0x11112b12</shmem_key>
+        <show_results>1</show_results>
+        <key_dir>/home/boincadm/projects/mm/keys/</key_dir>
+        <dont_generate_upload_certificates>1</dont_generate_upload_certificates>
+        <enable_privacy_by_default>0</enable_privacy_by_default>
+        <enable_login_mustagree_termsofuse>0</enable_login_mustagree_termsofuse>
+        <ignore_upload_certificates>1</ignore_upload_certificates>
+        <db_passwd>w3Ratapat</db_passwd>
+        <min_sendwork_interval>6</min_sendwork_interval>
+        <no_forum_rating/>
+        <db_host>
+        </db_host>
+        <daily_result_quota>500</daily_result_quota>
+        <one_result_per_user_per_wu>0</one_result_per_user_per_wu>
+        <max_wus_to_send>50</max_wus_to_send>
+        <recaptcha_public_key>6LcldbEfAAAAAAmNMHQifF18Y9OXEhJTSmhxhxeS</recaptcha_public_key>
+        <recaptcha_private_key>6LcldbEfAAAAAAUFW1MekvqydENHJrozV5ErnDmK</recaptcha_private_key>
+    </config>
+    <tasks>
+        <task>
+            <cmd>run_in_ops ./update_forum_activities.php</cmd>
+            <period>1 hour</period>
+            <disabled>0</disabled>
+            <output>update_forum_activities.out</output>
+        </task>
+        <task>
+            <cmd>run_in_ops ./delete_expired_tokens.php</cmd>
+            <period>24 hours</period>
+            <disabled>0</disabled>
+            <output>delete_expired_tokens.out</output>
+        </task>
+        <task>
+            <cmd>run_in_ops ./search_rerun.php</cmd>
+            <period>24 hours</period>
+            <disabled>0</disabled>
+            <output>search_rerun.out</output>
+        </task>
+        <task>
+            <cmd>run_in_ops ./notify.php</cmd>
+            <period>24 hours</period>
+            <disabled>0</disabled>
+            <output>notify.out</output>
+        </task>
+    </tasks>
+</boinc>
